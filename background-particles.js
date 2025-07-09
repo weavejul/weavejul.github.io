@@ -12,6 +12,7 @@ export class BackgroundParticles {
         this.minLifetime = options.minLifetime || APP_CONFIG.PARTICLES.DEFAULT_MIN_LIFETIME;
         this.maxLifetime = options.maxLifetime || APP_CONFIG.PARTICLES.DEFAULT_MAX_LIFETIME;
         this.colors = options.colors || APP_CONFIG.COLORS.PARTICLE_COLORS;
+        this.isActive = true;
         
         // Initialize some particles
         this.initializeParticles();
@@ -49,6 +50,8 @@ export class BackgroundParticles {
     }
     
     update() {
+        if (!this.isActive) return;
+        
         const now = performance.now();
         const { width, height } = getViewportDimensions();
         
@@ -164,9 +167,10 @@ export class BackgroundParticles {
         }
     }
     
-    // Clean up all particles
+    // Clean up all particles and stop spawning
     destroy() {
         this.particles = [];
+        this.isActive = false;
     }
     
     // Change particle colors to black

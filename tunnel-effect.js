@@ -129,7 +129,7 @@ export class TunnelEffect {
         this.canvas.style.left = '0';
         this.canvas.style.width = '100%';
         this.canvas.style.height = '100%';
-        this.canvas.style.zIndex = '1000';
+        this.canvas.style.zIndex = '1005';
         this.canvas.style.pointerEvents = 'none';
         document.body.appendChild(this.canvas);
         
@@ -274,11 +274,30 @@ export class TunnelEffect {
             // Active phase
             newPhase = 'active';
             
-            // Clean up all physics objects and reset colors when transitioning to active
+            // Clean up all physics objects and trigger fluid simulation when transitioning to active
             if (this.tunnelPhase !== 'active') {
-                logger.scene('Tunnel entering active phase - cleaning up physics objects and resetting colors');
+                logger.scene('Tunnel entering active phase - cleaning up physics objects and starting fluid simulation...');
+                
+                // Remove background particles entirely
+                if (window.SceneManager && window.SceneManager.backgroundParticles) {
+                    logger.scene('Removing background particles entirely...');
+                    window.SceneManager.backgroundParticles.destroy();
+                    window.SceneManager.backgroundParticles = null;
+                }
+                
+                // Remove all physics/text/particle objects
                 if (window.SceneManager && typeof window.SceneManager.cleanupAll === 'function') {
                     window.SceneManager.cleanupAll();
+                }
+                
+                // Trigger fluid simulation and brain fade-in immediately after cleanup
+                if (window.SceneManager && typeof window.SceneManager.startFluidSimulation === 'function') {
+                    logger.scene('Physics objects destroyed - triggering fluid simulation and brain fade-in...');
+                    window.SceneManager.startFluidSimulation().catch(error => {
+                        logger.error('Error starting fluid simulation:', error);
+                    });
+                } else {
+                    logger.scene('SceneManager not available for fluid simulation transition');
                 }
             }
             
@@ -990,7 +1009,7 @@ export class TunnelEffect {
         return Array(len).fill({ h: 0, s: 0, l: 0 });
     }
 
-    // Cleanup all scene objects, set background to black, and destroy tunnel
+    // Cleanup tunnel resources and destroy
     cleanupAndDestroy() {
         // Set background to black
         if (this.renderer) {
@@ -999,10 +1018,9 @@ export class TunnelEffect {
         if (this.scene) {
             this.scene.background = new THREE.Color(0x000000);
         }
-        // Remove all physics/text/particle objects if present
-        if (window.SceneManager && typeof window.SceneManager.cleanupAll === 'function') {
-            window.SceneManager.cleanupAll();
-        }
+        
+        logger.scene('Tunnel effect complete - destroying tunnel resources');
+        
         // Remove tunnel and all Three.js resources
         this.destroy();
     }

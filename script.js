@@ -17,11 +17,10 @@ import {
     cleanupExpiredSparks, 
     performPeriodicCleanup, 
     performanceMonitor, 
-    updateDebugInfo, 
-    drawDebugInfo, 
     drawSparks,
     cleanupMeasurementCanvas
 } from './utils.js';
+import { FPSCounter } from './fps-counter.js';
 import { APP_CONFIG } from './constants.js';
 import { logger } from './logger.js';
 import { DebugUtils } from './debug-utils.js';
@@ -34,6 +33,7 @@ let isWindowVisible = true;
 let cleanupCounter = 0;
 let eventListeners = [];
 let resizeTimeout = null;
+let fpsCounter = null;
 
 // Initialize the application
 function initializeApp() {
@@ -69,11 +69,18 @@ function initializeApp() {
     // Initialize debug utilities
     DebugUtils.init(sceneManager, backgroundParticles, world, render);
     
+    // Initialize FPS counter
+    fpsCounter = new FPSCounter();
+    fpsCounter.init();
+    
     // Start the scene sequence
     sceneManager.run();
     
     // Expose sceneManager globally for tunnel effect access
     window.SceneManager = sceneManager;
+    
+    // Expose fpsCounter globally for debug access
+    window.fpsCounter = fpsCounter;
     
     logger.success('Application initialized successfully!');
 }
@@ -135,6 +142,11 @@ function setupEventListeners() {
     const beforeUpdateHandler = function() {
         cleanupCounter++;
         
+        // Update FPS counter
+        if (fpsCounter) {
+            fpsCounter.update();
+        }
+        
         // Update background particles
         if (backgroundParticles) {
             backgroundParticles.update();
@@ -180,6 +192,19 @@ function setupEventListeners() {
     
     document.addEventListener('visibilitychange', visibilityHandler);
     eventListeners.push({ element: document, event: 'visibilitychange', handler: visibilityHandler });
+    
+    // Keyboard handler for scene skipping
+    const keyboardHandler = function(event) {
+        if (event.key.toLowerCase() === 's') {
+            logger.scene('S key pressed - skipping to brain scene');
+            if (sceneManager) {
+                sceneManager.skipToBrainScene();
+            }
+        }
+    };
+    
+    document.addEventListener('keydown', keyboardHandler);
+    eventListeners.push({ element: document, event: 'keydown', handler: keyboardHandler });
 }
 
 // Start the physics engine
@@ -200,9 +225,6 @@ function customRender() {
         initializeCanvasContext();
     }
     
-    // Update debug info
-    updateDebugInfo();
-    
     // Draw background particles first (behind everything else)
     if (backgroundParticles) {
         backgroundParticles.draw(canvasContext);
@@ -213,11 +235,6 @@ function customRender() {
     
     // Draw sparks
     drawSparks(canvasContext, world);
-    
-    // Draw debug info if enabled
-    if (APP_CONFIG.DEBUG.ENABLED) {
-        drawDebugInfo(canvasContext, world, sceneManager.getHangingTexts(), backgroundParticles, render);
-    }
 }
 
 // Handle window resize
@@ -271,6 +288,12 @@ function cleanup() {
     if (backgroundParticles) {
         backgroundParticles.destroy();
         backgroundParticles = null;
+    }
+    
+    // Clean up FPS counter
+    if (fpsCounter) {
+        fpsCounter.destroy();
+        fpsCounter = null;
     }
     
     // Clean up canvas context

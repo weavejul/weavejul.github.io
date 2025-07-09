@@ -5,6 +5,8 @@ import { GroundManager } from './ground-manager.js';
 import { APP_CONFIG } from './constants.js';
 import { logger } from './logger.js';
 import { TunnelEffect } from './tunnel-effect.js';
+import { FluidIntegration } from './fluid-integration.js';
+import { BrainManager } from './brain-manager.js';
 
 // SceneManager class to orchestrate the sequence of text appearances
 export class SceneManager {
@@ -21,7 +23,15 @@ export class SceneManager {
         this.colorChangeTimeout = null;
         this.tunnelTimeout = null;
         this.tunnelEffect = null;
+        this.fluidIntegration = null;
+        this.brainManager = null;
         this.backgroundParticles = backgroundParticles;
+        
+        // Transition management
+        this.transitionState = 'idle'; // 'idle', 'transitioning', 'skipping'
+        this.pendingTransitions = new Set();
+        this.transitionCallbacks = new Map();
+        this.skipRequested = false;
     }
     
     // Set callback for scene changes
@@ -35,6 +45,88 @@ export class SceneManager {
         if (this.onSceneChangeCallback) {
             this.onSceneChangeCallback(scene);
         }
+    }
+    
+    // Transition management methods
+    isInTransition() {
+        return this.transitionState !== 'idle' || this.skipRequested;
+    }
+    
+    canStartTransition() {
+        return this.transitionState === 'idle' && !this.skipRequested;
+    }
+    
+    beginTransition(type = 'normal') {
+        if (this.skipRequested) {
+            logger.scene(`Transition blocked - skip requested`);
+            return false;
+        }
+        
+        this.transitionState = type === 'skip' ? 'skipping' : 'transitioning';
+        logger.scene(`Transition started: ${this.transitionState}`);
+        return true;
+    }
+    
+    endTransition() {
+        this.transitionState = 'idle';
+        this.pendingTransitions.clear();
+        this.transitionCallbacks.clear();
+        logger.scene('Transition ended');
+    }
+    
+    cancelAllPendingTransitions() {
+        logger.scene('Cancelling all pending transitions...');
+        
+        // Clear all timeouts
+        this.cleanupColorChangeTimeout();
+        this.cleanupTunnelTimeout();
+        
+        // Clear all pending transitions
+        this.pendingTransitions.forEach(transitionId => {
+            if (this.transitionCallbacks.has(transitionId)) {
+                const callback = this.transitionCallbacks.get(transitionId);
+                if (callback && callback.cancel) {
+                    callback.cancel();
+                }
+            }
+        });
+        
+        this.pendingTransitions.clear();
+        this.transitionCallbacks.clear();
+        
+        logger.scene('All pending transitions cancelled');
+    }
+    
+    scheduleTransition(delay, callback, cancelCallback = null) {
+        if (this.skipRequested) {
+            logger.scene('Transition scheduled but skip requested - cancelling');
+            return null;
+        }
+        
+        const transitionId = `transition_${Date.now()}_${Math.random()}`;
+        
+        const timeoutId = setTimeout(() => {
+            if (this.skipRequested) {
+                logger.scene('Transition executed but skip requested - cancelling');
+                return;
+            }
+            
+            if (this.pendingTransitions.has(transitionId)) {
+                this.pendingTransitions.delete(transitionId);
+                this.transitionCallbacks.delete(transitionId);
+                callback();
+            }
+        }, delay);
+        
+        this.pendingTransitions.add(transitionId);
+        this.transitionCallbacks.set(transitionId, {
+            cancel: () => {
+                clearTimeout(timeoutId);
+                if (cancelCallback) cancelCallback();
+            }
+        });
+        
+        return transitionId;
     }
     
     // Run the complete sequence
@@ -63,11 +155,35 @@ export class SceneManager {
         
         // Set up fall callback to trigger next scene
         helloText.onFall(() => {
+            if (this.skipRequested) {
+                logger.scene('Hello text fell but skip requested - ignoring transition');
+                return;
+            }
+            
             logger.scene('Hello text fell, transitioning to Julian scene...');
-            // Add delay before next scene for dramatic effect
-            setTimeout(() => {
-                this.runJulianScene();
-            }, APP_CONFIG.ANIMATION.SCENE_TRANSITION_DELAY);
+            
+            if (!this.beginTransition()) {
+                logger.scene('Transition blocked - skipping to brain scene');
+                return;
+            }
+            
+            // Schedule transition with proper cleanup
+            this.scheduleTransition(
+                APP_CONFIG.ANIMATION.SCENE_TRANSITION_DELAY,
+                () => {
+                    if (this.skipRequested) {
+                        logger.scene('Julian scene transition cancelled due to skip');
+                        this.endTransition();
+                        return;
+                    }
+                    this.runJulianScene();
+                    this.endTransition();
+                },
+                () => {
+                    logger.scene('Julian scene transition cancelled');
+                    this.endTransition();
+                }
+            );
         });
         
         helloText.create();
@@ -107,13 +223,37 @@ export class SceneManager {
         // Set up fall callbacks for transition to Ready scene
         let fallCount = 0;
         const onBothFallen = () => {
+            if (this.skipRequested) {
+                logger.scene('Julian texts fell but skip requested - ignoring transition');
+                return;
+            }
+            
             fallCount++;
             if (fallCount === 2) {
                 logger.scene('Both Julian texts fell, transitioning to Ready scene...');
-                // Add delay before next scene for dramatic effect
-                setTimeout(() => {
-                    this.runReadyScene();
-                }, APP_CONFIG.ANIMATION.SCENE_TRANSITION_DELAY);
+                
+                if (!this.beginTransition()) {
+                    logger.scene('Transition blocked - skipping to brain scene');
+                    return;
+                }
+                
+                // Schedule transition with proper cleanup
+                this.scheduleTransition(
+                    APP_CONFIG.ANIMATION.SCENE_TRANSITION_DELAY,
+                    () => {
+                        if (this.skipRequested) {
+                            logger.scene('Ready scene transition cancelled due to skip');
+                            this.endTransition();
+                            return;
+                        }
+                        this.runReadyScene();
+                        this.endTransition();
+                    },
+                    () => {
+                        logger.scene('Ready scene transition cancelled');
+                        this.endTransition();
+                    }
+                );
             }
         };
         
@@ -151,6 +291,11 @@ export class SceneManager {
         
         // Set up fall callback for final scene
         readyText.onFall(() => {
+            if (this.skipRequested) {
+                logger.scene('Ready text fell but skip requested - ignoring transition');
+                return;
+            }
+            
             logger.scene('Ready? text fell, sequence complete!');
             
             // Prevent multiple triggers
@@ -165,11 +310,28 @@ export class SceneManager {
             // Enable ground collision so the text hits the bottom
             this.groundManager.enableCollision();
             
+            if (!this.beginTransition()) {
+                logger.scene('Transition blocked - skipping to brain scene');
+                return;
+            }
+            
             // Start 2-second timer for color change immediately (not after collision)
             logger.scene('Starting 2-second color change timer...');
-            this.colorChangeTimeout = setTimeout(() => {
-                this.triggerColorChange();
-            }, APP_CONFIG.ANIMATION.COLOR_CHANGE_DELAY);
+            this.scheduleTransition(
+                APP_CONFIG.ANIMATION.COLOR_CHANGE_DELAY,
+                () => {
+                    if (this.skipRequested) {
+                        logger.scene('Color change transition cancelled due to skip');
+                        this.endTransition();
+                        return;
+                    }
+                    this.triggerColorChange();
+                },
+                () => {
+                    logger.scene('Color change transition cancelled');
+                    this.endTransition();
+                }
+            );
             
             this.currentScene = 'complete';
             this.emitSceneChange('complete');
@@ -258,13 +420,30 @@ export class SceneManager {
         
         // Start tunnel effect after a delay
         logger.scene('Starting tunnel effect timer...');
-        this.tunnelTimeout = setTimeout(() => {
-            this.startTunnelEffect();
-        }, APP_CONFIG.ANIMATION.TUNNEL_EFFECT_DELAY);
+        this.scheduleTransition(
+            APP_CONFIG.ANIMATION.TUNNEL_EFFECT_DELAY,
+            () => {
+                if (this.skipRequested) {
+                    logger.scene('Tunnel effect transition cancelled due to skip');
+                    this.endTransition();
+                    return;
+                }
+                this.startTunnelEffect();
+            },
+            () => {
+                logger.scene('Tunnel effect transition cancelled');
+                this.endTransition();
+            }
+        );
     }
     
     // Start the tunnel effect
     startTunnelEffect() {
+        if (this.skipRequested) {
+            logger.scene('Tunnel effect start cancelled due to skip');
+            return;
+        }
+        
         logger.scene('Starting psychedelic tunnel effect!');
         
         try {
@@ -296,6 +475,115 @@ export class SceneManager {
             logger.scene('Tunnel effect timeout cleared');
         }
     }
+
+    // Start fluid simulation after tunnel effect completes
+    async startFluidSimulation() {
+        if (this.skipRequested) {
+            logger.scene('Fluid simulation start cancelled due to skip');
+            return;
+        }
+        
+        logger.scene('Starting fluid simulation transition...');
+        
+        try {
+            // Initialize fluid integration if not already created
+            if (!this.fluidIntegration) {
+                this.fluidIntegration = new FluidIntegration();
+            }
+            
+            // Initialize brain manager
+            if (!this.brainManager) {
+                this.brainManager = new BrainManager();
+                await this.brainManager.init();
+            }
+            
+            // Start the fluid simulation with fade in
+            await this.fluidIntegration.start();
+            
+            // Fade in the brain at the same time as fluid simulation
+            if (this.brainManager) {
+                this.brainManager.fadeIn(2.0); // Match fluid simulation fade duration
+            }
+            
+            // Update scene state
+            this.currentScene = 'fluid';
+            this.emitSceneChange('fluid');
+            
+        } catch (error) {
+            logger.error('Error starting fluid simulation:', error);
+        }
+    }
+
+    // Clean up fluid simulation
+    cleanupFluidSimulation() {
+        if (this.fluidIntegration) {
+            this.fluidIntegration.destroy();
+            this.fluidIntegration = null;
+            logger.scene('Fluid simulation cleaned up');
+        }
+        
+        if (this.brainManager) {
+            this.brainManager.destroy();
+            this.brainManager = null;
+            logger.scene('Brain manager cleaned up');
+        }
+    }
+    
+    // Skip directly to brain scene
+    async skipToBrainScene() {
+        logger.scene('Skipping to brain scene...');
+        
+        // Set skip flag to prevent new transitions
+        this.skipRequested = true;
+        
+        // Cancel all pending transitions immediately
+        this.cancelAllPendingTransitions();
+        
+        // Clean up tunnel effect if active
+        if (this.tunnelEffect) {
+            logger.scene('Cleaning up tunnel effect before skip...');
+            this.tunnelEffect.destroy();
+            this.tunnelEffect = null;
+        }
+        
+        // Comprehensive cleanup of all physics objects
+        this.cleanupAll();
+        
+        // Reset background to black
+        document.body.style.backgroundColor = 'black';
+        render.options.background = 'black';
+        
+        // Initialize fluid integration
+        if (!this.fluidIntegration) {
+            this.fluidIntegration = new FluidIntegration();
+        }
+        
+        // Initialize brain manager
+        if (!this.brainManager) {
+            this.brainManager = new BrainManager();
+            await this.brainManager.init();
+        }
+        
+        // Start the fluid simulation
+        await this.fluidIntegration.start();
+        
+        // Enable auto-rotation and fade in the brain (controls disabled to preserve fluid interaction)
+        if (this.brainManager) {
+            this.brainManager.enableControls(false); // Disable controls to preserve fluid interaction
+            this.brainManager.setAutoRotate(true);
+            this.brainManager.fadeIn(2.0); // Match fluid simulation fade duration
+        }
+        
+        // Update scene state
+        this.currentScene = 'fluid';
+        this.emitSceneChange('fluid');
+        
+        // Reset transition state
+        this.endTransition();
+        this.skipRequested = false;
+        
+        logger.scene('Successfully skipped to brain scene with fluid simulation and interactivity enabled');
+    }
     
     // Debug color states
     debugColors() {
@@ -306,6 +594,8 @@ export class SceneManager {
         if (this.backgroundParticles) {
             logger.scene('Background particles colors:', this.backgroundParticles.colors);
             logger.scene('Background particles count:', this.backgroundParticles.particles.length);
+        } else {
+            logger.scene('Background particles: destroyed/removed');
         }
         
         logger.scene('Hanging texts:');
@@ -365,9 +655,10 @@ export class SceneManager {
         document.body.style.backgroundColor = '';
         render.options.background = 'rgba(0, 0, 0, 1)';
         
-        // Reset background particles to original colors
+        // Clear background particles
         if (this.backgroundParticles) {
-            this.backgroundParticles.setColors(APP_CONFIG.COLORS.PARTICLE_COLORS);
+            this.backgroundParticles.destroy();
+            logger.scene('Background particles cleared');
         }
         
         // Reset any remaining hanging text colors to original palette
@@ -391,6 +682,16 @@ export class SceneManager {
             }
         });
         
+        // Clean up fluid simulation if active
+        this.cleanupFluidSimulation();
+        
+        // Clean up tunnel effect if active (unless we're in a transition)
+        if (this.tunnelEffect && !this.isInTransition()) {
+            this.tunnelEffect.destroy();
+            this.tunnelEffect = null;
+            logger.scene('Tunnel effect cleaned up');
+        }
+        
         logger.scene('Cleanup completed - all physics objects removed and colors reset');
     }
     
@@ -401,14 +702,21 @@ export class SceneManager {
     
     // Update for window resize
     updateForResize(oldDimensions, newDimensions) {
-        // Clean up collision handler during resize
-        this.cleanupCollisionHandler();
+        logger.scene(`Resize during transition state: ${this.transitionState}, skip requested: ${this.skipRequested}`);
         
-        // Clean up color change timeout during resize
-        this.cleanupColorChangeTimeout();
-        
-        // Clean up tunnel effect timeout during resize
-        this.cleanupTunnelTimeout();
+        // If we're in a transition, be more careful about cleanup
+        if (this.isInTransition()) {
+            logger.scene('Resize during transition - performing minimal cleanup');
+            
+            // Only clean up timeouts, don't cancel transitions
+            this.cleanupColorChangeTimeout();
+            this.cleanupTunnelTimeout();
+        } else {
+            // Normal resize cleanup
+            this.cleanupCollisionHandler();
+            this.cleanupColorChangeTimeout();
+            this.cleanupTunnelTimeout();
+        }
         
         this.hangingTexts.forEach(hangingText => {
             hangingText.updateForResize(oldDimensions, newDimensions);
@@ -417,6 +725,22 @@ export class SceneManager {
         // Update ground bodies for new screen size
         if (this.groundManager.getGroundBodies().length > 0) {
             this.groundManager.updateForResize();
+        }
+        
+        // Update tunnel effect if active
+        if (this.tunnelEffect) {
+            // Don't destroy tunnel effect during resize, just update it
+            logger.scene('Tunnel effect active during resize - preserving');
+        }
+        
+        // Update fluid integration if active
+        if (this.fluidIntegration) {
+            this.fluidIntegration.updateForResize();
+        }
+        
+        // Update brain manager if active
+        if (this.brainManager) {
+            this.brainManager.updateForResize();
         }
     }
     
@@ -480,6 +804,11 @@ export class SceneManager {
         return this.currentScene === sceneName;
     }
     
+    // Check if we're in a critical transition (tunnel or brain scene)
+    isInCriticalTransition() {
+        return this.currentScene === 'tunnel' || this.currentScene === 'fluid';
+    }
+    
     // Draw all hanging texts
     drawAllTexts(ctx) {
         this.hangingTexts.forEach(hangingText => {
@@ -491,6 +820,9 @@ export class SceneManager {
     // Cleanup resources
     destroy() {
         logger.scene('Destroying scene manager...');
+        
+        // Cancel all pending transitions
+        this.cancelAllPendingTransitions();
         
         // Clean up collision handler
         this.cleanupCollisionHandler();
@@ -507,6 +839,9 @@ export class SceneManager {
             this.tunnelEffect = null;
         }
         
+        // Clean up fluid simulation
+        this.cleanupFluidSimulation();
+        
         this.clearAllHangingTexts();
         
         // Destroy ground bodies
@@ -521,5 +856,9 @@ export class SceneManager {
         });
         this.eventListeners = [];
         this.onSceneChangeCallback = null;
+        
+        // Reset transition state
+        this.endTransition();
+        this.skipRequested = false;
     }
 } 

@@ -40,7 +40,8 @@ export class DebugUtils {
             'Physics Composites': this.world.composites.length,
             'Ground Bodies': this.sceneManager?.groundManager?.getGroundBodies().length || 0,
             'Collision Enabled': this.sceneManager?.groundManager?.isCollisionEnabled() || false,
-            'Background Particles': this.backgroundParticles?.particles.length || 0
+            'Background Particles': this.backgroundParticles?.particles?.length || 0,
+            'FPS': window.fpsCounter?.getFPS() || 0
         };
         
         logger.debugBlock('Physics App Debug Info', info);
@@ -56,7 +57,7 @@ export class DebugUtils {
             'Body Background': document.body.style.backgroundColor || 'default',
             'Render Background': this.render?.options.background || 'default',
             'Particle Colors': this.backgroundParticles?.colors || 'none',
-            'Particle Count': this.backgroundParticles?.particles.length || 0
+            'Particle Count': this.backgroundParticles?.particles?.length || 0
         };
         
         logger.debugBlock('Color Debug Info', colorInfo);
@@ -145,7 +146,7 @@ export class DebugUtils {
         
         const initialBodies = this.world.bodies.length;
         const initialConstraints = this.world.constraints.length;
-        const initialParticles = this.backgroundParticles?.particles.length || 0;
+        const initialParticles = this.backgroundParticles?.particles?.length || 0;
         
         logger.app(`Initial counts - Bodies: ${initialBodies}, Constraints: ${initialConstraints}, Particles: ${initialParticles}`);
         

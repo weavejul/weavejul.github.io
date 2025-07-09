@@ -707,7 +707,6 @@ export class HangingText {
         
         // Check if text was detached using the stored flag
         const wasDetached = this.isDetached;
-        logger.info(`📏 Resize detection: wasFalling=${wasFalling}, wasDetached=${wasDetached}, text="${this.options?.text}"`);
         
         // For fallen text, calculate relative position to maintain position relative to screen
         let scaledPosition = null;
@@ -715,9 +714,7 @@ export class HangingText {
             // Calculate relative position (as percentage of screen)
             const relativeX = currentPosition.x / oldDimensions.width;
             const relativeY = currentPosition.y / oldDimensions.height;
-            
-            logger.info(`📏 Position scaling for "${this.options?.text}": (${currentPosition.x.toFixed(1)}, ${currentPosition.y.toFixed(1)}) = (${(relativeX * 100).toFixed(1)}%, ${(relativeY * 100).toFixed(1)}%)`);
-            
+                        
             // Store relative position for later use
             scaledPosition = { relativeX, relativeY };
         }
@@ -824,14 +821,12 @@ export class HangingText {
                 x: relativePosition.relativeX * newDimensions.width,
                 y: relativePosition.relativeY * newDimensions.height
             };
-            logger.info(`📏 Creating detached text "${this.options.text}": (${(relativePosition.relativeX * 100).toFixed(1)}%, ${(relativePosition.relativeY * 100).toFixed(1)}%) → (${absolutePosition.x.toFixed(1)}, ${absolutePosition.y.toFixed(1)})`);
         } else {
             // Fallback to near bottom of screen
             absolutePosition = {
                 x: this.options.x,
                 y: newDimensions.height - 100
             };
-            logger.info(`📏 Creating detached text "${this.options.text}" at fallback position: (${absolutePosition.x.toFixed(1)}, ${absolutePosition.y.toFixed(1)})`);
         }
         
         // Create only the text physics body
@@ -939,8 +934,6 @@ export class HangingText {
         if (velocity && this.textBody) {
             Body.setVelocity(this.textBody, velocity);
         }
-        
-        logger.info(`📏 Detached text "${this.options.text}" recreated for resize at position (${absolutePosition.x.toFixed(1)}, ${absolutePosition.y.toFixed(1)})`);
     }
     
     // Clean up resources
