@@ -475,6 +475,17 @@ export class SceneManager {
             logger.scene('Tunnel effect timeout cleared');
         }
     }
+    
+    // Force cleanup tunnel effect
+    forceCleanupTunnelEffect() {
+        if (this.tunnelEffect) {
+            logger.scene('Force cleaning up tunnel effect...');
+            this.tunnelEffect.destroy();
+            this.tunnelEffect = null;
+            return true;
+        }
+        return false;
+    }
 
     // Start fluid simulation after tunnel effect completes
     async startFluidSimulation() {
@@ -539,7 +550,7 @@ export class SceneManager {
         // Cancel all pending transitions immediately
         this.cancelAllPendingTransitions();
         
-        // Clean up tunnel effect if active
+        // Always clean up tunnel effect if it exists (regardless of current scene)
         if (this.tunnelEffect) {
             logger.scene('Cleaning up tunnel effect before skip...');
             this.tunnelEffect.destroy();

@@ -196,8 +196,16 @@ function setupEventListeners() {
     // Keyboard handler for scene skipping
     const keyboardHandler = function(event) {
         if (event.key.toLowerCase() === 's') {
+            // Don't skip if already in brain scene
+            if (sceneManager && sceneManager.getCurrentScene() === 'fluid') {
+                logger.scene('S key pressed but already in brain scene - ignoring');
+                return;
+            }
+            
             logger.scene('S key pressed - skipping to brain scene');
             if (sceneManager) {
+                // Force cleanup of tunnel effect if it exists
+                sceneManager.forceCleanupTunnelEffect();
                 sceneManager.skipToBrainScene();
             }
         }

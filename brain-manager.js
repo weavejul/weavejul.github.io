@@ -13,6 +13,18 @@ export class BrainManager {
         this.scriptLoaded = false;
         this.rotationSpeed = 0.005;
         this.autoRotate = true;
+        
+        // Brain click and pulse properties
+        this.raycaster = null;
+        this.mouse = null;
+        this.isPulsing = false;
+        this.pulseStartTime = 0;
+        this.pulseDuration = 0.2; // 1 second pulse
+        this.originalScale = null;
+        this.originalMaterials = [];
+        this.pulseScale = 1.1; // Scale up by 30%
+        this.pulseColor = new THREE.Color(0xffffff); // Bright red pulse color
+        this.originalColors = [];
     }
 
     // Initialize Three.js and load the brain model
@@ -36,9 +48,9 @@ export class BrainManager {
             this.container.style.left = '0';
             this.container.style.width = '100%';
             this.container.style.height = '100%';
-                    this.container.style.zIndex = '1002'; // Higher than fluid canvas (1001)
-        this.container.style.pointerEvents = 'none'; // Allow mouse events to pass through to fluid
-        this.container.style.opacity = '0';
+            this.container.style.zIndex = '1002'; // Higher than fluid canvas (1001)
+            this.container.style.pointerEvents = 'none'; // Allow mouse events to pass through to fluid
+            this.container.style.opacity = '0';
             document.body.appendChild(this.container);
 
             // Initialize Three.js scene
@@ -46,6 +58,9 @@ export class BrainManager {
 
             // Load brain model
             await this.loadBrainModel();
+            
+            // Initialize click detection
+            this.setupClickDetection();
             
             logger.scene('Brain manager setup complete - container z-index:', this.container.style.zIndex);
 
@@ -210,28 +225,43 @@ export class BrainManager {
         return new Promise((resolve, reject) => {
             const loader = new THREE.GLTFLoader();
             
-            // Set up DRACO loader for compressed models
+            // Use DRACO loader for compressed models
             const dracoLoader = new THREE.DRACOLoader();
             dracoLoader.setDecoderPath('https://www.gstatic.com/draco/versioned/decoders/1.4.1/');
             loader.setDRACOLoader(dracoLoader);
-
+            
             loader.load(
                 'brain-small.glb',
                 (gltf) => {
                     this.brainModel = gltf.scene;
                     
-                    // Center and scale the model
-                    const box = new THREE.Box3().setFromObject(this.brainModel);
-                    const center = box.getCenter(new THREE.Vector3());
-                    const size = box.getSize(new THREE.Vector3());
+                    // Position and scale the brain
+                    this.brainModel.position.set(0, 0, 0);
+                    this.brainModel.scale.set(1, 1, 1);
                     
-                    // Scale to fit nicely in view
-                    const maxDim = Math.max(size.x, size.y, size.z);
-                    const scale = 1.5 / maxDim; // Slightly smaller than test
-                    this.brainModel.scale.setScalar(scale);
+                    // Store original scale for pulse animation
+                    this.originalScale = this.brainModel.scale.clone();
                     
-                    // Center the model
-                    this.brainModel.position.sub(center.multiplyScalar(scale));
+                    // Store original materials and colors for pulse animation
+                    this.originalMaterials = [];
+                    this.originalColors = [];
+                    this.brainModel.traverse((child) => {
+                        if (child.isMesh) {
+                            // Store a reference to the mesh and its material
+                            this.originalMaterials.push({
+                                mesh: child,
+                                material: child.material.clone()
+                            });
+                            
+                            // Store the original color if it exists
+                            if (child.material && child.material.color) {
+                                this.originalColors.push(child.material.color.clone());
+                            } else {
+                                // Default color if none exists
+                                this.originalColors.push(new THREE.Color(0x888888));
+                            }
+                        }
+                    });
                     
                     // Enable shadows for all meshes
                     this.brainModel.traverse((child) => {
@@ -253,6 +283,7 @@ export class BrainManager {
                     logger.scene('Brain model loaded successfully, position:', this.brainModel.position);
                     logger.scene('Brain model rotation:', this.brainModel.rotation);
                     logger.scene('Brain model scale:', this.brainModel.scale);
+                    logger.scene('Stored original colors:', this.originalColors.length);
                     resolve();
                 },
                 (xhr) => {
@@ -264,6 +295,116 @@ export class BrainManager {
                 }
             );
         });
+    }
+
+    // Setup click detection for the brain
+    setupClickDetection() {
+        // Initialize raycaster and mouse
+        this.raycaster = new THREE.Raycaster();
+        this.mouse = new THREE.Vector2();
+        
+        // Bind the click handler to maintain proper context
+        this.boundHandleBrainClick = this.handleBrainClick.bind(this);
+        
+        // Add click event listener to the document
+        document.addEventListener('click', this.boundHandleBrainClick);
+        
+        logger.scene('Brain click detection initialized');
+    }
+
+    // Handle brain click detection
+    handleBrainClick(event) {
+        if (!this.brainModel || this.isPulsing) return;
+        
+        // Calculate mouse position in normalized device coordinates
+        this.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+        this.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+        
+        // Update the picking ray with the camera and mouse position
+        this.raycaster.setFromCamera(this.mouse, this.camera);
+        
+        // Calculate objects intersecting the picking ray
+        const intersects = this.raycaster.intersectObject(this.brainModel, true);
+        
+        if (intersects.length > 0) {
+            logger.scene('Brain clicked! Starting pulse animation...');
+            this.startPulse();
+        }
+    }
+
+    // Start pulse animation
+    startPulse() {
+        if (this.isPulsing) return;
+        
+        this.isPulsing = true;
+        this.pulseStartTime = performance.now();
+        
+        logger.scene('Brain pulse animation started');
+    }
+
+    // Update pulse animation
+    updatePulse() {
+        if (!this.isPulsing || !this.brainModel) return;
+        
+        const currentTime = performance.now();
+        const elapsed = (currentTime - this.pulseStartTime) / 1000;
+        const progress = Math.min(elapsed / this.pulseDuration, 1.0);
+        
+        // Create a pulse curve that grows and then shrinks
+        const pulseCurve = this.createPulseCurve(progress);
+        
+        // Scale animation - use the pulse curve for growing and shrinking
+        const scaleFactor = 1.0 + (this.pulseScale - 1.0) * pulseCurve;
+        this.brainModel.scale.setScalar(this.originalScale.x * scaleFactor);
+        
+        // Color animation - apply to all stored materials
+        this.originalMaterials.forEach((materialData, index) => {
+            if (materialData.mesh && materialData.mesh.material && this.originalColors[index]) {
+                const originalColor = this.originalColors[index];
+                const pulseColor = this.pulseColor;
+                
+                // Interpolate between original and pulse color
+                const newR = originalColor.r + (pulseColor.r - originalColor.r) * pulseCurve;
+                const newG = originalColor.g + (pulseColor.g - originalColor.g) * pulseCurve;
+                const newB = originalColor.b + (pulseColor.b - originalColor.b) * pulseCurve;
+                
+                materialData.mesh.material.color.setRGB(newR, newG, newB);
+                
+                // Also animate emissive for extra glow effect
+                materialData.mesh.material.emissive.setRGB(
+                    pulseColor.r * 0.5 * pulseCurve * 5,
+                    pulseColor.g * 0.5 * pulseCurve * 5,
+                    pulseColor.b * 0.5 * pulseCurve * 5
+                );
+                
+                // Debug logging for first material
+                if (index === 0 && progress > 0.1 && progress < 0.9) {
+                    logger.scene(`Pulse color: R=${newR.toFixed(3)}, G=${newG.toFixed(3)}, B=${newB.toFixed(3)}, curve=${pulseCurve.toFixed(3)}`);
+                }
+            }
+        });
+        
+        // End pulse animation
+        if (progress >= 1.0) {
+            this.isPulsing = false;
+            
+            // Reset colors
+            this.originalMaterials.forEach((materialData, index) => {
+                if (materialData.mesh && materialData.mesh.material && this.originalColors[index]) {
+                    materialData.mesh.material.color.copy(this.originalColors[index]);
+                    // Reset emissive to original
+                    materialData.mesh.material.emissive.setRGB(0.133, 0.133, 0.133); // 0x222222
+                }
+            });
+            
+            logger.scene('Brain pulse animation completed');
+        }
+    }
+
+    // Create a pulse curve that grows and then shrinks
+    createPulseCurve(progress) {
+        // Use a sine wave to create a smooth pulse that goes from 0 to 1 and back to 0
+        return Math.sin(progress * Math.PI);
     }
 
     // Start the animation loop
@@ -280,6 +421,9 @@ export class BrainManager {
             if (this.controls) {
                 this.controls.update();
             }
+
+            // Update pulse animation
+            this.updatePulse();
 
             // Render the scene
             if (this.renderer && this.scene && this.camera) {
@@ -391,6 +535,7 @@ export class BrainManager {
 
         // Remove event listeners
         window.removeEventListener('resize', this.onWindowResize.bind(this));
+        document.removeEventListener('click', this.boundHandleBrainClick);
 
         // Dispose of Three.js resources
         if (this.renderer) {
@@ -424,6 +569,12 @@ export class BrainManager {
         this.brainModel = null;
         this.controls = null;
         this.container = null;
+        this.raycaster = null;
+        this.mouse = null;
+        this.originalScale = null;
+        this.originalMaterials = [];
+        this.originalColors = [];
+        this.boundHandleBrainClick = null;
 
         logger.scene('Brain manager destroyed');
     }
