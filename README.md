@@ -12,7 +12,7 @@
 ## Architecture
 
 ```
-src/js/
+js/
 ├── script.js              # Main application entry point
 ├── config.js              # Physics engine configuration
 ├── constants.js           # Application constants and settings

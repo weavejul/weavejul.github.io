@@ -246,7 +246,7 @@ if (!canvas) {
         compileShaders();
         
         // Initialize ditheringTexture now that gl is available
-        ditheringTexture = createTextureAsync('../assets/textures/LDR_LLL1_0.png');
+        ditheringTexture = createTextureAsync('../../assets/textures/LDR_LLL1_0.png');
         
         // Initialize framebuffers and start simulation
         updateKeywords();

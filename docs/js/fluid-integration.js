@@ -76,7 +76,7 @@ export class FluidIntegration {
         }
         
         // Check if script tag already exists
-        const existingScript = document.querySelector('script[src="/src/js/fluid-simulation.js"]');
+        const existingScript = document.querySelector('script[src="/docs/js/fluid-simulation.js"]');
         if (existingScript) {
             this.scriptLoaded = true;
             window.fluidSimulationScriptLoaded = true;
@@ -86,7 +86,7 @@ export class FluidIntegration {
         
         return new Promise((resolve, reject) => {
             const script = document.createElement('script');
-            script.src = '/src/js/fluid-simulation.js';
+            script.src = '/docs/js/fluid-simulation.js';
             
             script.onload = () => {
                 this.scriptLoaded = true;
