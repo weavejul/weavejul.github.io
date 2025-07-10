@@ -20,10 +20,8 @@ import {
     drawSparks,
     cleanupMeasurementCanvas
 } from './utils.js';
-import { FPSCounter } from './fps-counter.js';
 import { APP_CONFIG } from './constants.js';
 import { logger } from './logger.js';
-import { DebugUtils } from './debug-utils.js';
 
 // Application state
 let backgroundParticles = null;
@@ -33,7 +31,6 @@ let isWindowVisible = true;
 let cleanupCounter = 0;
 let eventListeners = [];
 let resizeTimeout = null;
-let fpsCounter = null;
 
 // Initialize the application
 function initializeApp() {
@@ -66,21 +63,11 @@ function initializeApp() {
     // Start the engines
     startPhysicsEngine();
     
-    // Initialize debug utilities
-    DebugUtils.init(sceneManager, backgroundParticles, world, render);
-    
-    // Initialize FPS counter
-    fpsCounter = new FPSCounter();
-    fpsCounter.init();
-    
     // Start the scene sequence
     sceneManager.run();
     
     // Expose sceneManager globally for tunnel effect access
     window.SceneManager = sceneManager;
-    
-    // Expose fpsCounter globally for debug access
-    window.fpsCounter = fpsCounter;
     
     logger.success('Application initialized successfully!');
 }
@@ -141,11 +128,6 @@ function setupEventListeners() {
     // Before update handler for cleanup and updates
     const beforeUpdateHandler = function() {
         cleanupCounter++;
-        
-        // Update FPS counter
-        if (fpsCounter) {
-            fpsCounter.update();
-        }
         
         // Update background particles
         if (backgroundParticles) {
@@ -217,7 +199,7 @@ function setupEventListeners() {
 
 // Start the physics engine
 function startPhysicsEngine() {
-    Engine.run(engine);
+    Matter.Runner.run(engine);
     Render.run(render);
     Runner.run(runner, engine);
 }
@@ -243,6 +225,12 @@ function customRender() {
     
     // Draw sparks
     drawSparks(canvasContext, world);
+    
+    // Update and draw skip text overlay (on top of everything)
+    if (sceneManager) {
+        sceneManager.updateSkipTextOverlay();
+        sceneManager.drawSkipTextOverlay(canvasContext);
+    }
 }
 
 // Handle window resize
@@ -296,12 +284,6 @@ function cleanup() {
     if (backgroundParticles) {
         backgroundParticles.destroy();
         backgroundParticles = null;
-    }
-    
-    // Clean up FPS counter
-    if (fpsCounter) {
-        fpsCounter.destroy();
-        fpsCounter = null;
     }
     
     // Clean up canvas context

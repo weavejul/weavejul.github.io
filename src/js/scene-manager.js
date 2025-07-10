@@ -32,6 +32,17 @@ export class SceneManager {
         this.pendingTransitions = new Set();
         this.transitionCallbacks = new Map();
         this.skipRequested = false;
+        
+        // Skip text overlay
+        this.skipTextOverlay = {
+            visible: false,
+            startTime: null,
+            fadeInDuration: 500, // 0.5 seconds
+            displayDuration: 3000, // 3 seconds
+            fadeOutDuration: 1000, // 1 second
+            totalDuration: 4500, // 4.5 seconds total
+            alpha: undefined // Added for rendering
+        };
     }
     
     // Set callback for scene changes
@@ -138,11 +149,84 @@ export class SceneManager {
         this.runHelloScene();
     }
     
+    // Show skip text overlay
+    showSkipTextOverlay() {
+        this.skipTextOverlay.visible = true;
+        this.skipTextOverlay.startTime = performance.now();
+        logger.scene('Skip text overlay started');
+    }
+    
+    // Update skip text overlay (called during render)
+    updateSkipTextOverlay() {
+        if (!this.skipTextOverlay.visible || !this.skipTextOverlay.startTime) {
+            return;
+        }
+        
+        const currentTime = performance.now();
+        const elapsed = currentTime - this.skipTextOverlay.startTime;
+        
+        // Check if overlay should be hidden
+        if (elapsed >= this.skipTextOverlay.totalDuration) {
+            this.skipTextOverlay.visible = false;
+            this.skipTextOverlay.startTime = null;
+            return;
+        }
+        
+        // Calculate alpha based on current phase
+        let alpha = 0;
+        if (elapsed < this.skipTextOverlay.fadeInDuration) {
+            // Fade in phase
+            alpha = elapsed / this.skipTextOverlay.fadeInDuration;
+        } else if (elapsed < this.skipTextOverlay.fadeInDuration + this.skipTextOverlay.displayDuration) {
+            // Display phase
+            alpha = 1;
+        } else {
+            // Fade out phase
+            const fadeOutElapsed = elapsed - (this.skipTextOverlay.fadeInDuration + this.skipTextOverlay.displayDuration);
+            alpha = 1 - (fadeOutElapsed / this.skipTextOverlay.fadeOutDuration);
+        }
+        
+        // Store alpha for rendering
+        this.skipTextOverlay.alpha = Math.max(0, Math.min(1, alpha));
+    }
+    
+    // Draw skip text overlay
+    drawSkipTextOverlay(ctx) {
+        if (!this.skipTextOverlay.visible || this.skipTextOverlay.alpha === undefined) {
+            return;
+        }
+        
+        ctx.save();
+        
+        // Set font to match panel-content
+        ctx.font = '14px "Courier New", "Courier", monospace';
+        ctx.fillStyle = APP_CONFIG.COLORS.DEFAULT_GOLD;
+        ctx.textAlign = 'left';
+        ctx.textBaseline = 'top';
+        ctx.globalAlpha = this.skipTextOverlay.alpha;
+        
+        // Position in top left with some padding
+        const x = 20;
+        const y = 20;
+        const text = "press s to skip";
+        
+        // Add subtle glow effect
+        ctx.shadowColor = APP_CONFIG.COLORS.DEFAULT_GOLD;
+        ctx.shadowBlur = 5;
+        
+        ctx.fillText(text, x, y);
+        
+        ctx.restore();
+    }
+    
     // Scene 1: Hello text appears and waits to be clicked
     runHelloScene() {
         logger.scene('Scene 1: Hello');
         this.currentScene = 'hello';
         this.emitSceneChange('hello');
+        
+        // Show skip text overlay
+        this.showSkipTextOverlay();
         
         // Create "Hello!" text with enlarged physics body for easier clicking
         const helloText = new HangingText({
@@ -487,7 +571,7 @@ export class SceneManager {
         return false;
     }
 
-    // Start fluid simulation after tunnel effect completes
+    // Start fluid simulation during tunnel fade-out phase
     async startFluidSimulation() {
         if (this.skipRequested) {
             logger.scene('Fluid simulation start cancelled due to skip');

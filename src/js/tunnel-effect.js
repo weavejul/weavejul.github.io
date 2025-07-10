@@ -274,9 +274,9 @@ export class TunnelEffect {
             // Active phase
             newPhase = 'active';
             
-            // Clean up all physics objects and trigger fluid simulation when transitioning to active
+            // Clean up all physics objects when transitioning to active phase
             if (this.tunnelPhase !== 'active') {
-                logger.scene('Tunnel entering active phase - cleaning up physics objects and starting fluid simulation...');
+                logger.scene('Tunnel entering active phase - cleaning up physics objects...');
                 
                 // Remove background particles entirely
                 if (window.SceneManager && window.SceneManager.backgroundParticles) {
@@ -288,16 +288,6 @@ export class TunnelEffect {
                 // Remove all physics/text/particle objects
                 if (window.SceneManager && typeof window.SceneManager.cleanupAll === 'function') {
                     window.SceneManager.cleanupAll();
-                }
-                
-                // Trigger fluid simulation and brain fade-in immediately after cleanup
-                if (window.SceneManager && typeof window.SceneManager.startFluidSimulation === 'function') {
-                    logger.scene('Physics objects destroyed - triggering fluid simulation and brain fade-in...');
-                    window.SceneManager.startFluidSimulation().catch(error => {
-                        logger.error('Error starting fluid simulation:', error);
-                    });
-                } else {
-                    logger.scene('SceneManager not available for fluid simulation transition');
                 }
             }
             
@@ -313,10 +303,25 @@ export class TunnelEffect {
             }
             
         } else if (elapsedTime <= this.fadeInDuration + this.activeDuration + this.fadeOutDuration) {
-            // Fade-out phase - shift to black palette and fade opacity
+            // Fade-out phase - shift to black palette, fade opacity, and initialize brain/fluid
             newPhase = 'fade-out';
             const fadeOutStart = this.fadeInDuration + this.activeDuration;
             const fadeOutProgress = (elapsedTime - fadeOutStart) / this.fadeOutDuration;
+            
+            // Initialize brain/fluid simulation when transitioning to fade-out phase
+            if (this.tunnelPhase !== 'fade-out') {
+                logger.scene('Tunnel entering fade-out phase - initializing brain and fluid simulation...');
+                
+                // Trigger fluid simulation and brain fade-in during fade-out
+                if (window.SceneManager && typeof window.SceneManager.startFluidSimulation === 'function') {
+                    logger.scene('Initializing fluid simulation and brain during tunnel fade-out...');
+                    window.SceneManager.startFluidSimulation().catch(error => {
+                        logger.error('Error starting fluid simulation:', error);
+                    });
+                } else {
+                    logger.scene('SceneManager not available for fluid simulation transition');
+                }
+            }
             
             // Shift to black palette during fade-out
             this.forceBlackPalette = true;
@@ -1011,15 +1016,48 @@ export class TunnelEffect {
 
     // Cleanup tunnel resources and destroy
     cleanupAndDestroy() {
-        // Set background to black
+        logger.scene('Tunnel effect complete - checking fluid simulation status before cleanup...');
+        
+        // Check if fluid simulation is ready before destroying tunnel
+        if (window.SceneManager && window.SceneManager.fluidIntegration) {
+            const fluidIntegration = window.SceneManager.fluidIntegration;
+            
+            // If fluid simulation is already visible, we can destroy immediately
+            if (fluidIntegration.currentOpacity > 0.5) {
+                logger.scene('Fluid simulation is visible - destroying tunnel immediately');
+                this.destroyTunnelResources();
+            } else {
+                // Wait for fluid simulation to be more visible before destroying tunnel
+                logger.scene('Waiting for fluid simulation to become visible before destroying tunnel...');
+                const checkFluidReady = () => {
+                    if (fluidIntegration.currentOpacity > 0.3) {
+                        logger.scene('Fluid simulation is ready - destroying tunnel');
+                        this.destroyTunnelResources();
+                    } else {
+                        // Continue checking every frame
+                        requestAnimationFrame(checkFluidReady);
+                    }
+                };
+                checkFluidReady();
+            }
+        } else {
+            // Fallback: destroy immediately if no fluid integration
+            logger.scene('No fluid integration found - destroying tunnel immediately');
+            this.destroyTunnelResources();
+        }
+    }
+    
+    // Actually destroy the tunnel resources
+    destroyTunnelResources() {
+        // Set background to transparent instead of black
         if (this.renderer) {
-            this.renderer.setClearColor(0x000000, 1);
+            this.renderer.setClearColor(0x000000, 0); // Alpha = 0 for transparent
         }
         if (this.scene) {
-            this.scene.background = new THREE.Color(0x000000);
+            this.scene.background = null; // Remove background instead of setting to black
         }
         
-        logger.scene('Tunnel effect complete - destroying tunnel resources');
+        logger.scene('Destroying tunnel resources...');
         
         // Remove tunnel and all Three.js resources
         this.destroy();

@@ -25,6 +25,11 @@ export class BrainManager {
         this.pulseScale = 1.1; // Scale up by 30%
         this.pulseColor = new THREE.Color(0xffffff); // Bright red pulse color
         this.originalColors = [];
+        
+        // Panel properties
+        this.panel = null;
+        this.panelVisible = false;
+        this.panelDelay = 200; // 500ms delay before showing panel
     }
 
     // Initialize Three.js and load the brain model
@@ -161,50 +166,27 @@ export class BrainManager {
         this.renderer.domElement.style.height = '100%';
         this.renderer.domElement.style.pointerEvents = 'none'; // Allow mouse events to pass through
 
-        // Lighting
-        const ambientLight = new THREE.AmbientLight(0x404040, 1.0); // Increased ambient light
+        // Lighting - Simplified setup for better visibility of changes
+        const ambientLight = new THREE.AmbientLight(0x404040, 0.3); // Reduced ambient light
         this.scene.add(ambientLight);
 
-        const directionalLight = new THREE.DirectionalLight(0xffffff, 1.5); // Increased intensity
+        // Main directional light
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 3.0);
         directionalLight.position.set(5, 5, 5);
         directionalLight.castShadow = true;
         directionalLight.shadow.mapSize.width = 2048;
         directionalLight.shadow.mapSize.height = 2048;
         this.scene.add(directionalLight);
 
-        // Add a second directional light from the opposite side
-        const directionalLight2 = new THREE.DirectionalLight(0xffffff, 0.8);
-        directionalLight2.position.set(-5, -5, -5);
+        // Secondary directional light for fill
+        const directionalLight2 = new THREE.DirectionalLight(0xffffff, 3);
+        directionalLight2.position.set(-3, 2, -3);
         this.scene.add(directionalLight2);
 
-        // Colored lights for better visualization - increased intensity
-        const redLight = new THREE.PointLight(0xff6666, 0.8, 15); // Brighter red light
-        redLight.position.set(3, 2, 3);
-        this.scene.add(redLight);
-
-        const blueLight = new THREE.PointLight(0x6666ff, 0.8, 15); // Brighter blue light
-        blueLight.position.set(-3, -2, -3);
-        this.scene.add(blueLight);
-
-        // Add a white spotlight for extra illumination
-        const spotlight = new THREE.SpotLight(0xffffff, 1.0, 20, Math.PI / 4, 0.5);
-        spotlight.position.set(0, 10, 5);
-        spotlight.target.position.set(0, 0, 0);
-        this.scene.add(spotlight);
-        this.scene.add(spotlight.target);
-
-        // Add additional point lights for more illumination
-        const frontLight = new THREE.PointLight(0xffffff, 0.6, 10);
-        frontLight.position.set(0, 0, 8);
-        this.scene.add(frontLight);
-
-        const backLight = new THREE.PointLight(0xffffff, 0.4, 10);
-        backLight.position.set(0, 0, -8);
-        this.scene.add(backLight);
-
-        const topLight = new THREE.PointLight(0xffffff, 0.5, 10);
-        topLight.position.set(0, 8, 0);
-        this.scene.add(topLight);
+        // Single colored light for accent
+        const accentLight = new THREE.PointLight(0x6666ff, 2, 12);
+        accentLight.position.set(2, 1, 2);
+        this.scene.add(accentLight);
 
         // Controls (disabled for now, will be enabled when needed)
         this.controls = new THREE.OrbitControls(this.camera, this.renderer.domElement);
@@ -231,7 +213,7 @@ export class BrainManager {
             loader.setDRACOLoader(dracoLoader);
             
             loader.load(
-                'brain-small.glb',
+                '../assets/models/brain-small.glb',
                 (gltf) => {
                     this.brainModel = gltf.scene;
                     
@@ -273,8 +255,9 @@ export class BrainManager {
                             if (child.material) {
                                 child.material.metalness = 0.2; // Slightly more metallic
                                 child.material.roughness = 0.6; // Less rough for more shine
-                                child.material.emissive = new THREE.Color(0x222222); // Add subtle glow
-                                child.material.emissiveIntensity = 0.1; // Subtle emission
+                                // Reduced emissive to make lighting changes more visible
+                                child.material.emissive = new THREE.Color(0x111111); // Very subtle glow
+                                child.material.emissiveIntensity = 0.05; // Much lower emission
                             }
                         }
                     });
@@ -310,6 +293,92 @@ export class BrainManager {
         document.addEventListener('click', this.boundHandleBrainClick);
         
         logger.scene('Brain click detection initialized');
+        
+        // Create the panel
+        this.createPanel();
+    }
+    
+    // Create the iframe panel
+    createPanel() {
+        this.panel = document.createElement('div');
+        this.panel.id = 'brain-panel';
+        this.panel.style.position = 'fixed';
+        this.panel.style.top = '50%';
+        this.panel.style.left = '50%';
+        this.panel.style.transform = 'translate(-50%, -50%)';
+        this.panel.style.width = '80%';
+        this.panel.style.height = '80%';
+        this.panel.style.zIndex = '1003'; // Higher than brain container
+        this.panel.style.backgroundColor = 'rgba(26, 0, 0, 0.95)';
+        this.panel.style.borderRadius = '0px';
+        this.panel.style.border = '2px solid #ff4444';
+        this.panel.style.boxShadow = '0 0 20px rgba(255, 68, 68, 0.3)';
+        this.panel.style.opacity = '0';
+        this.panel.style.visibility = 'hidden';
+        this.panel.style.transition = 'opacity 0.3s ease-in-out';
+        this.panel.style.overflow = 'hidden';
+        
+        // Create close button
+        const closeButton = document.createElement('button');
+        closeButton.innerHTML = '×';
+        closeButton.style.position = 'absolute';
+        closeButton.style.top = '10px';
+        closeButton.style.right = '15px';
+        closeButton.style.background = 'none';
+        closeButton.style.border = 'none';
+        closeButton.style.color = '#ff4444';
+        closeButton.style.fontSize = '24px';
+        closeButton.style.fontWeight = 'bold';
+        closeButton.style.cursor = 'pointer';
+        closeButton.style.zIndex = '1004';
+        closeButton.onclick = () => this.hidePanel();
+        
+        // Create iframe
+        const iframe = document.createElement('iframe');
+        // Add cache-busting parameter to force reload
+        iframe.src = 'panel-content.html?t=' + Date.now();
+        iframe.style.width = '100%';
+        iframe.style.height = '100%';
+        iframe.style.border = 'none';
+        iframe.style.borderRadius = '8px';
+        
+        this.panel.appendChild(closeButton);
+        this.panel.appendChild(iframe);
+        document.body.appendChild(this.panel);
+        
+        logger.scene('Brain panel created');
+    }
+    
+    // Show the panel
+    showPanel() {
+        if (!this.panel || this.panelVisible) return;
+        
+        // Force reload the iframe content to ensure latest version
+        const iframe = this.panel.querySelector('iframe');
+        if (iframe) {
+            iframe.src = 'panel-content.html?t=' + Date.now();
+        }
+        
+        this.panel.style.visibility = 'visible';
+        this.panel.style.opacity = '1';
+        this.panelVisible = true;
+        
+        logger.scene('Brain panel shown');
+    }
+    
+    // Hide the panel
+    hidePanel() {
+        if (!this.panel || !this.panelVisible) return;
+        
+        this.panel.style.opacity = '0';
+        setTimeout(() => {
+            if (this.panel) {
+                this.panel.style.visibility = 'hidden';
+                this.panelVisible = false;
+            }
+        }, 300); // Match transition duration
+        
+        logger.scene('Brain panel hidden');
     }
 
     // Handle brain click detection
@@ -329,6 +398,11 @@ export class BrainManager {
         if (intersects.length > 0) {
             logger.scene('Brain clicked! Starting pulse animation...');
             this.startPulse();
+            
+            // Show panel after delay
+            setTimeout(() => {
+                this.showPanel();
+            }, this.panelDelay);
         }
     }
 
@@ -561,6 +635,11 @@ export class BrainManager {
         if (this.container && this.container.parentNode) {
             this.container.parentNode.removeChild(this.container);
         }
+        
+        // Remove panel
+        if (this.panel && this.panel.parentNode) {
+            this.panel.parentNode.removeChild(this.panel);
+        }
 
         // Clear references
         this.scene = null;
@@ -574,6 +653,8 @@ export class BrainManager {
         this.originalScale = null;
         this.originalMaterials = [];
         this.originalColors = [];
+        this.panel = null;
+        this.panelVisible = false;
         this.boundHandleBrainClick = null;
 
         logger.scene('Brain manager destroyed');
