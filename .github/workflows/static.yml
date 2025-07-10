@@ -37,6 +37,7 @@ jobs:
         run: |
           mkdir deploy
           cp docs/index.html deploy/
+          cp docs/panel-content.html deploy/
           cp -r docs/js deploy/js
           cp -r assets deploy/assets
       - name: Upload artifact
