@@ -35,7 +35,7 @@ jobs:
         uses: actions/configure-pages@v5
       - name: Prepare deployment content
         run: |
-          mkdir deploy
+          mkdir deploy 
           cp docs/index.html deploy/
           cp docs/panel-content.html deploy/ 
           cp -r docs/js deploy/js
