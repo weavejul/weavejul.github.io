@@ -279,7 +279,7 @@ export class BrainManager {
             loader.setDRACOLoader(dracoLoader);
             
             loader.load(
-                '../../assets/models/brain-small.glb',
+                '../assets/models/brain-small.glb',
                 (gltf) => {
                     this.setupBrainModel(gltf.scene);
                     resolve();
