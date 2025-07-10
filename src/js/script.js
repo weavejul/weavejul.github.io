@@ -22,6 +22,7 @@ import {
 } from './utils.js';
 import { APP_CONFIG } from './constants.js';
 import { logger } from './logger.js';
+import { initializePerformanceOptimization, performanceOptimizer } from './performance-optimizer.js';
 
 /**
  * Main application class for managing the physics-based interactive experience
@@ -53,6 +54,9 @@ class PhysicsApp {
         this.setupEventListeners();
         this.startPhysicsEngine();
         this.startSceneSequence();
+        
+        // Initialize performance optimization
+        initializePerformanceOptimization();
         
         // Expose sceneManager globally for tunnel effect access
         window.SceneManager = this.sceneManager;
@@ -177,6 +181,9 @@ class PhysicsApp {
     setupBeforeUpdateHandler() {
         const beforeUpdateHandler = () => {
             this.cleanupCounter++;
+            
+            // Update performance optimizer
+            performanceOptimizer.update(performance.now());
             
             // Update background particles
             if (this.backgroundParticles) {
