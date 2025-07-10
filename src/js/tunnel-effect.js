@@ -1,6 +1,13 @@
 import { logger } from './logger.js';
 
+/**
+ * TunnelEffect class for creating immersive 3D tunnel visualizations
+ * @class TunnelEffect
+ */
 export class TunnelEffect {
+    /**
+     * Create a new TunnelEffect instance
+     */
     constructor() {
         this.isActive = false;
         this.renderer = null;
@@ -29,13 +36,13 @@ export class TunnelEffect {
         this.speed = 4;
         this.rotationSpeed = 0.001;
         this.colorTime = 0;
-        this.geometryComplexity = 120; // Number of segments along the curve
+        this.geometryComplexity = 120;
         this.tubeRadius = 0.025;
         this.tubeRadialSegments = 8;
-        this.shapeTransitionSpeed = 1.0; // Speed of shape transitions (increased)
-        this.shapeWaveSpeed = 0.5; // Speed of shape wave propagation (increased)
+        this.shapeTransitionSpeed = 1.0;
+        this.shapeWaveSpeed = 0.5;
         
-        // Define shape sequence (number of radial segments for each shape)
+        // Shape sequence configuration
         this.shapeSequence = [
             { sides: 6, name: 'hexagon' },
             { sides: 3, name: 'triangle' },
@@ -44,27 +51,39 @@ export class TunnelEffect {
             { sides: 8, name: 'octagon' },
             { sides: 7, name: 'heptagon' },
             { sides: 12, name: 'dodecagon' },
-            { sides: 6, name: 'hexagon' } // Loop back
+            { sides: 6, name: 'hexagon' }
         ];
         this.currentShapeIndex = 0;
         this.shapeTransitionTime = 0;
         
         // Color animation parameters
-        this.colorWaveSpeed = 0.3; // Speed of color wave propagation (increased)
-        this.paletteShiftSpeed = 0.3; // Speed of palette changes (increased)
+        this.colorWaveSpeed = 0.3;
+        this.paletteShiftSpeed = 0.3;
         this.paletteTime = 0;
         
         // Tunnel lifecycle timing
         this.tunnelStartTime = 0;
-        this.tunnelPhase = 'fade-in'; // 'fade-in', 'active', 'fade-out', 'complete'
-        this.fadeInDuration = 3.0; // 3 seconds fade in
-        this.activeDuration = 5.0; // 5 seconds active
-        this.fadeOutDuration = 2.0; // 2 seconds fade out to black
-        this.originalTunnelLength = 3; // Original tunnel length
-        this.currentTunnelLength = 3; // Current tunnel length
+        this.tunnelPhase = 'fade-in';
+        this.fadeInDuration = 3.0;
+        this.activeDuration = 5.0;
+        this.fadeOutDuration = 2.0;
+        this.originalTunnelLength = 3;
+        this.currentTunnelLength = 3;
         
-        // Dynamic color palettes (always include black)
-        this.colorPalettes = [
+        // Color palettes
+        this.colorPalettes = this.createColorPalettes();
+        this.currentPaletteIndex = 0;
+        
+        // Initialize noise function
+        this.initNoise();
+    }
+
+    /**
+     * Create color palettes for tunnel effects
+     * @returns {Array<Array<Object>>} - Array of color palette arrays
+     */
+    createColorPalettes() {
+        return [
             // Electric neon palette
             [
                 { h: 0.0, s: 0.0, l: 0.0 },    // Black
@@ -98,18 +117,14 @@ export class TunnelEffect {
                 { h: 0.83, s: 1.0, l: 0.6 }    // Violet
             ]
         ];
-        this.currentPaletteIndex = 0;
-        
-        // Initialize noise function
-        this.initNoise();
     }
     
-    // Initialize noise function (simplified version)
+    /**
+     * Initialize noise function for procedural effects
+     */
     initNoise() {
-        // Simple noise function for procedural colors
         this.noise = {
             simplex3: (x, y, z) => {
-                // Simple noise approximation using sin/cos
                 const hash = (x * 374761393 + y * 668265263 + z * 1274126177) % 2147483647;
                 const normalized = (hash / 2147483647) * 2 - 1;
                 return Math.sin(normalized * Math.PI) * 0.5 + 0.5;
@@ -117,44 +132,17 @@ export class TunnelEffect {
         };
     }
     
-    // Initialize the tunnel effect
+    /**
+     * Initialize the tunnel effect
+     */
     init() {
         logger.scene('Initializing tunnel effect...');
         
-        // Create canvas for Three.js
-        this.canvas = document.createElement('canvas');
-        this.canvas.id = 'tunnel-canvas';
-        this.canvas.style.position = 'fixed';
-        this.canvas.style.top = '0';
-        this.canvas.style.left = '0';
-        this.canvas.style.width = '100%';
-        this.canvas.style.height = '100%';
-        this.canvas.style.zIndex = '1005';
-        this.canvas.style.pointerEvents = 'none';
-        document.body.appendChild(this.canvas);
-        
-        // Initialize Three.js
-        this.renderer = new THREE.WebGLRenderer({
-            canvas: this.canvas,
-            antialias: true,
-            alpha: true
-        });
-        this.renderer.setSize(window.innerWidth, window.innerHeight);
-        this.renderer.setClearColor(0x000000, 0);
-        
-        // Create camera
-        this.camera = new THREE.PerspectiveCamera(15, window.innerWidth / window.innerHeight, 0.01, 1000);
-        this.camera.rotation.y = Math.PI;
-        this.camera.position.z = 0.35;
-        
-        // Create scene  
-        this.scene = new THREE.Scene();
-        this.scene.fog = new THREE.Fog(0x000000, 1, 1.9);
-        
-        // Create the tunnel mesh
+        this.createCanvas();
+        this.setupRenderer();
+        this.setupCamera();
+        this.setupScene();
         this.createTunnelMesh();
-        
-        // Set up event listeners
         this.setupEventListeners();
         
         // Start the animation
@@ -169,55 +157,132 @@ export class TunnelEffect {
         
         logger.scene('Tunnel effect initialized successfully');
     }
-    
-    // Create the tunnel mesh with complex geometry
-    createTunnelMesh() {
-        // Create curve points for the tunnel path (dynamic length)
-        this.updateTunnelCurve();
+
+    /**
+     * Create the tunnel canvas element
+     */
+    createCanvas() {
+        this.canvas = document.createElement('canvas');
+        this.canvas.id = 'tunnel-canvas';
         
-        // Initial curve setup
+        Object.assign(this.canvas.style, {
+            position: 'fixed',
+            top: '0',
+            left: '0',
+            width: '100%',
+            height: '100%',
+            zIndex: '1005',
+            pointerEvents: 'none'
+        });
+        
+        document.body.appendChild(this.canvas);
+    }
+
+    /**
+     * Setup the Three.js renderer
+     */
+    setupRenderer() {
+        this.renderer = new THREE.WebGLRenderer({
+            canvas: this.canvas,
+            antialias: true,
+            alpha: true
+        });
+        this.renderer.setSize(window.innerWidth, window.innerHeight);
+        this.renderer.setClearColor(0x000000, 0);
+    }
+
+    /**
+     * Setup the camera
+     */
+    setupCamera() {
+        this.camera = new THREE.PerspectiveCamera(15, window.innerWidth / window.innerHeight, 0.01, 1000);
+        this.camera.rotation.y = Math.PI;
+        this.camera.position.z = 0.35;
+    }
+
+    /**
+     * Setup the scene
+     */
+    setupScene() {
+        this.scene = new THREE.Scene();
+        this.scene.fog = new THREE.Fog(0x000000, 1, 1.9);
+    }
+    
+    /**
+     * Create the tunnel mesh with complex geometry
+     */
+    createTunnelMesh() {
+        this.createTunnelCurve();
+        this.createSplineMesh();
+        this.createTubeGeometry();
+        this.createTubeMaterial();
+        this.applyProceduralColors();
+        this.storeOriginalGeometry();
+        this.createTubeMesh();
+        this.createAdditionalLayers();
+    }
+
+    /**
+     * Create the tunnel curve
+     */
+    createTunnelCurve() {
         const points = [];
         for (let i = 0; i < 5; i++) {
             points.push(new THREE.Vector3(0, 0, this.currentTunnelLength * (i / 4)));
         }
         points[4].y = -0.06; // Slight downward bend at the end
         
-        // Create the curve
         this.curve = new THREE.CatmullRomCurve3(points);
         this.curve.type = "catmullrom";
-        
-        // Create spline mesh for curve visualization
+    }
+
+    /**
+     * Create spline mesh for curve visualization
+     */
+    createSplineMesh() {
         const splineGeometry = new THREE.BufferGeometry();
         const splinePoints = this.curve.getPoints(this.geometryComplexity);
         splineGeometry.setFromPoints(splinePoints);
         this.splineMesh = new THREE.Line(splineGeometry, new THREE.LineBasicMaterial({ color: 0x444444 }));
-        
-        // Create custom morphing tube geometry
+    }
+
+    /**
+     * Create the tube geometry
+     */
+    createTubeGeometry() {
         this.tubeGeometry = this.createMorphingTubeGeometry();
-        
-        // Create complex rainbow material with vertex colors
+    }
+
+    /**
+     * Create the tube material
+     */
+    createTubeMaterial() {
         this.tubeMaterial = new THREE.MeshBasicMaterial({
             side: THREE.BackSide,
             vertexColors: true,
             transparent: true,
             opacity: 0.0 // Start invisible for fade-in
         });
-        
-        // Apply initial palette colors to geometry
-        this.applyProceduralColors();
-        
-        // Store original geometry for animations
+    }
+
+    /**
+     * Store original geometry for animations
+     */
+    storeOriginalGeometry() {
         this.tubeGeometry_o = this.tubeGeometry.clone();
-        
-        // Create tube mesh
+    }
+
+    /**
+     * Create the tube mesh
+     */
+    createTubeMesh() {
         this.tubeMesh = new THREE.Mesh(this.tubeGeometry, this.tubeMaterial);
         this.scene.add(this.tubeMesh);
-        
-        // Add multiple tunnel layers for complexity
-        this.createAdditionalLayers();
     }
     
-    // Update tunnel curve based on current length
+    /**
+     * Update tunnel curve based on current length
+     */
     updateTunnelCurve() {
         if (!this.curve || !this.curve.points) return;
         
@@ -232,7 +297,9 @@ export class TunnelEffect {
         }
     }
     
-    // Update ring positions based on current tunnel length
+    /**
+     * Update ring positions based on current tunnel length
+     */
     updateRingPositions() {
         if (!this.rings || this.rings.length === 0) return;
         
@@ -249,97 +316,21 @@ export class TunnelEffect {
         });
     }
     
-    // Update tunnel phase and properties based on elapsed time
+    /**
+     * Update tunnel phase and properties based on elapsed time
+     * @param {number} elapsedTime - Elapsed time in seconds
+     * @param {number} frameDelta - Frame delta time in milliseconds
+     */
     updateTunnelPhase(elapsedTime, frameDelta) {
         let newPhase = this.tunnelPhase;
         
         if (elapsedTime <= this.fadeInDuration) {
-            // Fade-in phase
-            newPhase = 'fade-in';
-            const fadeProgress = elapsedTime / this.fadeInDuration;
-            const smoothFade = fadeProgress * fadeProgress * (3 - 2 * fadeProgress); // Smooth step
-            
-            // Update opacity for all materials
-            this.tubeMaterial.opacity = smoothFade;
-            if (this.innerTubeMaterial) {
-                this.innerTubeMaterial.opacity = smoothFade * 0.8; // Slightly more transparent
-            }
-            if (this.rings) {
-                this.rings.forEach(ring => {
-                    ring.mesh.material.opacity = smoothFade * 0.6;
-                });
-            }
-            
+            newPhase = this.handleFadeInPhase(elapsedTime);
         } else if (elapsedTime <= this.fadeInDuration + this.activeDuration) {
-            // Active phase
-            newPhase = 'active';
-            
-            // Clean up all physics objects when transitioning to active phase
-            if (this.tunnelPhase !== 'active') {
-                logger.scene('Tunnel entering active phase - cleaning up physics objects...');
-                
-                // Remove background particles entirely
-                if (window.SceneManager && window.SceneManager.backgroundParticles) {
-                    logger.scene('Removing background particles entirely...');
-                    window.SceneManager.backgroundParticles.destroy();
-                    window.SceneManager.backgroundParticles = null;
-                }
-                
-                // Remove all physics/text/particle objects
-                if (window.SceneManager && typeof window.SceneManager.cleanupAll === 'function') {
-                    window.SceneManager.cleanupAll();
-                }
-            }
-            
-            // Full opacity for all materials
-            this.tubeMaterial.opacity = 1.0;
-            if (this.innerTubeMaterial) {
-                this.innerTubeMaterial.opacity = 0.8;
-            }
-            if (this.rings) {
-                this.rings.forEach(ring => {
-                    ring.mesh.material.opacity = 0.6;
-                });
-            }
-            
+            newPhase = this.handleActivePhase();
         } else if (elapsedTime <= this.fadeInDuration + this.activeDuration + this.fadeOutDuration) {
-            // Fade-out phase - shift to black palette, fade opacity, and initialize brain/fluid
-            newPhase = 'fade-out';
-            const fadeOutStart = this.fadeInDuration + this.activeDuration;
-            const fadeOutProgress = (elapsedTime - fadeOutStart) / this.fadeOutDuration;
-            
-            // Initialize brain/fluid simulation when transitioning to fade-out phase
-            if (this.tunnelPhase !== 'fade-out') {
-                logger.scene('Tunnel entering fade-out phase - initializing brain and fluid simulation...');
-                
-                // Trigger fluid simulation and brain fade-in during fade-out
-                if (window.SceneManager && typeof window.SceneManager.startFluidSimulation === 'function') {
-                    logger.scene('Initializing fluid simulation and brain during tunnel fade-out...');
-                    window.SceneManager.startFluidSimulation().catch(error => {
-                        logger.error('Error starting fluid simulation:', error);
-                    });
-                } else {
-                    logger.scene('SceneManager not available for fluid simulation transition');
-                }
-            }
-            
-            // Shift to black palette during fade-out
-            this.forceBlackPalette = true;
-            
-            // Fade out opacity for all materials
-            const fadeOutOpacity = 1.0 - fadeOutProgress;
-            this.tubeMaterial.opacity = fadeOutOpacity;
-            if (this.innerTubeMaterial) {
-                this.innerTubeMaterial.opacity = fadeOutOpacity * 0.8;
-            }
-            if (this.rings) {
-                this.rings.forEach(ring => {
-                    ring.mesh.material.opacity = fadeOutOpacity * 0.6;
-                });
-            }
-            
+            newPhase = this.handleFadeOutPhase(elapsedTime);
         } else {
-            // Complete phase - tunnel has ended
             newPhase = 'complete';
             this.cleanupAndDestroy();
             return;
@@ -351,8 +342,113 @@ export class TunnelEffect {
             logger.scene(`🌀 Tunnel phase: ${newPhase} (${elapsedTime.toFixed(1)}s elapsed)`);
         }
     }
+
+    /**
+     * Handle fade-in phase
+     * @param {number} elapsedTime - Elapsed time in seconds
+     * @returns {string} - New phase
+     */
+    handleFadeInPhase(elapsedTime) {
+        const fadeProgress = elapsedTime / this.fadeInDuration;
+        const smoothFade = fadeProgress * fadeProgress * (3 - 2 * fadeProgress); // Smooth step
+        
+        // Update opacity for all materials
+        this.tubeMaterial.opacity = smoothFade;
+        if (this.innerTubeMaterial) {
+            this.innerTubeMaterial.opacity = smoothFade * 0.8;
+        }
+        if (this.rings) {
+            this.rings.forEach(ring => {
+                ring.mesh.material.opacity = smoothFade * 0.6;
+            });
+        }
+        
+        return 'fade-in';
+    }
+
+    /**
+     * Handle active phase
+     * @returns {string} - New phase
+     */
+    handleActivePhase() {
+        // Clean up all physics objects when transitioning to active phase
+        if (this.tunnelPhase !== 'active') {
+            logger.scene('Tunnel entering active phase - cleaning up physics objects...');
+            
+            // Remove background particles entirely
+            if (window.SceneManager && window.SceneManager.backgroundParticles) {
+                logger.scene('Removing background particles entirely...');
+                window.SceneManager.backgroundParticles.destroy();
+                window.SceneManager.backgroundParticles = null;
+            }
+            
+            // Remove all physics/text/particle objects
+            if (window.SceneManager && typeof window.SceneManager.cleanupAll === 'function') {
+                window.SceneManager.cleanupAll();
+            }
+        }
+        
+        // Full opacity for all materials
+        this.tubeMaterial.opacity = 1.0;
+        if (this.innerTubeMaterial) {
+            this.innerTubeMaterial.opacity = 0.8;
+        }
+        if (this.rings) {
+            this.rings.forEach(ring => {
+                ring.mesh.material.opacity = 0.6;
+            });
+        }
+        
+        return 'active';
+    }
+
+    /**
+     * Handle fade-out phase
+     * @param {number} elapsedTime - Elapsed time in seconds
+     * @returns {string} - New phase
+     */
+    handleFadeOutPhase(elapsedTime) {
+        const fadeOutStart = this.fadeInDuration + this.activeDuration;
+        const fadeOutProgress = (elapsedTime - fadeOutStart) / this.fadeOutDuration;
+        
+        // Initialize brain/fluid simulation when transitioning to fade-out phase
+        if (this.tunnelPhase !== 'fade-out') {
+            logger.scene('Tunnel entering fade-out phase - initializing brain and fluid simulation...');
+            
+            // Trigger fluid simulation and brain fade-in during fade-out
+            if (window.SceneManager && typeof window.SceneManager.startFluidSimulation === 'function') {
+                logger.scene('Initializing fluid simulation and brain during tunnel fade-out...');
+                window.SceneManager.startFluidSimulation().catch(error => {
+                    logger.error('Error starting fluid simulation:', error);
+                });
+            } else {
+                logger.scene('SceneManager not available for fluid simulation transition');
+            }
+        }
+        
+        // Shift to black palette during fade-out
+        this.forceBlackPalette = true;
+        
+        // Fade out opacity for all materials
+        const fadeOutOpacity = 1.0 - fadeOutProgress;
+        this.tubeMaterial.opacity = fadeOutOpacity;
+        if (this.innerTubeMaterial) {
+            this.innerTubeMaterial.opacity = fadeOutOpacity * 0.8;
+        }
+        if (this.rings) {
+            this.rings.forEach(ring => {
+                ring.mesh.material.opacity = fadeOutOpacity * 0.6;
+            });
+        }
+        
+        return 'fade-out';
+    }
     
-    // Create custom morphing tube geometry that can change shape
+    /**
+     * Create custom morphing tube geometry that can change shape
+     * @param {number} scale - Scale factor for the tube geometry
+     * @returns {THREE.BufferGeometry} - The created geometry
+     */
     createMorphingTubeGeometry(scale = 1) {
         const geometry = new THREE.BufferGeometry();
         const curvePoints = this.curve.getPoints(this.geometryComplexity);
@@ -430,7 +526,14 @@ export class TunnelEffect {
         return geometry;
     }
     
-    // Calculate radius for a given angle based on shape interpolation
+    /**
+     * Calculate radius for a given angle based on shape interpolation
+     * @param {number} angle - The angle in radians
+     * @param {Object} currentShape - Current shape object with sides property
+     * @param {Object} nextShape - Next shape object with sides property
+     * @param {number} lerp - Interpolation factor between shapes
+     * @returns {number} - Calculated radius
+     */
     calculateShapeRadius(angle, currentShape, nextShape, lerp) {
         const currentRadius = this.getShapeRadius(angle, currentShape.sides);
         const nextRadius = this.getShapeRadius(angle, nextShape.sides);
@@ -441,7 +544,12 @@ export class TunnelEffect {
         return this.tubeRadius * (currentRadius * (1 - smoothLerp) + nextRadius * smoothLerp);
     }
     
-    // Get radius for a specific angle in a polygonal shape
+    /**
+     * Get radius for a specific angle in a polygonal shape
+     * @param {number} angle - The angle in radians
+     * @param {number} sides - Number of sides in the polygon
+     * @returns {number} - Calculated radius for the shape
+     */
     getShapeRadius(angle, sides) {
         if (sides <= 2) return 1; // Fallback for invalid shapes
         
@@ -583,7 +691,9 @@ export class TunnelEffect {
         targetGeometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
     }
     
-    // Set up event listeners
+    /**
+     * Set up event listeners for mouse and window events
+     */
     setupEventListeners() {
         // Mouse move handler
         this.mouseMoveHandler = (event) => {
@@ -604,7 +714,9 @@ export class TunnelEffect {
         window.addEventListener('resize', this.resizeHandler);
     }
     
-    // Update camera position based on mouse movement
+    /**
+     * Update camera position based on mouse movement
+     */
     updateCameraPosition() {
         // Smooth mouse tracking (matching inspiration code)
         this.mouse.position.x += (this.mouse.target.x - this.mouse.position.x) / 50;
@@ -1007,47 +1119,57 @@ export class TunnelEffect {
         colors.needsUpdate = true;
     }
     
-    // Return a palette of all black for fade-out
+    /**
+     * Return a palette of all black for fade-out
+     * @returns {Array<Object>} - Array of black color objects
+     */
     getBlackPalette() {
         // Use the same length as the current palette for smooth interpolation
         const len = this.colorPalettes[0].length;
         return Array(len).fill({ h: 0, s: 0, l: 0 });
     }
 
-    // Cleanup tunnel resources and destroy
+    /**
+     * Cleanup tunnel resources and destroy with optimized timing
+     */
     cleanupAndDestroy() {
         logger.scene('Tunnel effect complete - checking fluid simulation status before cleanup...');
         
-        // Check if fluid simulation is ready before destroying tunnel
-        if (window.SceneManager && window.SceneManager.fluidIntegration) {
-            const fluidIntegration = window.SceneManager.fluidIntegration;
-            
-            // If fluid simulation is already visible, we can destroy immediately
-            if (fluidIntegration.currentOpacity > 0.5) {
-                logger.scene('Fluid simulation is visible - destroying tunnel immediately');
-                this.destroyTunnelResources();
+        // Use requestAnimationFrame for optimized cleanup timing
+        requestAnimationFrame(() => {
+            // Check if fluid simulation is ready before destroying tunnel
+            if (window.SceneManager && window.SceneManager.fluidIntegration) {
+                const fluidIntegration = window.SceneManager.fluidIntegration;
+                
+                // If fluid simulation is already visible, we can destroy immediately
+                if (fluidIntegration.currentOpacity > 0.5) {
+                    logger.scene('Fluid simulation is visible - destroying tunnel immediately');
+                    this.destroyTunnelResources();
+                } else {
+                    // Wait for fluid simulation to be more visible before destroying tunnel
+                    logger.scene('Waiting for fluid simulation to become visible before destroying tunnel...');
+                    const checkFluidReady = () => {
+                        if (fluidIntegration.currentOpacity > 0.3) {
+                            logger.scene('Fluid simulation is ready - destroying tunnel');
+                            this.destroyTunnelResources();
+                        } else {
+                            // Continue checking every frame with optimized timing
+                            requestAnimationFrame(checkFluidReady);
+                        }
+                    };
+                    checkFluidReady();
+                }
             } else {
-                // Wait for fluid simulation to be more visible before destroying tunnel
-                logger.scene('Waiting for fluid simulation to become visible before destroying tunnel...');
-                const checkFluidReady = () => {
-                    if (fluidIntegration.currentOpacity > 0.3) {
-                        logger.scene('Fluid simulation is ready - destroying tunnel');
-                        this.destroyTunnelResources();
-                    } else {
-                        // Continue checking every frame
-                        requestAnimationFrame(checkFluidReady);
-                    }
-                };
-                checkFluidReady();
+                // Fallback: destroy immediately if no fluid integration
+                logger.scene('No fluid integration found - destroying tunnel immediately');
+                this.destroyTunnelResources();
             }
-        } else {
-            // Fallback: destroy immediately if no fluid integration
-            logger.scene('No fluid integration found - destroying tunnel immediately');
-            this.destroyTunnelResources();
-        }
+        });
     }
     
-    // Actually destroy the tunnel resources
+    /**
+     * Actually destroy the tunnel resources
+     */
     destroyTunnelResources() {
         // Set background to transparent instead of black
         if (this.renderer) {
@@ -1063,7 +1185,9 @@ export class TunnelEffect {
         this.destroy();
     }
     
-    // Animation loop
+    /**
+     * Main animation loop for the tunnel effect
+     */
     animate() {
         // Multiple safety checks to prevent errors after destruction
         if (!this.isActive || 
@@ -1102,9 +1226,11 @@ export class TunnelEffect {
         }
     }
     
-    // Destroy the tunnel effect
+    /**
+     * Destroy the tunnel effect and clean up all resources with optimized timing
+     */
     destroy() {
-        logger.scene('Destroying tunnel effect...');
+        logger.scene('Destroying tunnel effect with optimized cleanup...');
         
         // Stop animation immediately and prevent new animation frames
         this.isActive = false;
@@ -1116,57 +1242,78 @@ export class TunnelEffect {
             this.animationId = null;
         }
         
-        // Small delay to ensure any pending animation frames are processed
-        setTimeout(() => {
-            // Remove event listeners
-            if (this.mouseMoveHandler) {
-                document.removeEventListener('mousemove', this.mouseMoveHandler);
-                this.mouseMoveHandler = null;
-            }
-            if (this.resizeHandler) {
-                window.removeEventListener('resize', this.resizeHandler);
-                this.resizeHandler = null;
-            }
+        // Use requestAnimationFrame for optimized cleanup timing
+        requestAnimationFrame(() => {
+            this.removeEventListeners();
+            this.cleanupThreeJSResources();
+            this.removeCanvas();
+            this.clearReferences();
             
-            // Clean up Three.js resources
-            if (this.scene) {
-                this.scene.clear();
-            }
-            if (this.renderer) {
-                this.renderer.dispose();
-            }
-            
-            // Remove canvas
-            if (this.canvas && this.canvas.parentNode) {
-                this.canvas.parentNode.removeChild(this.canvas);
-            }
-            
-            // Clear references (set to null to prevent any further access)
-            this.renderer = null;
-            this.camera = null;
-            this.scene = null;
-            this.tubeMesh = null;
-            this.tubeGeometry = null;
-            this.tubeGeometry_o = null;
-            this.tubeMaterial = null;
-            this.curve = null;
-            this.splineMesh = null;
-            this.canvas = null;
-            this.innerTubeGeometry = null;
-            this.innerTubeGeometry_o = null;
-            this.innerTubeMesh = null;
-            this.innerTubeMaterial = null;
-            this.rings = null;
-            this.lastFrameTime = null;
-            this.colorPalettes = null;
-            this.currentPaletteIndex = 0;
-            this.paletteTime = 0;
-            this.tunnelStartTime = 0;
-            this.tunnelPhase = 'complete';
-            this.currentTunnelLength = 0;
-            this.forceBlackPalette = false;
-            
-            logger.scene('Tunnel effect destroyed');
-        }, 0);
+            logger.scene('Tunnel effect destroyed with optimized cleanup');
+        });
+    }
+
+    /**
+     * Remove event listeners
+     */
+    removeEventListeners() {
+        if (this.mouseMoveHandler) {
+            document.removeEventListener('mousemove', this.mouseMoveHandler);
+            this.mouseMoveHandler = null;
+        }
+        if (this.resizeHandler) {
+            window.removeEventListener('resize', this.resizeHandler);
+            this.resizeHandler = null;
+        }
+    }
+
+    /**
+     * Clean up Three.js resources
+     */
+    cleanupThreeJSResources() {
+        if (this.scene) {
+            this.scene.clear();
+        }
+        if (this.renderer) {
+            this.renderer.dispose();
+        }
+    }
+
+    /**
+     * Remove canvas element
+     */
+    removeCanvas() {
+        if (this.canvas && this.canvas.parentNode) {
+            this.canvas.parentNode.removeChild(this.canvas);
+        }
+    }
+
+    /**
+     * Clear all references
+     */
+    clearReferences() {
+        this.renderer = null;
+        this.camera = null;
+        this.scene = null;
+        this.tubeMesh = null;
+        this.tubeGeometry = null;
+        this.tubeGeometry_o = null;
+        this.tubeMaterial = null;
+        this.curve = null;
+        this.splineMesh = null;
+        this.canvas = null;
+        this.innerTubeGeometry = null;
+        this.innerTubeGeometry_o = null;
+        this.innerTubeMesh = null;
+        this.innerTubeMaterial = null;
+        this.rings = null;
+        this.lastFrameTime = null;
+        this.colorPalettes = null;
+        this.currentPaletteIndex = 0;
+        this.paletteTime = 0;
+        this.tunnelStartTime = 0;
+        this.tunnelPhase = 'complete';
+        this.currentTunnelLength = 0;
+        this.forceBlackPalette = false;
     }
 } 

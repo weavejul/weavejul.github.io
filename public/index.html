@@ -12,16 +12,37 @@
             background-color: rgba(0, 0, 0, 1);
             overflow: hidden;
             font-family: 'Arial', sans-serif;
+            /* Hardware acceleration for smooth scrolling and animations */
+            transform: translateZ(0);
+            will-change: scroll-position;
         }
         
         #canvas-container {
             width: 100vw;
             height: 100vh;
             position: relative;
+            /* Hardware acceleration for canvas container */
+            transform: translateZ(0);
+            will-change: transform;
         }
         
         canvas {
             display: block;
+            /* Hardware acceleration for canvas elements */
+            transform: translateZ(0);
+            will-change: transform;
+        }
+        
+        /* Optimize transitions with CSS instead of JavaScript */
+        .optimized-transition {
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            will-change: opacity, transform;
+        }
+        
+        /* Hardware acceleration for animated elements */
+        .hardware-accelerated {
+            transform: translateZ(0);
+            will-change: transform, opacity;
         }
     </style>
 </head>

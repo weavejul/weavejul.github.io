@@ -1,67 +1,149 @@
-/*
-MIT License
-
-Copyright (c) 2017 Pavel Dobryakov
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+/**
+ * MIT License
+ * 
+ * Copyright (c) 2017 Pavel Dobryakov
+ * 
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ * 
+ * 
+ * This module provides a real-time fluid simulation using WebGL shaders.
+ * It creates interactive fluid effects with physics-based particle movement,
+ * color advection, and various visual effects like bloom and sunrays.
+ * 
+ * @module FluidSimulation
 */
 
 'use strict';
 
-// Simulation section
-
-// Global variables
+/**
+ * Global simulation variables
+ * @type {HTMLCanvasElement}
+ */
 let canvas;
+
+/**
+ * Simulation configuration object
+ * @type {Object}
+ */
 let config;
+
+/**
+ * Array of pointer objects for input handling
+ * @type {Array}
+ */
 let pointers = [];
+
+/**
+ * Stack of splat effects to be applied
+ * @type {Array}
+ */
 let splatStack = [];
+
+/**
+ * Timestamp of last update
+ * @type {number}
+ */
 let lastUpdateTime;
+
+/**
+ * Timer for color updates
+ * @type {number}
+ */
 let colorUpdateTimer = 0.0;
+
+/**
+ * WebGL context and extensions
+ * @type {Object}
+ */
 let gl, ext;
+
+/**
+ * Simulation buffers
+ * @type {Object}
+ */
 let dye, velocity, divergence, curl, pressure;
+
+/**
+ * Bloom effect buffers
+ * @type {Object}
+ */
 let bloom, bloomFramebuffers = [];
+
+/**
+ * Sunrays effect buffers
+ * @type {Object}
+ */
 let sunrays, sunraysTemp;
+
+/**
+ * Dithering texture for bloom effect
+ * @type {Object}
+ */
 let ditheringTexture;
 
-// Shader and program variables (will be initialized in compileShaders)
+/**
+ * Shader variables (initialized in compileShaders)
+ * @type {WebGLShader}
+ */
 let baseVertexShader, blurVertexShader, blurShader, copyShader, clearShader, colorShader;
 let checkerboardShader, bloomPrefilterShader, bloomBlurShader, bloomFinalShader;
 let sunraysMaskShader, sunraysShader, splatShader, advectionShader;
 let divergenceShader, curlShader, vorticityShader, pressureShader, gradientSubtractShader;
+
+/**
+ * Display material for rendering
+ * @type {Material}
+ */
 let displayMaterial;
 
-// Program variables (will be initialized in compileShaders)
+/**
+ * Program variables (initialized in compileShaders)
+ * @type {Program}
+ */
 let blurProgram, copyProgram, clearProgram, colorProgram, checkerboardProgram;
 let bloomPrefilterProgram, bloomBlurProgram, bloomFinalProgram;
 let sunraysMaskProgram, sunraysProgram, splatProgram, advectionProgram;
 let divergenceProgram, curlProgram, vorticityProgram, pressureProgram, gradienSubtractProgram;
 
-// Brain turbulence generation (replaces floating rectangle)
+/**
+ * Brain turbulence generation object
+ * Creates fluid turbulence around the brain position
+ * @type {Object}
+ */
 let brainTurbulence = {
+    /** X position of brain turbulence */
     x: 0.5,
+    /** Y position of brain turbulence */
     y: 0.5,
+    /** Radius of turbulence effect */
     radius: 0.15,
+    /** X velocity component */
     velocityX: 0.0005,
+    /** Y velocity component */
     velocityY: 0.0005,
+    /** Current rotation angle */
     angle: 0,
+    /** Angular velocity for rotation */
     angularVelocity: 0.001,
+    /** Last update timestamp */
     lastUpdateTime: Date.now(),
+    /** Intensity of turbulence effect */
     intensity: 0.8
 };
 
@@ -71,7 +153,11 @@ if (typeof ditheringTexture === 'undefined') {
     // ditheringTexture = createTextureAsync('LDR_LLL1_0.png');
 }
 
-// Initialize function - called when script is loaded
+/**
+ * Initialize the fluid simulation
+ * Sets up WebGL context, shaders, framebuffers, and starts the simulation loop
+ * @function initializeFluidSimulation
+ */
 function initializeFluidSimulation() {
     if (window.fluidSimulationInitialized) {
         console.log('Fluid simulation already initialized');
@@ -109,7 +195,7 @@ if (!canvas) {
     SIM_RESOLUTION: 128,
     DYE_RESOLUTION: 512,
     CAPTURE_RESOLUTION: 512,
-    DENSITY_DISSIPATION: 2,
+    DENSITY_DISSIPATION: 1,
     VELOCITY_DISSIPATION: 0.2,
     PRESSURE: 1,
     PRESSURE_ITERATIONS: 20,
@@ -180,17 +266,33 @@ if (!canvas) {
     }
 }
 
+/**
+ * Pointer prototype for input handling
+ * Represents a mouse/touch input point
+ * @constructor
+ */
 function pointerPrototype () {
+    /** Unique identifier for the pointer */
     this.id = -1;
+    /** Current X texture coordinate */
     this.texcoordX = 0;
+    /** Current Y texture coordinate */
     this.texcoordY = 0;
+    /** Previous X texture coordinate */
     this.prevTexcoordX = 0;
+    /** Previous Y texture coordinate */
     this.prevTexcoordY = 0;
+    /** X delta movement */
     this.deltaX = 0;
+    /** Y delta movement */
     this.deltaY = 0;
+    /** Whether pointer is pressed down */
     this.down = false;
+    /** Whether pointer has moved */
     this.moved = false;
+    /** Whether pointer has been processed */
     this.processed = false;
+    /** Color of the pointer effect */
     this.color = [30, 0, 300];
 }
 
@@ -222,6 +324,11 @@ function pointerPrototype () {
 
 // Skip GUI setup for our implementation
 
+/**
+ * Get WebGL context with appropriate parameters
+ * @param {HTMLCanvasElement} canvas - The canvas element
+ * @returns {Object} - Object containing gl context and extensions
+ */
 function getWebGLContext (canvas) {
     const params = { alpha: true, depth: false, stencil: false, antialias: false, preserveDrawingBuffer: false };
 
@@ -317,10 +424,18 @@ function startGUI () {
     // Controls are handled by the HTML interface
 }
 
+/**
+ * Check if the current device is mobile
+ * @returns {boolean} - True if mobile device
+ */
 function isMobile () {
     return /Mobi|Android/i.test(navigator.userAgent);
 }
 
+/**
+ * Capture a screenshot of the current fluid simulation
+ * @function captureScreenshot
+ */
 function captureScreenshot () {
     let res = getResolution(config.CAPTURE_RESOLUTION);
     let target = createFBO(res.width, res.height, ext.formatRGBA.internalFormat, ext.formatRGBA.format, ext.halfFloatTexType, gl.NEAREST);
@@ -385,7 +500,16 @@ function downloadURI (filename, uri) {
     document.body.removeChild(link);
 }
 
+/**
+ * Material class for managing shader programs
+ * @class Material
+ */
 class Material {
+    /**
+     * Create a new material
+     * @param {WebGLShader} vertexShader - The vertex shader
+     * @param {string} fragmentShaderSource - The fragment shader source code
+     */
     constructor (vertexShader, fragmentShaderSource) {
         this.vertexShader = vertexShader;
         this.fragmentShaderSource = fragmentShaderSource;
@@ -418,7 +542,16 @@ class Material {
     }
 }
 
+/**
+ * Program class for WebGL shader programs
+ * @class Program
+ */
 class Program {
+    /**
+     * Create a new shader program
+     * @param {WebGLShader} vertexShader - The vertex shader
+     * @param {WebGLShader} fragmentShader - The fragment shader
+     */
     constructor (vertexShader, fragmentShader) {
         this.uniforms = {};
         this.program = createProgram(vertexShader, fragmentShader);
@@ -430,6 +563,12 @@ class Program {
     }
 }
 
+/**
+ * Create a WebGL shader program
+ * @param {WebGLShader} vertexShader - The vertex shader
+ * @param {WebGLShader} fragmentShader - The fragment shader
+ * @returns {WebGLProgram} - The linked shader program
+ */
 function createProgram (vertexShader, fragmentShader) {
     let program = gl.createProgram();
     gl.attachShader(program, vertexShader);
@@ -442,6 +581,11 @@ function createProgram (vertexShader, fragmentShader) {
     return program;
 }
 
+/**
+ * Get uniform locations from a shader program
+ * @param {WebGLProgram} program - The shader program
+ * @returns {Object} - Object mapping uniform names to locations
+ */
 function getUniforms (program) {
     let uniforms = [];
     let uniformCount = gl.getProgramParameter(program, gl.ACTIVE_UNIFORMS);
@@ -452,6 +596,13 @@ function getUniforms (program) {
     return uniforms;
 }
 
+/**
+ * Compile a WebGL shader
+ * @param {number} type - The shader type (VERTEX_SHADER or FRAGMENT_SHADER)
+ * @param {string} source - The shader source code
+ * @param {Array} keywords - Optional keywords to add to the shader
+ * @returns {WebGLShader} - The compiled shader
+ */
 function compileShader (type, source, keywords) {
     source = addKeywords(source, keywords);
 
@@ -465,6 +616,12 @@ function compileShader (type, source, keywords) {
     return shader;
 };
 
+/**
+ * Add keywords to shader source code
+ * @param {string} source - The shader source code
+ * @param {Array} keywords - Array of keywords to add
+ * @returns {string} - The modified shader source
+ */
 function addKeywords (source, keywords) {
     if (keywords == null) return source;
     let keywordsString = '';
@@ -948,7 +1105,11 @@ const gradientSubtractShaderSource = `
     }
 `;
 
-// Function to compile all shaders after WebGL context is available
+/**
+ * Compile all shaders and create programs
+ * This function must be called after WebGL context is available
+ * @function compileShaders
+ */
 function compileShaders() {
     baseVertexShader = compileShader(gl.VERTEX_SHADER, baseVertexShaderSource);
     blurVertexShader = compileShader(gl.VERTEX_SHADER, blurVertexShaderSource);
@@ -1036,6 +1197,11 @@ function CHECK_FRAMEBUFFER_STATUS () {
 
 // Programs are now created in compileShaders() function
 
+/**
+ * Initialize framebuffers for the simulation
+ * Creates all necessary buffers for fluid simulation
+ * @function initFramebuffers
+ */
 function initFramebuffers () {
     let simRes = getResolution(config.SIM_RESOLUTION);
     let dyeRes = getResolution(config.DYE_RESOLUTION);
@@ -1227,6 +1393,11 @@ function updateKeywords () {
 
 // Remove auto-initialization - this is now handled by the integration
 
+/**
+ * Main update loop for the fluid simulation
+ * Handles timing, input, physics steps, and rendering
+ * @function update
+ */
 function update () {
     const dt = calcDeltaTime();
     if (resizeCanvas())
@@ -1645,6 +1816,11 @@ function correctDeltaY (delta) {
     return delta;
 }
 
+/**
+ * Generate a random color from the meaty organic palette
+ * Creates rich reds, browns, and natural tones for organic fluid effects
+ * @returns {Object} - Color object with r, g, b components
+ */
 function generateColor () {
     // Meaty organic color palette - rich reds, browns, and natural tones
     const meatyColors = [
@@ -1750,15 +1926,26 @@ console.log('Fluid.js loading...');
 
 // Remove duplicate initialization function - this is handled in the main initialization function
 
-// Control functions for HTML interface
+/**
+ * Add a random splat effect to the simulation
+ * @function addSplat
+ */
 function addSplat() {
     splatStack.push(parseInt(Math.random() * 20) + 5);
 }
 
+/**
+ * Toggle the pause state of the simulation
+ * @function togglePause
+ */
 function togglePause() {
     config.PAUSED = !config.PAUSED;
 }
 
+/**
+ * Clear the fluid simulation and reset to initial state
+ * @function clearFluid
+ */
 function clearFluid() {
     // Clear the fluid by reinitializing framebuffers
     initFramebuffers();
@@ -1775,7 +1962,11 @@ window.togglePause = togglePause;
 window.clearFluid = clearFluid;
 window.initializeFluidSimulation = initializeFluidSimulation;
 
-// Brain turbulence functions
+/**
+ * Update brain turbulence based on brain position and movement
+ * Creates fluid turbulence around the brain's current position
+ * @function updateBrainTurbulence
+ */
 function updateBrainTurbulence() {
     const now = Date.now();
     const dt = (now - brainTurbulence.lastUpdateTime) / 1000;
@@ -1813,6 +2004,11 @@ function updateBrainTurbulence() {
     createBrainTurbulence();
 }
 
+/**
+ * Create turbulence effects around the brain position
+ * Generates fluid disturbances in a circular pattern around the brain
+ * @function createBrainTurbulence
+ */
 function createBrainTurbulence() {
     // Create velocity disturbances around the brain's position
     const brain = brainTurbulence;
@@ -1844,7 +2040,11 @@ function createBrainTurbulence() {
     }
 }
 
-// Utility to fill dye buffer with background color
+/**
+ * Fill the dye buffer with the background color
+ * Used to clear the fluid simulation to initial state
+ * @function fillDyeWithBackground
+ */
 function fillDyeWithBackground() {
     colorProgram.bind();
     const bg = normalizeColor(config.BACK_COLOR);

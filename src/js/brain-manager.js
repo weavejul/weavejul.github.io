@@ -1,6 +1,13 @@
 import { logger } from './logger.js';
 
+/**
+ * BrainManager class for handling 3D brain visualization and interaction
+ * @class BrainManager
+ */
 export class BrainManager {
+    /**
+     * Create a new BrainManager instance
+     */
     constructor() {
         this.isActive = false;
         this.scene = null;
@@ -10,64 +17,73 @@ export class BrainManager {
         this.controls = null;
         this.container = null;
         this.animationId = null;
-        this.scriptLoaded = false;
+        
+        // Animation properties
         this.rotationSpeed = 0.005;
         this.autoRotate = true;
         
-        // Brain click and pulse properties
+        // Click detection properties
         this.raycaster = null;
         this.mouse = null;
+        this.boundHandleBrainClick = null;
+        
+        // Pulse animation properties
         this.isPulsing = false;
         this.pulseStartTime = 0;
-        this.pulseDuration = 0.2; // 1 second pulse
+        this.pulseDuration = 0.2;
         this.originalScale = null;
         this.originalMaterials = [];
-        this.pulseScale = 1.1; // Scale up by 30%
-        this.pulseColor = new THREE.Color(0xffffff); // Bright red pulse color
+        this.pulseScale = 1.1;
+        this.pulseColor = new THREE.Color(0xffffff);
         this.originalColors = [];
         
         // Panel properties
         this.panel = null;
         this.panelVisible = false;
-        this.panelDelay = 200; // 500ms delay before showing panel
+        this.panelDelay = 200;
+        
+        // Performance optimization properties
+        this.pauseBrainAnimation = false;
+        this.originalBrainOpacity = null;
     }
 
-    // Initialize Three.js and load the brain model
+    /**
+     * Initialize the brain manager and load the 3D brain model with optimized timing
+     * @returns {Promise<void>}
+     */
     async init() {
         if (this.isActive) {
             logger.scene('Brain manager already active');
             return;
         }
 
-        logger.scene('Initializing brain manager...');
+        logger.scene('Initializing brain manager with optimized timing...');
 
         try {
-            // Load Three.js scripts if not already loaded
+            // Defer heavy operations to next frame
+            await new Promise(resolve => requestAnimationFrame(resolve));
+            
             await this.loadThreeJSScripts();
-
-            // Create container
-            this.container = document.createElement('div');
-            this.container.id = 'brain-container';
-            this.container.style.position = 'fixed';
-            this.container.style.top = '0';
-            this.container.style.left = '0';
-            this.container.style.width = '100%';
-            this.container.style.height = '100%';
-            this.container.style.zIndex = '1002'; // Higher than fluid canvas (1001)
-            this.container.style.pointerEvents = 'none'; // Allow mouse events to pass through to fluid
-            this.container.style.opacity = '0';
-            document.body.appendChild(this.container);
-
-            // Initialize Three.js scene
-            this.setupThreeJS();
-
-            // Load brain model
+            
+            // Use requestAnimationFrame for DOM operations
+            await new Promise(resolve => {
+                requestAnimationFrame(() => {
+                    this.createContainer();
+                    this.setupThreeJS();
+                    resolve();
+                });
+            });
+            
             await this.loadBrainModel();
             
-            // Initialize click detection
-            this.setupClickDetection();
-            
-            logger.scene('Brain manager setup complete - container z-index:', this.container.style.zIndex);
+            // Defer remaining setup to next frame
+            await new Promise(resolve => {
+                requestAnimationFrame(() => {
+                    this.setupClickDetection();
+                    this.createPanel();
+                    resolve();
+                });
+            });
 
             this.isActive = true;
             this.startAnimation();
@@ -75,24 +91,21 @@ export class BrainManager {
             // Make brain manager globally accessible for fluid simulation
             window.brainManager = this;
 
-            logger.scene('Brain manager initialized successfully');
+            logger.scene('Brain manager initialized successfully with optimized timing');
         } catch (error) {
             logger.error('Failed to initialize brain manager:', error);
             throw error;
         }
     }
 
-    // Load Three.js scripts dynamically
+    /**
+     * Load Three.js scripts dynamically
+     * @returns {Promise<void>}
+     */
     async loadThreeJSScripts() {
-        // Check if Three.js is already loaded
-        if (window.THREE) {
-            logger.scene('Three.js already loaded, checking for required components...');
-            
-            // Check if we have all required components
-            if (window.THREE.GLTFLoader && window.THREE.OrbitControls && window.THREE.DRACOLoader) {
+        if (window.THREE && window.THREE.GLTFLoader && window.THREE.OrbitControls && window.THREE.DRACOLoader) {
                 logger.scene('All Three.js components already available');
                 return;
-            }
         }
 
         return new Promise((resolve, reject) => {
@@ -106,8 +119,7 @@ export class BrainManager {
             let loadedCount = 0;
             const totalScripts = scripts.length;
 
-            scripts.forEach((src, index) => {
-                // Check if script already exists
+            scripts.forEach((src) => {
                 const existingScript = document.querySelector(`script[src="${src}"]`);
                 if (existingScript) {
                     loadedCount++;
@@ -136,17 +148,55 @@ export class BrainManager {
         });
     }
 
-    // Setup Three.js scene, camera, and renderer
-    setupThreeJS() {
-        // Scene
-        this.scene = new THREE.Scene();
+    /**
+     * Create the brain container element
+     */
+    createContainer() {
+        this.container = document.createElement('div');
+        this.container.id = 'brain-container';
+        this.container.style.position = 'fixed';
+        this.container.style.top = '0';
+        this.container.style.left = '0';
+        this.container.style.width = '100%';
+        this.container.style.height = '100%';
+        this.container.style.zIndex = '1002';
+        this.container.style.pointerEvents = 'none';
+        this.container.style.opacity = '0';
+        document.body.appendChild(this.container);
+    }
 
-        // Camera
+    /**
+     * Setup Three.js scene, camera, renderer, and lighting
+     */
+    setupThreeJS() {
+        this.setupScene();
+        this.setupCamera();
+        this.setupRenderer();
+        this.setupLighting();
+        this.setupControls();
+        this.setupEventListeners();
+    }
+
+    /**
+     * Setup the Three.js scene
+     */
+    setupScene() {
+        this.scene = new THREE.Scene();
+    }
+
+    /**
+     * Setup the camera
+     */
+    setupCamera() {
         this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
         this.camera.position.set(0, 0, 5);
         logger.scene('Camera positioned at:', this.camera.position);
+    }
 
-        // Renderer
+    /**
+     * Setup the renderer
+     */
+    setupRenderer() {
         this.renderer = new THREE.WebGLRenderer({ 
             antialias: true, 
             alpha: true,
@@ -158,16 +208,21 @@ export class BrainManager {
         this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
         this.container.appendChild(this.renderer.domElement);
         
-        // Ensure the renderer canvas is visible and doesn't block mouse events
+        // Ensure renderer canvas is visible and doesn't block mouse events
         this.renderer.domElement.style.position = 'absolute';
         this.renderer.domElement.style.top = '0';
         this.renderer.domElement.style.left = '0';
         this.renderer.domElement.style.width = '100%';
         this.renderer.domElement.style.height = '100%';
-        this.renderer.domElement.style.pointerEvents = 'none'; // Allow mouse events to pass through
+        this.renderer.domElement.style.pointerEvents = 'none';
+    }
 
-        // Lighting - Simplified setup for better visibility of changes
-        const ambientLight = new THREE.AmbientLight(0x404040, 0.3); // Reduced ambient light
+    /**
+     * Setup lighting for the scene
+     */
+    setupLighting() {
+        // Ambient light
+        const ambientLight = new THREE.AmbientLight(0x404040, 0.3);
         this.scene.add(ambientLight);
 
         // Main directional light
@@ -183,12 +238,16 @@ export class BrainManager {
         directionalLight2.position.set(-3, 2, -3);
         this.scene.add(directionalLight2);
 
-        // Single colored light for accent
+        // Accent light
         const accentLight = new THREE.PointLight(0x6666ff, 2, 12);
         accentLight.position.set(2, 1, 2);
         this.scene.add(accentLight);
+    }
 
-        // Controls (disabled for now, will be enabled when needed)
+    /**
+     * Setup orbit controls
+     */
+    setupControls() {
         this.controls = new THREE.OrbitControls(this.camera, this.renderer.domElement);
         this.controls.enableDamping = true;
         this.controls.dampingFactor = 0.05;
@@ -196,13 +255,20 @@ export class BrainManager {
         this.controls.minDistance = 1;
         this.controls.maxDistance = 20;
         this.controls.maxPolarAngle = Math.PI;
-        this.controls.enabled = false; // Disabled by default
+        this.controls.enabled = false;
+    }
 
-        // Handle window resize
+    /**
+     * Setup event listeners
+     */
+    setupEventListeners() {
         window.addEventListener('resize', this.onWindowResize.bind(this));
     }
 
-    // Load the brain model
+    /**
+     * Load the brain model from GLB file
+     * @returns {Promise<void>}
+     */
     async loadBrainModel() {
         return new Promise((resolve, reject) => {
             const loader = new THREE.GLTFLoader();
@@ -215,58 +281,7 @@ export class BrainManager {
             loader.load(
                 '../assets/models/brain-small.glb',
                 (gltf) => {
-                    this.brainModel = gltf.scene;
-                    
-                    // Position and scale the brain
-                    this.brainModel.position.set(0, 0, 0);
-                    this.brainModel.scale.set(1, 1, 1);
-                    
-                    // Store original scale for pulse animation
-                    this.originalScale = this.brainModel.scale.clone();
-                    
-                    // Store original materials and colors for pulse animation
-                    this.originalMaterials = [];
-                    this.originalColors = [];
-                    this.brainModel.traverse((child) => {
-                        if (child.isMesh) {
-                            // Store a reference to the mesh and its material
-                            this.originalMaterials.push({
-                                mesh: child,
-                                material: child.material.clone()
-                            });
-                            
-                            // Store the original color if it exists
-                            if (child.material && child.material.color) {
-                                this.originalColors.push(child.material.color.clone());
-                            } else {
-                                // Default color if none exists
-                                this.originalColors.push(new THREE.Color(0x888888));
-                            }
-                        }
-                    });
-                    
-                    // Enable shadows for all meshes
-                    this.brainModel.traverse((child) => {
-                        if (child.isMesh) {
-                            child.castShadow = true;
-                            child.receiveShadow = true;
-                            
-                            // Add some material properties for better appearance
-                            if (child.material) {
-                                child.material.metalness = 0.2; // Slightly more metallic
-                                child.material.roughness = 0.6; // Less rough for more shine
-                                // Reduced emissive to make lighting changes more visible
-                                child.material.emissive = new THREE.Color(0x111111); // Very subtle glow
-                                child.material.emissiveIntensity = 0.05; // Much lower emission
-                            }
-                        }
-                    });
-                    
-                    this.scene.add(this.brainModel);
-                    logger.scene('Brain model loaded successfully, position:', this.brainModel.position);
-                    logger.scene('Brain model rotation:', this.brainModel.rotation);
-                    logger.scene('Brain model scale:', this.brainModel.scale);
-                    logger.scene('Stored original colors:', this.originalColors.length);
+                    this.setupBrainModel(gltf.scene);
                     resolve();
                 },
                 (xhr) => {
@@ -280,93 +295,217 @@ export class BrainManager {
         });
     }
 
-    // Setup click detection for the brain
+    /**
+     * Setup loaded brain model
+     * @param {THREE.Group} brainModel - Loaded brain model
+     */
+    setupBrainModel(brainModel) {
+        this.brainModel = brainModel;
+        
+        // Position and scale the brain
+        this.brainModel.position.set(0, 0, 0);
+        this.brainModel.scale.set(1, 1, 1);
+        
+        // Store original scale for pulse animation
+        this.originalScale = this.brainModel.scale.clone();
+        
+        // Store original materials and colors
+        this.storeOriginalMaterials();
+        
+        // Setup materials and shadows
+        this.setupBrainMaterials();
+        
+        this.scene.add(this.brainModel);
+        logger.scene('Brain model loaded successfully');
+    }
+
+    /**
+     * Store original materials and colors for pulse animation
+     */
+    storeOriginalMaterials() {
+        this.originalMaterials = [];
+        this.originalColors = [];
+        
+        this.brainModel.traverse((child) => {
+            if (child.isMesh) {
+                this.originalMaterials.push({
+                    mesh: child,
+                    material: child.material.clone()
+                });
+                
+                if (child.material && child.material.color) {
+                    this.originalColors.push(child.material.color.clone());
+                } else {
+                    this.originalColors.push(new THREE.Color(0x888888));
+                }
+            }
+        });
+        
+        logger.scene('Stored original colors:', this.originalColors.length);
+    }
+
+    /**
+     * Setup brain materials and shadows
+     */
+    setupBrainMaterials() {
+        this.brainModel.traverse((child) => {
+            if (child.isMesh) {
+                child.castShadow = true;
+                child.receiveShadow = true;
+                
+                if (child.material) {
+                    child.material.metalness = 0.2;
+                    child.material.roughness = 0.6;
+                    child.material.emissive = new THREE.Color(0x111111);
+                    child.material.emissiveIntensity = 0.05;
+                }
+            }
+        });
+    }
+
+    /**
+     * Setup click detection for the brain
+     */
     setupClickDetection() {
-        // Initialize raycaster and mouse
         this.raycaster = new THREE.Raycaster();
         this.mouse = new THREE.Vector2();
         
-        // Bind the click handler to maintain proper context
         this.boundHandleBrainClick = this.handleBrainClick.bind(this);
-        
-        // Add click event listener to the document
         document.addEventListener('click', this.boundHandleBrainClick);
         
         logger.scene('Brain click detection initialized');
-        
-        // Create the panel
-        this.createPanel();
     }
     
-    // Create the iframe panel
+    /**
+     * Create the iframe panel
+     */
     createPanel() {
         this.panel = document.createElement('div');
         this.panel.id = 'brain-panel';
-        this.panel.style.position = 'fixed';
-        this.panel.style.top = '50%';
-        this.panel.style.left = '50%';
-        this.panel.style.transform = 'translate(-50%, -50%)';
-        this.panel.style.width = '80%';
-        this.panel.style.height = '80%';
-        this.panel.style.zIndex = '1003'; // Higher than brain container
-        this.panel.style.backgroundColor = 'rgba(26, 0, 0, 0.95)';
-        this.panel.style.borderRadius = '0px';
-        this.panel.style.border = '2px solid #ff4444';
-        this.panel.style.boxShadow = '0 0 20px rgba(255, 68, 68, 0.3)';
-        this.panel.style.opacity = '0';
-        this.panel.style.visibility = 'hidden';
-        this.panel.style.transition = 'opacity 0.3s ease-in-out';
-        this.panel.style.overflow = 'hidden';
-        
-        // Create close button
-        const closeButton = document.createElement('button');
-        closeButton.innerHTML = '×';
-        closeButton.style.position = 'absolute';
-        closeButton.style.top = '10px';
-        closeButton.style.right = '15px';
-        closeButton.style.background = 'none';
-        closeButton.style.border = 'none';
-        closeButton.style.color = '#ff4444';
-        closeButton.style.fontSize = '24px';
-        closeButton.style.fontWeight = 'bold';
-        closeButton.style.cursor = 'pointer';
-        closeButton.style.zIndex = '1004';
-        closeButton.onclick = () => this.hidePanel();
-        
-        // Create iframe
-        const iframe = document.createElement('iframe');
-        // Add cache-busting parameter to force reload
-        iframe.src = 'panel-content.html?t=' + Date.now();
-        iframe.style.width = '100%';
-        iframe.style.height = '100%';
-        iframe.style.border = 'none';
-        iframe.style.borderRadius = '8px';
-        
-        this.panel.appendChild(closeButton);
-        this.panel.appendChild(iframe);
+        this.setupPanelStyles();
+        this.setupPanelContent();
         document.body.appendChild(this.panel);
         
         logger.scene('Brain panel created');
     }
+
+    /**
+     * Setup panel styles
+     */
+    setupPanelStyles() {
+        Object.assign(this.panel.style, {
+            position: 'fixed',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            width: '80%',
+            height: '80%',
+            zIndex: '1003',
+            backgroundColor: 'rgba(26, 0, 0, 0.95)',
+            borderRadius: '0px',
+            border: '2px solid #ff4444',
+            boxShadow: '0 0 20px rgba(255, 68, 68, 0.3)',
+            opacity: '0',
+            visibility: 'hidden',
+            transition: 'opacity 0.3s ease-in-out',
+            overflow: 'hidden'
+        });
+    }
+
+    /**
+     * Setup panel content (close button and iframe)
+     */
+    setupPanelContent() {
+        const closeButton = this.createCloseButton();
+        const iframe = this.createIframe();
+        
+        this.panel.appendChild(closeButton);
+        this.panel.appendChild(iframe);
+    }
+
+    /**
+     * Create the close button
+     * @returns {HTMLButtonElement}
+     */
+    createCloseButton() {
+        const closeButton = document.createElement('button');
+        closeButton.innerHTML = '×';
+        
+        Object.assign(closeButton.style, {
+            position: 'absolute',
+            top: '10px',
+            right: '15px',
+            background: 'none',
+            border: 'none',
+            color: '#ff4444',
+            fontSize: '24px',
+            fontWeight: 'bold',
+            cursor: 'pointer',
+            zIndex: '1004'
+        });
+        
+        closeButton.onclick = () => this.hidePanel();
+        return closeButton;
+    }
+
+    /**
+     * Create the iframe with optimized loading
+     * @returns {HTMLIFrameElement}
+     */
+    createIframe() {
+        const iframe = document.createElement('iframe');
+        
+        // Add loading="lazy" for optimized loading
+        iframe.loading = 'lazy';
+        
+        // Defer iframe loading with setTimeout for better performance
+        setTimeout(() => {
+            iframe.src = 'panel-content.html?t=' + Date.now();
+        }, 100);
+        
+        Object.assign(iframe.style, {
+            width: '100%',
+            height: '100%',
+            border: 'none',
+            borderRadius: '8px',
+            // Add hardware acceleration for smooth rendering
+            transform: 'translateZ(0)',
+            willChange: 'transform, opacity'
+        });
+        
+        return iframe;
+    }
     
-    // Show the panel
+    /**
+     * Show the panel with optimized rendering and hide brain
+     */
     showPanel() {
         if (!this.panel || this.panelVisible) return;
         
-        // Force reload the iframe content to ensure latest version
-        const iframe = this.panel.querySelector('iframe');
-        if (iframe) {
-            iframe.src = 'panel-content.html?t=' + Date.now();
-        }
-        
-        this.panel.style.visibility = 'visible';
-        this.panel.style.opacity = '1';
-        this.panelVisible = true;
-        
-        logger.scene('Brain panel shown');
+        // Use requestAnimationFrame for smooth panel showing
+        requestAnimationFrame(() => {
+            // Force reload the iframe content with deferred loading
+            const iframe = this.panel.querySelector('iframe');
+            if (iframe) {
+                setTimeout(() => {
+                    iframe.src = 'panel-content.html?t=' + Date.now();
+                }, 50);
+            }
+            
+            this.panel.style.visibility = 'visible';
+            this.panel.style.opacity = '1';
+            this.panelVisible = true;
+            
+            // Hide brain for better performance when panel is open
+            this.hideBrain();
+            
+            logger.scene('Brain panel shown with optimized rendering - brain hidden for performance');
+        });
     }
     
-    // Hide the panel
+    /**
+     * Hide the panel and show brain
+     */
     hidePanel() {
         if (!this.panel || !this.panelVisible) return;
         
@@ -375,13 +514,19 @@ export class BrainManager {
             if (this.panel) {
                 this.panel.style.visibility = 'hidden';
                 this.panelVisible = false;
+                
+                // Show brain again when panel is closed
+                this.showBrain();
             }
-        }, 300); // Match transition duration
+        }, 300);
         
-        logger.scene('Brain panel hidden');
+        logger.scene('Brain panel hidden - brain shown again');
     }
 
-    // Handle brain click detection
+    /**
+     * Handle brain click detection
+     * @param {MouseEvent} event - The click event
+     */
     handleBrainClick(event) {
         if (!this.brainModel || this.isPulsing) return;
         
@@ -406,7 +551,9 @@ export class BrainManager {
         }
     }
 
-    // Start pulse animation
+    /**
+     * Start pulse animation
+     */
     startPulse() {
         if (this.isPulsing) return;
         
@@ -416,7 +563,9 @@ export class BrainManager {
         logger.scene('Brain pulse animation started');
     }
 
-    // Update pulse animation
+    /**
+     * Update pulse animation
+     */
     updatePulse() {
         if (!this.isPulsing || !this.brainModel) return;
         
@@ -424,14 +573,32 @@ export class BrainManager {
         const elapsed = (currentTime - this.pulseStartTime) / 1000;
         const progress = Math.min(elapsed / this.pulseDuration, 1.0);
         
-        // Create a pulse curve that grows and then shrinks
         const pulseCurve = this.createPulseCurve(progress);
         
-        // Scale animation - use the pulse curve for growing and shrinking
+        this.updatePulseScale(pulseCurve);
+        this.updatePulseColors(pulseCurve, progress);
+        
+        // End pulse animation
+        if (progress >= 1.0) {
+            this.endPulse();
+        }
+    }
+
+    /**
+     * Update pulse scale animation
+     * @param {number} pulseCurve - The pulse curve value
+     */
+    updatePulseScale(pulseCurve) {
         const scaleFactor = 1.0 + (this.pulseScale - 1.0) * pulseCurve;
         this.brainModel.scale.setScalar(this.originalScale.x * scaleFactor);
-        
-        // Color animation - apply to all stored materials
+    }
+
+    /**
+     * Update pulse color animation
+     * @param {number} pulseCurve - The pulse curve value
+     * @param {number} progress - The animation progress
+     */
+    updatePulseColors(pulseCurve, progress) {
         this.originalMaterials.forEach((materialData, index) => {
             if (materialData.mesh && materialData.mesh.material && this.originalColors[index]) {
                 const originalColor = this.originalColors[index];
@@ -444,7 +611,7 @@ export class BrainManager {
                 
                 materialData.mesh.material.color.setRGB(newR, newG, newB);
                 
-                // Also animate emissive for extra glow effect
+                // Animate emissive for extra glow effect
                 materialData.mesh.material.emissive.setRGB(
                     pulseColor.r * 0.5 * pulseCurve * 5,
                     pulseColor.g * 0.5 * pulseCurve * 5,
@@ -457,34 +624,46 @@ export class BrainManager {
                 }
             }
         });
-        
-        // End pulse animation
-        if (progress >= 1.0) {
+    }
+
+    /**
+     * End the pulse animation and reset colors
+     */
+    endPulse() {
             this.isPulsing = false;
             
             // Reset colors
             this.originalMaterials.forEach((materialData, index) => {
                 if (materialData.mesh && materialData.mesh.material && this.originalColors[index]) {
                     materialData.mesh.material.color.copy(this.originalColors[index]);
-                    // Reset emissive to original
-                    materialData.mesh.material.emissive.setRGB(0.133, 0.133, 0.133); // 0x222222
+                materialData.mesh.material.emissive.setRGB(0.133, 0.133, 0.133);
                 }
             });
             
             logger.scene('Brain pulse animation completed');
         }
-    }
 
-    // Create a pulse curve that grows and then shrinks
+    /**
+     * Create a pulse curve that grows and then shrinks
+     * @param {number} progress - Animation progress (0-1)
+     * @returns {number} - Pulse curve value
+     */
     createPulseCurve(progress) {
-        // Use a sine wave to create a smooth pulse that goes from 0 to 1 and back to 0
         return Math.sin(progress * Math.PI);
     }
 
-    // Start the animation loop
+    /**
+     * Start the animation loop
+     */
     startAnimation() {
         const animate = () => {
             if (!this.isActive) return;
+
+            // Skip animation if brain is paused for performance
+            if (this.pauseBrainAnimation) {
+                this.animationId = requestAnimationFrame(animate);
+                return;
+            }
 
             // Auto-rotate the brain
             if (this.brainModel && this.autoRotate) {
@@ -508,10 +687,13 @@ export class BrainManager {
         };
 
         animate();
-        logger.scene('Brain animation started');
+        logger.scene('Brain animation started with pause support');
     }
 
-    // Fade in the brain
+    /**
+     * Fade in the brain
+     * @param {number} duration - Fade duration in seconds
+     */
     fadeIn(duration = 2.0) {
         if (!this.container) {
             logger.error('Brain container not found for fade in');
@@ -521,12 +703,14 @@ export class BrainManager {
         logger.scene('Fading in brain with z-index:', this.container.style.zIndex);
         this.container.style.transition = `opacity ${duration}s ease-in-out`;
         this.container.style.opacity = '1';
-        // Don't override pointer events here - let enableControls handle it
 
         logger.scene('Brain fade in initiated');
     }
 
-    // Fade out the brain
+    /**
+     * Fade out the brain
+     * @param {number} duration - Fade duration in seconds
+     */
     fadeOut(duration = 2.0) {
         if (!this.container) return;
 
@@ -537,49 +721,96 @@ export class BrainManager {
         logger.scene('Brain faded out');
     }
 
-    // Enable/disable user controls
+    /**
+     * Hide brain for performance optimization when panel is open
+     */
+    hideBrain() {
+        if (!this.container || !this.brainModel) return;
+        
+        // Store current opacity for restoration
+        this.originalBrainOpacity = this.container.style.opacity || '1';
+        
+        // Hide brain with smooth transition
+        this.container.style.transition = 'opacity 0.3s ease-out';
+        this.container.style.opacity = '0';
+        this.container.style.pointerEvents = 'none';
+        
+        // Pause brain animation for performance
+        this.pauseBrainAnimation = true;
+        
+        logger.scene('Brain hidden for panel performance optimization');
+    }
+
+    /**
+     * Show brain when panel is closed
+     */
+    showBrain() {
+        if (!this.container || !this.brainModel) return;
+        
+        // Restore brain with smooth transition
+        this.container.style.transition = 'opacity 0.3s ease-in';
+        this.container.style.opacity = this.originalBrainOpacity || '1';
+        // Keep pointerEvents as 'none' to avoid interfering with fluid simulation
+        this.container.style.pointerEvents = 'none';
+        
+        // Resume brain animation
+        this.pauseBrainAnimation = false;
+        
+        logger.scene('Brain shown again after panel closed - pointer events disabled for fluid compatibility');
+    }
+
+    /**
+     * Enable/disable user controls
+     * @param {boolean} enabled - Whether to enable controls
+     */
     enableControls(enabled = true) {
         if (this.controls) {
             this.controls.enabled = enabled;
         }
         
-        // Keep pointer events disabled so fluid interaction works
-        // The brain will auto-rotate but won't block mouse events
         if (this.container) {
             this.container.style.pointerEvents = 'none';
         }
     }
 
-    // Set auto-rotation
+    /**
+     * Set auto-rotation
+     * @param {boolean} enabled - Whether to enable auto-rotation
+     */
     setAutoRotate(enabled = true) {
         this.autoRotate = enabled;
     }
 
-    // Set rotation speed
+    /**
+     * Set rotation speed
+     * @param {number} speed - Rotation speed
+     */
     setRotationSpeed(speed) {
         this.rotationSpeed = speed;
     }
 
-    // Get brain position for turbulence generation
+    /**
+     * Get brain position for turbulence generation
+     * @returns {{x: number, y: number}} - Normalized screen coordinates
+     */
     getBrainPosition() {
         if (this.brainModel) {
-            // Convert 3D position to 2D screen coordinates
             const vector = new THREE.Vector3();
             this.brainModel.getWorldPosition(vector);
             
-            // Project 3D position to 2D screen space
             vector.project(this.camera);
             
-            // Convert to normalized coordinates (0-1)
             const x = (vector.x + 1) / 2;
-            const y = (1 - vector.y) / 2; // Flip Y coordinate
+            const y = (1 - vector.y) / 2;
             
             return { x, y };
         }
-        return { x: 0.5, y: 0.5 }; // Default center position
+        return { x: 0.5, y: 0.5 };
     }
 
-    // Handle window resize
+    /**
+     * Handle window resize
+     */
     onWindowResize() {
         if (this.camera && this.renderer) {
             this.camera.aspect = window.innerWidth / window.innerHeight;
@@ -589,13 +820,17 @@ export class BrainManager {
         }
     }
     
-    // Update for window resize (called from scene manager)
+    /**
+     * Update for window resize (called from scene manager)
+     */
     updateForResize() {
         this.onWindowResize();
         logger.scene('Brain manager updated for resize');
     }
 
-    // Clean up and destroy
+    /**
+     * Clean up and destroy the brain manager
+     */
     destroy() {
         logger.scene('Destroying brain manager...');
 
@@ -612,6 +847,21 @@ export class BrainManager {
         document.removeEventListener('click', this.boundHandleBrainClick);
 
         // Dispose of Three.js resources
+        this.disposeThreeJSResources();
+
+        // Remove DOM elements
+        this.removeDOMElements();
+
+        // Clear references
+        this.clearReferences();
+
+        logger.scene('Brain manager destroyed');
+    }
+
+    /**
+     * Dispose of Three.js resources
+     */
+    disposeThreeJSResources() {
         if (this.renderer) {
             this.renderer.dispose();
         }
@@ -630,18 +880,25 @@ export class BrainManager {
                 }
             });
         }
+        }
 
-        // Remove container
+    /**
+     * Remove DOM elements
+     */
+    removeDOMElements() {
         if (this.container && this.container.parentNode) {
             this.container.parentNode.removeChild(this.container);
         }
         
-        // Remove panel
         if (this.panel && this.panel.parentNode) {
             this.panel.parentNode.removeChild(this.panel);
         }
+        }
 
-        // Clear references
+    /**
+     * Clear all references
+     */
+    clearReferences() {
         this.scene = null;
         this.camera = null;
         this.renderer = null;
@@ -656,11 +913,12 @@ export class BrainManager {
         this.panel = null;
         this.panelVisible = false;
         this.boundHandleBrainClick = null;
-
-        logger.scene('Brain manager destroyed');
     }
 
-    // Get current state
+    /**
+     * Check if the brain manager is running
+     * @returns {boolean} - True if active, false otherwise
+     */
     isRunning() {
         return this.isActive;
     }
