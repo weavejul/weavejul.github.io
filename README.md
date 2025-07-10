@@ -1,7 +1,5 @@
 # Julian Weaver - Interactive Personal Website
 
-An interactive, physics-based personal website featuring dynamic text animations, particle effects, and immersive visual experiences.
-
 ## Tech Stack
 
 ### Core
