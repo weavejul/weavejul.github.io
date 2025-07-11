@@ -408,7 +408,7 @@ export class BrainManager {
             left: '50%',
             transform: 'translate(-50%, -50%)',
             width: isMobile ? '95%' : '80%',
-            height: isMobile ? '90%' : '80%',
+            height: isMobile ? '70%' : '80%',
             zIndex: '1003',
             backgroundColor: 'rgba(26, 0, 0, 0.95)',
             borderRadius: '0px',
@@ -423,7 +423,7 @@ export class BrainManager {
         // Add responsive styles for very small screens
         if (isMobile) {
             this.panel.style.setProperty('--panel-width', '95%');
-            this.panel.style.setProperty('--panel-height', '90%');
+            this.panel.style.setProperty('--panel-height', '70%');
         }
     }
 

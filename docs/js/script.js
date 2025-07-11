@@ -412,7 +412,7 @@ class PhysicsApp {
         });
         
         skipButton.addEventListener('mouseleave', () => {
-            skipButton.style.opacity = '0.8';
+            skipButton.style.opacity = '0.3';
         });
         
         skipButton.addEventListener('click', () => {
@@ -434,8 +434,26 @@ class PhysicsApp {
         
         logger.scene('Mobile skip button created');
         
+        // Set up fade out behavior
+        this.setupSkipButtonFadeOut();
+        
         // Set up observer to sync with skip text overlay visibility
         this.setupSkipButtonSync();
+    }
+
+    /**
+     * Set up fade out behavior for mobile skip button
+     */
+    setupSkipButtonFadeOut() {
+        if (!this.mobileSkipButton) return;
+        
+        // Fade out after 3 seconds
+        setTimeout(() => {
+            if (this.mobileSkipButton) {
+                this.mobileSkipButton.style.opacity = '0.3';
+                logger.scene('Mobile skip button faded out');
+            }
+        }, 3000);
     }
 
     /**
