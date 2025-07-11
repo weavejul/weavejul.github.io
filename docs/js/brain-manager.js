@@ -458,11 +458,7 @@ export class BrainManager {
         // Add loading="lazy" for optimized loading
         iframe.loading = 'lazy';
         
-        // Defer iframe loading with setTimeout for better performance
-        setTimeout(() => {
-            iframe.src = 'panel-content.html?t=' + Date.now();
-        }, 100);
-        
+        // Start with iframe hidden to prevent flash
         Object.assign(iframe.style, {
             width: '100%',
             height: '100%',
@@ -470,8 +466,13 @@ export class BrainManager {
             borderRadius: '8px',
             // Add hardware acceleration for smooth rendering
             transform: 'translateZ(0)',
-            willChange: 'transform, opacity'
+            willChange: 'transform, opacity',
+            opacity: '0',
+            transition: 'opacity 0.3s ease-in-out'
         });
+        
+        // Don't load iframe content until panel is shown
+        this.iframe = iframe;
         
         return iframe;
     }
@@ -484,17 +485,24 @@ export class BrainManager {
         
         // Use requestAnimationFrame for smooth panel showing
         requestAnimationFrame(() => {
-            // Force reload the iframe content with deferred loading
-            const iframe = this.panel.querySelector('iframe');
-            if (iframe) {
-                setTimeout(() => {
-                    iframe.src = 'panel-content.html?t=' + Date.now();
-                }, 50);
-            }
-            
+            // Show panel first
             this.panel.style.visibility = 'visible';
             this.panel.style.opacity = '1';
             this.panelVisible = true;
+            
+            // Load iframe content with cache busting and proper loading sequence
+            if (this.iframe) {
+                // Load iframe content with cache busting
+                this.iframe.src = 'panel-content.html?t=' + Date.now() + '&v=' + Math.random();
+                
+                // Wait for iframe to load, then fade it in
+                this.iframe.onload = () => {
+                    // Small delay to ensure content is rendered
+                    setTimeout(() => {
+                        this.iframe.style.opacity = '1';
+                    }, 100);
+                };
+            }
             
             // Hide brain for better performance when panel is open
             this.hideBrain();
@@ -514,6 +522,12 @@ export class BrainManager {
             if (this.panel) {
                 this.panel.style.visibility = 'hidden';
                 this.panelVisible = false;
+                
+                // Reset iframe for next time
+                if (this.iframe) {
+                    this.iframe.style.opacity = '0';
+                    this.iframe.src = '';
+                }
                 
                 // Show brain again when panel is closed
                 this.showBrain();

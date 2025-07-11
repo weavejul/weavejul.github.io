@@ -3,6 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <link rel="icon" type="image/x-icon" href="../assets/icons/favicon.ico">
     <title>Julian Weaver</title>
     <style>
@@ -47,10 +50,12 @@
             margin: 0 auto;
             position: relative;
             z-index: 1;
-            animation: fadeInUp 1s ease-out;
+            animation: fadeInUp 2s ease-out;
             /* Hardware acceleration for container animations */
             transform: translateZ(0);
             will-change: transform, opacity;
+            /* Start hidden to prevent flash */
+            opacity: 0;
         }
         
         @keyframes fadeInUp {
@@ -62,6 +67,12 @@
                 opacity: 1;
                 transform: translateY(0);
             }
+        }
+        
+        /* Ensure container starts hidden and animates in */
+        .container {
+            opacity: 0;
+            animation: fadeInUp 1s ease-out 0.1s forwards;
         }
         
         h1 {
@@ -138,6 +149,8 @@
             /* Hardware acceleration for section animations */
             transform: translateZ(0);
             will-change: transform, opacity, box-shadow;
+            /* Start hidden to prevent flash */
+            visibility: hidden;
         }
         
         .section:nth-child(1) { animation-delay: 0.2s; }
@@ -152,6 +165,7 @@
             to {
                 opacity: 1;
                 transform: translateY(0);
+                visibility: visible;
             }
         }
         
@@ -464,7 +478,7 @@
         <h1 class="gradient-text">Hey! I'm Julian's Brain!</h1>
         
         <div class="section">
-            <p id="greeting" style="visibility: hidden;">(It's <span id="current-date" style="font-weight: bold;"></span>. Do you typically poke at exposed brain matter on <span id="current-weekday"></span>s?)</p>
+            <p id="greeting" style="opacity: 0; visibility: hidden;">(It's <span id="current-date" style="font-weight: bold;"></span>. Do you typically poke at exposed brain matter on <span id="current-weekday"></span>s?)</p>
         </div>
         
         <div class="section">
@@ -912,6 +926,7 @@
                 const greetingElement = document.getElementById('greeting');
                 const originalText = greetingElement.innerHTML;
                 greetingElement.style.visibility = 'visible';
+                greetingElement.style.opacity = '1';
                 typeText(greetingElement, originalText, 30);
             }, 500);
         });
