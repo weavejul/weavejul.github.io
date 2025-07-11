@@ -412,7 +412,8 @@ class PhysicsApp {
         });
         
         skipButton.addEventListener('mouseleave', () => {
-            skipButton.style.opacity = '0.3';
+            // Don't change opacity on mouse leave since we want it to fade to 0
+            // The fade out timer will handle the opacity
         });
         
         skipButton.addEventListener('click', () => {
@@ -447,11 +448,12 @@ class PhysicsApp {
     setupSkipButtonFadeOut() {
         if (!this.mobileSkipButton) return;
         
-        // Fade out after 3 seconds
+        // Start fade out after 3 seconds, fade to 0 over 2 seconds
         setTimeout(() => {
             if (this.mobileSkipButton) {
-                this.mobileSkipButton.style.opacity = '0.3';
-                logger.scene('Mobile skip button faded out');
+                this.mobileSkipButton.style.transition = 'opacity 2s ease-out';
+                this.mobileSkipButton.style.opacity = '0';
+                logger.scene('Mobile skip button starting slow fade to 0');
             }
         }, 3000);
     }
@@ -466,7 +468,15 @@ class PhysicsApp {
         // Don't hide it based on the overlay visibility
         this.mobileSkipButton.style.display = 'block';
         
-        logger.scene('Mobile skip button sync disabled - button always visible on mobile');
+        // Listen for scene changes to hide button when fluid scene starts
+        this.sceneManager.onSceneChange((scene) => {
+            if (scene === 'fluid' && this.mobileSkipButton) {
+                this.mobileSkipButton.style.display = 'none';
+                logger.scene('Mobile skip button hidden - fluid scene started');
+            }
+        });
+        
+        logger.scene('Mobile skip button sync enabled - will hide on fluid scene');
     }
 
     /**
