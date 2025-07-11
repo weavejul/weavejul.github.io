@@ -2,6 +2,7 @@ User-agent: *
 Allow: /
 
 # Disallow sensitive files and directories
+Disallow: /.htaccess
 Disallow: /.git/
 Disallow: /node_modules/
 Disallow: /*.config

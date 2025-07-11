@@ -1,4 +1,11 @@
 # Protect sensitive files and directories
+
+# Hide .htaccess file itself
+<Files ".htaccess">
+    Order allow,deny
+    Deny from all
+</Files>
+
 # Block access to configuration files
 <Files "*.config">
     Order allow,deny
