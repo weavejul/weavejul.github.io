@@ -6,7 +6,7 @@
 
 - **HTML5**
 - **CSS3**
-- **Vanilla JavaScript (ES6+)** 
+- **Vanilla JavaScript (ES6+)**
 - **Matter.js**
 - **Three.js**
 
