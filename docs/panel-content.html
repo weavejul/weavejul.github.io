@@ -24,6 +24,80 @@
             will-change: scroll-position;
         }
         
+        /* Responsive text scaling */
+        @media (max-width: 600px) {
+            body {
+                font-size: 12px;
+                padding: 10px;
+            }
+            
+            h1 {
+                font-size: 1.8em;
+                margin-bottom: 20px;
+            }
+            
+            h2 {
+                font-size: 1.2em;
+                margin-top: 25px;
+                margin-bottom: 12px;
+            }
+            
+            .section {
+                padding: 15px;
+                margin-bottom: 25px;
+            }
+            
+            .container {
+                max-width: 100%;
+            }
+        }
+        
+        @media (max-width: 400px) {
+            body {
+                font-size: 12px;
+                padding: 8px;
+            }
+            
+            h1 {
+                font-size: 1.6em;
+                margin-bottom: 18px;
+            }
+            
+            h2 {
+                font-size: 1.1em;
+                margin-top: 22px;
+                margin-bottom: 10px;
+            }
+            
+            .section {
+                padding: 12px;
+                margin-bottom: 20px;
+            }
+        }
+        
+        @media (max-width: 300px) {
+            body {
+                font-size: 12px;
+                padding: 6px;
+            }
+            
+            h1 {
+                font-size: 1.4em;
+                margin-bottom: 15px;
+            }
+            
+            h2 {
+                font-size: 1em;
+                margin-top: 20px;
+                margin-bottom: 8px;
+            }
+            
+            .section {
+                padding: 10px;
+                margin-bottom: 18px;
+            }
+        }
+        
         body::before {
             content: '';
             position: fixed;

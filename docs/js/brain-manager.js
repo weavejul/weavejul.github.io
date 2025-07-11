@@ -373,6 +373,12 @@ export class BrainManager {
         this.boundHandleBrainClick = this.handleBrainClick.bind(this);
         document.addEventListener('click', this.boundHandleBrainClick);
         
+        // Add touch support for mobile devices
+        if (window.mobileCheck && window.mobileCheck()) {
+            document.addEventListener('touchstart', this.boundHandleBrainClick, { passive: false });
+            logger.scene('Brain touch detection initialized for mobile');
+        }
+        
         logger.scene('Brain click detection initialized');
     }
     
@@ -393,13 +399,16 @@ export class BrainManager {
      * Setup panel styles
      */
     setupPanelStyles() {
+        // Check if mobile device
+        const isMobile = window.mobileCheck && window.mobileCheck();
+        
         Object.assign(this.panel.style, {
             position: 'fixed',
             top: '50%',
             left: '50%',
             transform: 'translate(-50%, -50%)',
-            width: '80%',
-            height: '80%',
+            width: isMobile ? '95%' : '80%',
+            height: isMobile ? '90%' : '80%',
             zIndex: '1003',
             backgroundColor: 'rgba(26, 0, 0, 0.95)',
             borderRadius: '0px',
@@ -410,6 +419,12 @@ export class BrainManager {
             transition: 'opacity 0.3s ease-in-out',
             overflow: 'hidden'
         });
+        
+        // Add responsive styles for very small screens
+        if (isMobile) {
+            this.panel.style.setProperty('--panel-width', '95%');
+            this.panel.style.setProperty('--panel-height', '90%');
+        }
     }
 
     /**
@@ -441,10 +456,25 @@ export class BrainManager {
             fontSize: '24px',
             fontWeight: 'bold',
             cursor: 'pointer',
-            zIndex: '1004'
+            zIndex: '1004',
+            // Add mobile-friendly touch target
+            minWidth: '44px',
+            minHeight: '44px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            userSelect: 'none'
         });
         
         closeButton.onclick = () => this.hidePanel();
+        
+        // Add touch support for mobile
+        closeButton.addEventListener('touchstart', (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            this.hidePanel();
+        }, { passive: false });
+        
         return closeButton;
     }
 
@@ -539,14 +569,29 @@ export class BrainManager {
 
     /**
      * Handle brain click detection
-     * @param {MouseEvent} event - The click event
+     * @param {MouseEvent|TouchEvent} event - The click or touch event
      */
     handleBrainClick(event) {
         if (!this.brainModel || this.isPulsing) return;
         
-        // Calculate mouse position in normalized device coordinates
-        this.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-        this.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+        // Prevent default for touch events to avoid scrolling
+        if (event.type === 'touchstart') {
+            event.preventDefault();
+        }
+        
+        // Get coordinates from either mouse or touch event
+        let clientX, clientY;
+        if (event.type === 'touchstart' && event.touches.length > 0) {
+            clientX = event.touches[0].clientX;
+            clientY = event.touches[0].clientY;
+        } else {
+            clientX = event.clientX;
+            clientY = event.clientY;
+        }
+        
+        // Calculate position in normalized device coordinates
+        this.mouse.x = (clientX / window.innerWidth) * 2 - 1;
+        this.mouse.y = -(clientY / window.innerHeight) * 2 + 1;
         
         // Update the picking ray with the camera and mouse position
         this.raycaster.setFromCamera(this.mouse, this.camera);
@@ -555,7 +600,7 @@ export class BrainManager {
         const intersects = this.raycaster.intersectObject(this.brainModel, true);
         
         if (intersects.length > 0) {
-            logger.scene('Brain clicked! Starting pulse animation...');
+            logger.scene('Brain clicked/touched! Starting pulse animation...');
             this.startPulse();
             
             // Show panel after delay

@@ -155,6 +155,9 @@ export class TunnelEffect {
         
         this.animate();
         
+        // Make tunnel effect globally accessible for mobile touch navigation
+        window.tunnelEffect = this;
+        
         logger.scene('Tunnel effect initialized successfully');
     }
 
@@ -701,6 +704,15 @@ export class TunnelEffect {
             this.mouse.target.y = event.clientY;
         };
         
+        // Touch move handler for mobile
+        this.touchMoveHandler = (event) => {
+            event.preventDefault();
+            if (event.touches.length > 0) {
+                this.mouse.target.x = event.touches[0].clientX;
+                this.mouse.target.y = event.touches[0].clientY;
+            }
+        };
+        
         // Resize handler
         this.resizeHandler = () => {
             if (this.renderer && this.camera) {
@@ -711,6 +723,7 @@ export class TunnelEffect {
         };
         
         document.addEventListener('mousemove', this.mouseMoveHandler);
+        document.addEventListener('touchmove', this.touchMoveHandler, { passive: false });
         window.addEventListener('resize', this.resizeHandler);
     }
     
@@ -729,6 +742,21 @@ export class TunnelEffect {
         // Apply dramatic camera movement like inspiration code
         this.camera.position.x = this.mouse.ratio.x * 0.044 - 0.025;
         this.camera.position.y = this.mouse.ratio.y * 0.044 - 0.025;
+    }
+
+    /**
+     * Handle touch navigation for mobile devices
+     * @param {number} deltaX - X movement delta
+     * @param {number} deltaY - Y movement delta
+     */
+    handleTouchNavigation(deltaX, deltaY) {
+        // Update mouse target based on touch movement
+        this.mouse.target.x += deltaX;
+        this.mouse.target.y += deltaY;
+        
+        // Clamp to screen bounds
+        this.mouse.target.x = Math.max(0, Math.min(window.innerWidth, this.mouse.target.x));
+        this.mouse.target.y = Math.max(0, Math.min(window.innerHeight, this.mouse.target.y));
     }
     
     // Update tunnel geometry and colors
@@ -1260,6 +1288,10 @@ export class TunnelEffect {
         if (this.mouseMoveHandler) {
             document.removeEventListener('mousemove', this.mouseMoveHandler);
             this.mouseMoveHandler = null;
+        }
+        if (this.touchMoveHandler) {
+            document.removeEventListener('touchmove', this.touchMoveHandler);
+            this.touchMoveHandler = null;
         }
         if (this.resizeHandler) {
             window.removeEventListener('resize', this.resizeHandler);

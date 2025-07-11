@@ -249,6 +249,11 @@ export class SceneManager {
             return;
         }
         
+        // Don't show skip text overlay on mobile devices
+        if (window.mobileCheck && window.mobileCheck()) {
+            return;
+        }
+        
         ctx.save();
         
         ctx.font = '14px "Courier New", "Courier", monospace';

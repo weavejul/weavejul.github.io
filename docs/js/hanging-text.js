@@ -562,14 +562,21 @@ export class HangingText {
         if (!this.textBody) return false;
         
         // Use original unscaled dimensions for click detection
-        const halfWidth = this.originalWidth / 2;
-        const halfHeight = this.originalHeight / 2;
+        let halfWidth = this.originalWidth / 2;
+        let halfHeight = this.originalHeight / 2;
+        
+        // Increase click area on mobile devices
+        if (window.mobileCheck && window.mobileCheck()) {
+            const mobileMultiplier = 1.5; // 50% larger click area on mobile
+            halfWidth *= mobileMultiplier;
+            halfHeight *= mobileMultiplier;
+        }
         
         // Get text body position
         const bodyX = this.textBody.position.x;
         const bodyY = this.textBody.position.y;
         
-        // Check if mouse is within the original text bounds
+        // Check if mouse is within the click bounds
         return (mouseX >= bodyX - halfWidth && mouseX <= bodyX + halfWidth &&
                 mouseY >= bodyY - halfHeight && mouseY <= bodyY + halfHeight);
     }
