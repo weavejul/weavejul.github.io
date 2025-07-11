@@ -1,0 +1,66 @@
+# Protect sensitive files and directories
+# Block access to configuration files
+<Files "*.config">
+    Order allow,deny
+    Deny from all
+</Files>
+
+# Block access to backup files
+<Files "*.bak">
+    Order allow,deny
+    Deny from all
+</Files>
+
+# Block access to temporary files
+<Files "*.tmp">
+    Order allow,deny
+    Deny from all
+</Files>
+
+# Block access to log files
+<Files "*.log">
+    Order allow,deny
+    Deny from all
+</Files>
+
+# Block access to .env files (if you add them later)
+<Files ".env*">
+    Order allow,deny
+    Deny from all
+</Files>
+
+# Block access to .git directory (if accidentally exposed)
+RedirectMatch 404 /\.git
+
+# Block access to node_modules (if you add them later)
+RedirectMatch 404 /node_modules
+
+# Block access to package files
+<Files "package*.json">
+    Order allow,deny
+    Deny from all
+</Files>
+
+# Block access to README files in subdirectories
+<Files "README.md">
+    Order allow,deny
+    Deny from all
+</Files>
+
+# Block access to .DS_Store files (macOS)
+<Files ".DS_Store">
+    Order allow,deny
+    Deny from all
+</Files>
+
+# Block access to Thumbs.db files (Windows)
+<Files "Thumbs.db">
+    Order allow,deny
+    Deny from all
+</Files>
+
+# Block access to IDE/editor files
+<FilesMatch "\.(vscode|idea|sublime-project|sublime-workspace)$">
+    Order allow,deny
+    Deny from all
+</FilesMatch> 
