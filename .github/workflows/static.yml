@@ -39,6 +39,7 @@ jobs:
           cp docs/index.html deploy/
           cp docs/panel-content.html deploy/ 
           cp -r docs/js deploy/js
+          cp -r docs/assets deploy/assets
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
