@@ -38,6 +38,8 @@ jobs:
           mkdir deploy 
           cp docs/index.html deploy/
           cp docs/panel-content.html deploy/ 
+          cp docs/sitemap.xml deploy/ 
+          cp docs/robots.txt deploy/ 
           cp -r docs/js deploy/js
           cp -r docs/assets deploy/assets
       - name: Upload artifact
