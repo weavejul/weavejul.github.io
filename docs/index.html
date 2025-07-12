@@ -166,10 +166,731 @@
             transform: translateZ(0);
             will-change: transform, opacity;
         }
+        
+        /* Panel Content Styles - Initially Hidden for SEO */
+        #brain-panel-content {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80%;
+            height: 80%;
+            z-index: 1003;
+            background-color: rgba(26, 0, 0, 0.95);
+            border-radius: 0px;
+            border: 2px solid #ff4444;
+            box-shadow: 0 0 20px rgba(255, 68, 68, 0.3);
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease-in-out;
+            overflow: hidden;
+        }
+        
+        /* Mobile responsive panel */
+        @media (max-width: 768px) {
+            #brain-panel-content {
+                width: 95%;
+                height: 70%;
+            }
+        }
+        
+        /* Panel container for scrollable content */
+        #brain-panel-container {
+            font-family: 'Courier New', 'Courier', monospace;
+            background: linear-gradient(135deg, #1a0000 0%, #2a0000 50%, #1a0000 100%);
+            color: #ff6666;
+            line-height: 1.4;
+            font-size: 14px;
+            width: 100%;
+            height: 100%;
+            overflow-y: auto;
+            padding: 15px;
+            box-sizing: border-box;
+            /* Hardware acceleration for smooth scrolling and animations */
+            transform: translateZ(0);
+            will-change: scroll-position;
+        }
+        
+        /* Responsive text scaling */
+        @media (max-width: 600px) {
+            #brain-panel-container {
+                font-size: 12px;
+                padding: 10px;
+            }
+            
+            #brain-panel-container h1 {
+                font-size: 1.8em;
+                margin-bottom: 20px;
+            }
+            
+            #brain-panel-container h2 {
+                font-size: 1.2em;
+                margin-top: 25px;
+                margin-bottom: 12px;
+            }
+            
+            #brain-panel-container .section {
+                padding: 15px;
+                margin-bottom: 25px;
+            }
+            
+            #brain-panel-container .container {
+                max-width: 100%;
+            }
+        }
+        
+        @media (max-width: 400px) {
+            #brain-panel-container {
+                font-size: 12px;
+                padding: 8px;
+            }
+            
+            #brain-panel-container h1 {
+                font-size: 1.6em;
+                margin-bottom: 18px;
+            }
+            
+            #brain-panel-container h2 {
+                font-size: 1.1em;
+                margin-top: 22px;
+                margin-bottom: 10px;
+            }
+            
+            #brain-panel-container .section {
+                padding: 12px;
+                margin-bottom: 20px;
+            }
+        }
+        
+        @media (max-width: 300px) {
+            #brain-panel-container {
+                font-size: 12px;
+                padding: 6px;
+            }
+            
+            #brain-panel-container h1 {
+                font-size: 1.4em;
+                margin-bottom: 15px;
+            }
+            
+            #brain-panel-container h2 {
+                font-size: 1em;
+                margin-top: 20px;
+                margin-bottom: 8px;
+            }
+            
+            #brain-panel-container .section {
+                padding: 10px;
+                margin-bottom: 18px;
+            }
+        }
+        
+        #brain-panel-container::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(255, 68, 68, 0.03) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 102, 102, 0.02) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(255, 68, 68, 0.01) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: -1;
+            animation: backgroundPulse 8s ease-in-out infinite;
+        }
+        
+        @keyframes backgroundPulse {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
+        
+        #brain-panel-container .container {
+            max-width: 900px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+            animation: fadeInUp 2s ease-out;
+            /* Hardware acceleration for container animations */
+            transform: translateZ(0);
+            will-change: transform, opacity;
+            /* Start hidden to prevent flash */
+            opacity: 0;
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* Ensure container starts hidden and animates in */
+        #brain-panel-container .container {
+            opacity: 0;
+            animation: fadeInUp 1s ease-out 0.1s forwards;
+        }
+        
+        #brain-panel-container h1 {
+            color: #ff4444;
+            margin-bottom: 25px;
+            font-size: 2.2em;
+            border-bottom: 2px solid #ff4444;
+            padding-bottom: 10px;
+            text-shadow: 0 0 10px rgba(255, 68, 68, 0.3);
+            position: relative;
+            animation: titlePulse 3s ease-in-out infinite;
+            /* Hardware acceleration for animated text */
+            transform: translateZ(0);
+            will-change: text-shadow;
+        }
+        
+        @keyframes titlePulse {
+            0%, 100% { text-shadow: 0 0 10px rgba(255, 68, 68, 0.3); }
+            50% { text-shadow: 0 0 20px rgba(255, 68, 68, 0.6), 0 0 30px rgba(255, 68, 68, 0.3); }
+        }
+        
+        #brain-panel-container h1::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 50px;
+            height: 2px;
+            background: linear-gradient(90deg, #ff4444, transparent);
+            animation: titleUnderline 2s ease-in-out infinite;
+        }
+        
+        @keyframes titleUnderline {
+            0%, 100% { width: 50px; }
+            50% { width: 100px; }
+        }
+        
+        #brain-panel-container h2 {
+            color: #ff6666;
+            margin-top: 30px;
+            margin-bottom: 15px;
+            font-size: 1.4em;
+            position: relative;
+            padding-left: 15px;
+        }
+        
+        #brain-panel-container h2::before {
+            content: '>';
+            position: absolute;
+            left: 0;
+            color: #ff4444;
+            font-weight: bold;
+        }
+        
+        #brain-panel-container p {
+            margin-bottom: 12px;
+            font-size: 1em;
+        }
+        
+        #brain-panel-container .section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: linear-gradient(145deg, #2a0000 0%, #3a0000 100%);
+            border: 1px solid #ff4444;
+            border-radius: 8px;
+            box-shadow: 
+                0 4px 15px rgba(255, 68, 68, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.05);
+            position: relative;
+            transition: all 0.3s ease;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: sectionFadeIn 0.8s ease-out forwards;
+            /* Hardware acceleration for section animations */
+            transform: translateZ(0);
+            will-change: transform, opacity, box-shadow;
+            /* Start hidden to prevent flash */
+            visibility: hidden;
+        }
+        
+        #brain-panel-container .section:nth-child(1) { animation-delay: 0.2s; }
+        #brain-panel-container .section:nth-child(2) { animation-delay: 0.4s; }
+        #brain-panel-container .section:nth-child(3) { animation-delay: 0.6s; }
+        #brain-panel-container .section:nth-child(4) { animation-delay: 0.8s; }
+        #brain-panel-container .section:nth-child(5) { animation-delay: 1.0s; }
+        #brain-panel-container .section:nth-child(6) { animation-delay: 1.2s; }
+        #brain-panel-container .section:nth-child(7) { animation-delay: 1.4s; }
+        
+        @keyframes sectionFadeIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+                visibility: visible;
+            }
+        }
+        
+        #brain-panel-container .section:hover {
+            transform: translateY(-2px);
+            box-shadow: 
+                0 6px 20px rgba(255, 68, 68, 0.15),
+                inset 0 1px 0 rgba(255, 255, 255, 0.05);
+        }
+        
+        #brain-panel-container .section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, #ff4444, transparent);
+            animation: borderGlow 3s ease-in-out infinite;
+        }
+        
+        @keyframes borderGlow {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
+        
+        #brain-panel-container .birthday-easter-egg {
+            color: #ffaa00;
+            font-weight: bold;
+            animation: birthdayGlow 2s ease-in-out infinite;
+        }
+        
+        @keyframes birthdayGlow {
+            0%, 100% { text-shadow: 0 0 5px rgba(255, 170, 0, 0.5); }
+            50% { text-shadow: 0 0 20px rgba(255, 170, 0, 0.8), 0 0 30px rgba(255, 170, 0, 0.4); }
+        }
+        
+        #brain-panel-container .gradient-text {
+            background: linear-gradient(45deg, #ff4444, #ff6666, #ff8888, #ff6666, #ff4444);
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradientShift 3s ease-in-out infinite;
+        }
+        
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+        
+        #brain-panel-container .date-highlight {
+            background: linear-gradient(135deg, rgba(255, 102, 102, 0.2) 0%, rgba(255, 68, 68, 0.25) 100%);
+            padding: 4px 8px;
+            border-radius: 4px;
+            border: 1px solid rgba(255, 102, 102, 0.2);
+            font-weight: bold;
+            text-shadow: 0 0 5px rgba(255, 102, 102, 0.3);
+        }
+        
+        #brain-panel-container .link-highlight {
+            background: linear-gradient(135deg, rgba(255, 102, 102, 0.2) 0%, rgba(255, 68, 68, 0.25) 100%);
+            padding: 2px 4px;
+            border-radius: 0px;
+            border: 0px solid rgba(255, 102, 102, 0.2);
+            font-weight: bold;
+            text-shadow: 0 0 5px rgba(255, 102, 102, 0.3);
+            text-decoration: none;
+            color: #ff6666;
+            transition: all 0.3s ease;
+        }
+        
+        #brain-panel-container .link-highlight:hover {
+            background: linear-gradient(135deg, rgba(255, 102, 102, 0.3) 0%, rgba(255, 68, 68, 0.35) 100%);
+            border-color: rgba(255, 102, 102, 0.4);
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(255, 102, 102, 0.2);
+        }
+        
+        #brain-panel-container .highlight {
+            background-color: #3a0000;
+            padding: 8px;
+            border: 1px solid #ff6666;
+            margin: 10px 0;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        #brain-panel-container .highlight::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 102, 102, 0.1), transparent);
+            transition: left 0.5s ease;
+        }
+        
+        #brain-panel-container .highlight:hover::before {
+            left: 100%;
+        }
+        
+        #brain-panel-container ul {
+            margin-left: 15px;
+        }
+        
+        #brain-panel-container li {
+            margin-bottom: 6px;
+        }
+        
+        #brain-panel-container .contact-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 10px 0;
+        }
+        
+        #brain-panel-container .contact-link {
+            background-color: #3a0000;
+            padding: 5px 10px;
+            border: 1px solid #ff6666;
+            text-decoration: none;
+            color: #ff6666;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        #brain-panel-container .contact-link::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 102, 102, 0.2), transparent);
+            transition: left 0.5s ease;
+        }
+        
+        #brain-panel-container .contact-link:hover {
+            background-color: #ff6666;
+            color: #ffffff;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255, 102, 102, 0.3);
+        }
+        
+        #brain-panel-container .contact-link:hover::before {
+            left: 100%;
+        }
+        
+        #brain-panel-container .friends-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin: 10px 0;
+        }
+        
+        #brain-panel-container .friend-link {
+            background-color: #3a0000;
+            padding: 4px 8px;
+            border: 1px solid #ff6666;
+            text-decoration: none;
+            color: #ff6666;
+            font-size: 0.9em;
+            transition: all 0.3s ease;
+            border-radius: 4px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        #brain-panel-container .friend-link::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 102, 102, 0.2), transparent);
+            transition: left 0.5s ease;
+        }
+        
+        #brain-panel-container .friend-link:hover {
+            background-color: #ff6666;
+            color: #ffffff;
+            transform: translateY(-1px) scale(1.05);
+            box-shadow: 0 4px 12px rgba(255, 102, 102, 0.3);
+        }
+        
+        #brain-panel-container .friend-link:hover::before {
+            left: 100%;
+        }
+        
+        #brain-panel-container .projects-list {
+            background-color: #3a0000;
+            padding: 10px;
+            border: 1px solid #ff6666;
+            margin: 10px 0;
+        }
+        
+        #brain-panel-container .footer {
+            margin-top: 30px;
+            padding-top: 15px;
+            border-top: 1px solid #ff4444;
+            font-size: 0.9em;
+            color: #ff8888;
+        }
+        
+        /* Close button styles */
+        #brain-panel-close {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            background: none;
+            border: none;
+            color: #ff4444;
+            font-size: 24px;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 1004;
+            /* Add mobile-friendly touch target */
+            min-width: 44px;
+            min-height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            user-select: none;
+        }
+        
+        /* Modal styles */
+        #brain-panel-container .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+        }
+        
+        #brain-panel-container .modal-content {
+            background-color: #1a0000;
+            margin: 15% auto;
+            padding: 20px;
+            border: 2px solid #ff4444;
+            border-radius: 8px;
+            width: 80%;
+            max-width: 500px;
+            position: relative;
+            box-shadow: 0 0 20px rgba(255, 68, 68, 0.3);
+        }
+        
+        #brain-panel-container .close {
+            color: #ff4444;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            position: absolute;
+            top: 10px;
+            right: 15px;
+        }
+        
+        #brain-panel-container .close:hover,
+        #brain-panel-container .close:focus {
+            color: #ff6666;
+        }
+        
+        #brain-panel-container .modal-content h3 {
+            color: #ff4444;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #ff4444;
+            padding-bottom: 5px;
+        }
+        
+        #brain-panel-container .modal-content p {
+            margin-bottom: 12px;
+        }
+        
+        #brain-panel-container .modal-content a {
+            color: #ff8888;
+            text-decoration: none;
+        }
+        
+        #brain-panel-container .modal-content a:hover {
+            color: #ff6666;
+            text-decoration: underline;
+        }
+
+        #brain-panel-container .typing-cursor {
+            display: inline-block;
+            width: 2px;
+            height: 1.2em;
+            background-color: #ff6666;
+            margin-left: 2px;
+            animation: blink-caret 0.75s step-end infinite;
+        }
+        
+        @keyframes blink-caret {
+            from, to { opacity: 1; }
+            50% { opacity: 0; }
+        }
+        
+        #brain-panel-container .wavy-text {
+            display: inline-block;
+            font-style: italic;
+            white-space: pre;
+            color: #dd4444;
+        }
+        
+        #brain-panel-container .wavy-text span {
+            display: inline-block;
+            animation: wave 1s infinite ease-in-out;
+            font-style: inherit;
+        }
+        
+        @keyframes wave {
+            12.5%   { transform: translateY(0); }
+            25%   { transform: translateY(-1px); }
+            37.5%  { transform: translateY(-2px); }
+            50%  { transform: translateY(-1px); }
+            62.5%  { transform: translateY(0); }
+            75%   { transform: translateY(1px); }
+            87.5%  { transform: translateY(2px); }
+            100%  { transform: translateY(1px); }
+        }
     </style>
 </head>
 <body>
     <div id="canvas-container"></div>
+    
+    <!-- Brain Panel Content - Initially Hidden for SEO -->
+    <div id="brain-panel-content" style="pointer-events: none;">
+        <button id="brain-panel-close" style="pointer-events: none;">×</button>
+        <div id="brain-panel-container">
+            <div class="container">
+                
+                <h1 class="gradient-text">Hey! I'm Julian's Brain!</h1>
+                
+                <div class="section">
+                    <p id="greeting" style="opacity: 0; visibility: hidden;">(It's <span id="current-date" style="font-weight: bold;"></span>. Do you typically poke at exposed brain matter on <span id="current-weekday"></span>s?)</p>
+                </div>
+                
+                <div class="section">
+                    <h2>My Work</h2>
+                    <p>Right now, I'm doing research in XAI, neuroimaging, and 
+                        neuro-inspired ML. I'm fascinated by the foundations of 
+                        intelligent systems, especially the human kind I happen to be a 
+                        member of. I'm a big proponent of 
+                        <a href="https://neuroaisafety.com/" target="_blank" class="link-highlight">NeuroAI</a>;
+                        I believe that studying how the brain represents information can
+                        help us build stronger and safer models- and that a better 
+                        understanding of AI can, in turn, tell us more about the brain itself.</p>
+                    
+                    <p>I'm trying to direct my fascination towards advancing what could be 
+                        called "intelligence" safety. That is- safety in how we build our 
+                        AI models and, (in my opinion) just as importantly, 
+                        <a href="https://en.wikipedia.org/wiki/Neuroethics" target="_blank" class="link-highlight">how we interact with the brain</a>. 
+                        Both are ripe with the potential for 
+                        <span class="wavy-text">man made horrors</span>. We need to 
+                        tread carefully!</p>
+                    <p>To this end, I co-founded 
+                        <a href="https://www.linkedin.com/company/lhneurotech/posts/?feedView=all" target="_blank" class="link-highlight">Longhorn Neurotech</a> 
+                        during my time at UT Austin. My goal was to educate as many 
+                        people as possible on 
+                        the immense opportunities and serious dangers surrounding 
+                        neurotechnology and AI. It grew into the largest organization 
+                        of its kind in the world. As part of that, I launched a short
+                        <a href="https://github.com/LonghornNeurotech/LHNT-Synposium/tree/main" target="_blank" class="link-highlight">lecture series</a> 
+                        to discuss these topics. I also initiated and led the design of a 
+                        cheap, open-source EEG headset for hobbyists and 
+                        researchers- a project that has outlived my tenure at UT!</p>
+                    
+                    <p>My research at UT was focused similarly. I worked on XAI and 
+                        neuroimaging to explain "black-box" fMRI models that classify 
+                        neurological disorders. My aim was to use these explanations 
+                        to determine, with high fidelity, which regions of the brain 
+                        likely contributed to a disorder in a specific individual. 
+                        The project is ongoing, and yielded a novel general-purpose 
+                        XAI method, currently in review at 
+                        <a href="https://neurips.cc/" target="_blank" class="link-highlight">NeurIPS 2025</a>.</p>
+                    
+                    <p>I'm currently job hunting and attempting to design reinforcement
+                        learning models more inspired by 
+                        <a href="https://en.wikipedia.org/wiki/Predictive_coding" target="_blank" class="link-highlight">predictive coding</a> 
+                        (TBD if it works).</p>
+                </div>
+                
+                <div class="section">
+                    <h2>My Existence</h2>
+                    <p>I've been floating in cerebrospinal fluid for 
+                        <b><span id="age-display"></span></b>.</p>
+                    
+                    <p>Early on, I was assigned the phonemes /ˈʤuliən ˈwivər/ 
+                        (Julian Weaver). I was shaped by the environments of Missouri, 
+                        Ukraine, Arizona, and Texas. At UT Austin, I refined my model 
+                        of the world and formally studied Neuroscience, 
+                        Computer Science, and Business.</p>
+                    
+                    <p>I'm currently piloting around the construct called Houston, Texas.</p>
+                    
+                    <p>In my free time, I produce music <b>(page incoming!)</b> and rock climb.</p>
+                </div>
+                
+                <div class="section">
+                    <h2>Connect</h2>
+                    <p>Feel free to reach out:</p>
+                    <div class="contact-links">
+                        <a href="mailto:juliver.dev@gmail.com" class="contact-link">Email</a>
+                        <a href="https://github.com/weavejul" target="_blank" class="contact-link">GitHub</a>
+                        <a href="https://www.linkedin.com/in/julian-weaver/" target="_blank" class="contact-link">LinkedIn</a>
+                        <a href="https://x.com/juliverian" target="_blank" class="contact-link">X</a>
+                        <a href="https://bsky.app/profile/juliverian.bsky.social" target="_blank" class="contact-link">Bluesky</a>
+                    </div>
+                </div>
+                
+                <div class="section">
+                    <h2>Friends</h2>
+                    <p>Check out some of my friends! (In lexicographical order)</p>
+                    <div class="friends-links">
+                        <a href="https://akibaten.xyz" target="_blank" class="friend-link">akibaten.xyz</a>
+                        <a href="https://benaubin.com" target="_blank" class="friend-link">benaubin.com</a>
+                        <a href="https://bengentry.com" target="_blank" class="friend-link">bengentry.com</a>
+                        <a href="https://chrisoosthuizen.com" target="_blank" class="friend-link">chrisoosthuizen.com</a>
+                        <a href="https://eidna.me" target="_blank" class="friend-link">eidna.me</a>
+                        <a href="https://junelc.xyz" target="_blank" class="friend-link">junelc.xyz</a>
+                        <a href="https://prydt.xyz" target="_blank" class="friend-link">prydt.xyz</a>
+                    </div>
+                </div>
+                
+                <div class="section">
+                    <h2>Other Projects</h2>
+                    <div class="projects-list">
+                        <ul>
+                            <li>Built an electric guitar</li>
+                            <li>Discovered that enhanced RNA Import messes with associative learning in C. elegans</li>
+                            <li>Created an LLM-powered procedurally generated dungeon crawler back in 2020</li>
+                            <li>Helped start Raport, a health tech company working to improve and automate EHR management</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="footer">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <p>© 2025 Julian Weaver</p>
+                        <a href="#" id="acknowledgements-link" style="color: #ff8888; text-decoration: none; font-size: 0.9em;">Acknowledgements</a>
+                    </div>
+                </div>
+                
+                <!-- Acknowledgements Modal -->
+                <div id="acknowledgements-modal" class="modal">
+                    <div class="modal-content">
+                        <span class="close">&times;</span>
+                        <h3>Acknowledgements</h3>
+                        <p><strong>Brain model:</strong> "human-brain" (<a href="https://skfb.ly/6YqDO" target="_blank">https://skfb.ly/6YqDO</a>) by Yash_Dandavate is licensed under Creative Commons Attribution (<a href="http://creativecommons.org/licenses/by/4.0/" target="_blank">http://creativecommons.org/licenses/by/4.0/</a>).</p>
+                        
+                        <p><strong>Fluid sim reference:</strong> <a href="https://github.com/PavelDoGreat/WebGL-Fluid-Simulation" target="_blank">https://github.com/PavelDoGreat/WebGL-Fluid-Simulation</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
     
     <!-- Matter.js CDN -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js"></script>
@@ -177,6 +898,339 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <!-- <script type="module" src="script.js"></script> -->
     <script type="module" src="js/script.js"></script>
+    
+    <!-- Panel Content JavaScript -->
+    <script>
+        // Birthday calculation with proper date handling
+        const birthday = new Date(2004, 10, 23); // November 23, 2004 (month 0-indexed)
+        const now = new Date();
+        
+        // Calculate age properly accounting for leap years
+        let ageInYears = now.getFullYear() - birthday.getFullYear();
+        let ageInDays = 0;
+        
+        // Adjust for leap years and exact day calculation
+        const currentMonth = now.getMonth();
+        const currentDay = now.getDate();
+        const birthMonth = birthday.getMonth();
+        const birthDay = birthday.getDate();
+        
+        // If birthday hasn't occurred this year yet, subtract one year
+        if (currentMonth < birthMonth || (currentMonth === birthMonth && currentDay < birthDay)) {
+            ageInYears--;
+        }
+        
+        // Calculate days since last birthday (excluding birth day)
+        const lastBirthday = new Date(now.getFullYear(), birthMonth, birthDay);
+        if (currentMonth < birthMonth || (currentMonth === birthMonth && currentDay < birthDay)) {
+            lastBirthday.setFullYear(lastBirthday.getFullYear() - 1);
+        }
+        
+        // Calculate days since last birthday, excluding the birth day itself
+        ageInDays = Math.floor((now - lastBirthday) / (1000 * 60 * 60 * 24));
+        
+        // Check if it's birthday
+        const isBirthday = birthDay === currentDay && birthMonth === currentMonth;
+        
+        // Format age display
+        let ageDisplay;
+        if (isBirthday) {
+            ageDisplay = `<span class="birthday-easter-egg">${ageInYears} years exactly! It's my birthday! 🎉</span>`;
+        } else {
+            ageDisplay =  `roughly ${ageInYears} years and ${ageInDays} days`;
+        }
+        
+        // Update age display
+        document.getElementById('age-display').innerHTML = ageDisplay;
+        
+        // Update current date and weekday
+        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+        const currentDate = now.toLocaleDateString('en-US', options);
+        const currentWeekday = now.toLocaleDateString('en-US', { weekday: 'long' });
+        
+        document.getElementById('current-date').textContent = currentDate;
+        document.getElementById('current-weekday').textContent = currentWeekday;
+        
+        // Add particle effect to background
+        function createParticle() {
+            const particle = document.createElement('div');
+            particle.style.position = 'fixed';
+            particle.style.width = '2px';
+            particle.style.height = '2px';
+            particle.style.backgroundColor = '#ff6666';
+            particle.style.borderRadius = '50%';
+            particle.style.pointerEvents = 'none';
+            particle.style.zIndex = '0';
+            particle.style.opacity = '0.6';
+            particle.style.left = Math.random() * window.innerWidth + 'px';
+            particle.style.top = window.innerHeight + 'px';
+            particle.style.animation = `particleFloat ${Math.random() * 3 + 2}s linear`;
+            
+            document.body.appendChild(particle);
+            
+            setTimeout(() => {
+                particle.remove();
+            }, 5000);
+        }
+        
+        // Add particle animation CSS
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes particleFloat {
+                to {
+                    transform: translateY(-100vh) rotate(360deg);
+                    opacity: 0;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+        
+        // Create particles periodically
+        setInterval(createParticle, 2000);
+        
+        // Add hover effects to sections
+        document.querySelectorAll('.section').forEach(section => {
+            section.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-5px) scale(1.02)';
+            });
+            
+            section.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0) scale(1)';
+            });
+        });
+        
+        // Modal functionality
+        const modal = document.getElementById('acknowledgements-modal');
+        const link = document.getElementById('acknowledgements-link');
+        const closeBtn = document.getElementsByClassName('close')[0];
+        
+        // Open modal when link is clicked
+        link.onclick = function(e) {
+            e.preventDefault();
+            modal.style.display = 'block';
+            modal.style.animation = 'modalFadeIn 0.3s ease-out';
+        }
+        
+        // Close modal when X is clicked
+        closeBtn.onclick = function() {
+            modal.style.animation = 'modalFadeOut 0.3s ease-out';
+            setTimeout(() => {
+                modal.style.display = 'none';
+            }, 300);
+        }
+        
+        // Close modal when clicking outside of it
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                modal.style.animation = 'modalFadeOut 0.3s ease-out';
+                setTimeout(() => {
+                    modal.style.display = 'none';
+                }, 300);
+            }
+        }
+        
+        // Close modal with Escape key
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape' && modal.style.display === 'block') {
+                modal.style.animation = 'modalFadeOut 0.3s ease-out';
+                setTimeout(() => {
+                    modal.style.display = 'none';
+                }, 300);
+            }
+        });
+        
+        // Add modal animations
+        const modalStyle = document.createElement('style');
+        modalStyle.textContent = `
+            @keyframes modalFadeIn {
+                from {
+                    opacity: 0;
+                    transform: scale(0.8) translateY(-20px);
+                }
+                to {
+                    opacity: 1;
+                    transform: scale(1) translateY(0);
+                }
+            }
+            
+            @keyframes modalFadeOut {
+                from {
+                    opacity: 1;
+                    transform: scale(1) translateY(0);
+                }
+                to {
+                    opacity: 0;
+                    transform: scale(0.8) translateY(-20px);
+                }
+            }
+        `;
+        document.head.appendChild(modalStyle);
+        
+        // Add smooth scrolling to all internal links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const href = this.getAttribute('href');
+                if (href && href !== '#') {
+                    const target = document.querySelector(href);
+                    if (target) {
+                        target.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
+                }
+            });
+        });
+        
+        // Add text reveal animation to sections
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+        
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.animation = 'sectionFadeIn 0.8s ease-out forwards';
+                }
+            });
+        }, observerOptions);
+        
+        document.querySelectorAll('.section').forEach(section => {
+            observer.observe(section);
+        });
+        
+        // Add keyboard shortcuts
+        document.addEventListener('keydown', function(event) {
+            // Removed brain mode toggle - keeping this for future keyboard shortcuts
+        });
+
+        // Custom typing animation for greeting
+        function typeText(element, text, speed = 50) {
+            // Create a temporary element to parse the HTML
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = text;
+            
+            // Get all text nodes and elements
+            const walker = document.createTreeWalker(
+                tempDiv,
+                NodeFilter.SHOW_TEXT | NodeFilter.SHOW_ELEMENT,
+                {
+                    acceptNode: function(node) {
+                        // Skip text nodes that are inside elements (they'll be handled by the element)
+                        if (node.nodeType === Node.TEXT_NODE && node.parentNode !== tempDiv) {
+                            return NodeFilter.FILTER_REJECT;
+                        }
+                        return NodeFilter.FILTER_ACCEPT;
+                    }
+                },
+                false
+            );
+            
+            const nodes = [];
+            let node;
+            while (node = walker.nextNode()) {
+                if (node.nodeType === Node.TEXT_NODE) {
+                    // Split text into individual characters
+                    for (let i = 0; i < node.textContent.length; i++) {
+                        nodes.push({ type: 'char', content: node.textContent[i] });
+                    }
+                } else if (node.nodeType === Node.ELEMENT_NODE) {
+                    // For elements, we need to type out their text content character by character
+                    // but preserve the element structure
+                    const elementText = node.textContent;
+                    const elementTag = node.outerHTML.replace(node.textContent, '');
+                    
+                    // Add opening tag
+                    nodes.push({ type: 'element-start', content: elementTag });
+                    
+                    // Add each character of the element's text
+                    for (let i = 0; i < elementText.length; i++) {
+                        nodes.push({ type: 'char', content: elementText[i] });
+                    }
+                    
+                    // Add closing tag
+                    nodes.push({ type: 'element-end', content: '</' + node.tagName.toLowerCase() + '>' });
+                }
+            }
+            
+            // Clear the original element and add cursor
+            element.innerHTML = '';
+            const cursor = document.createElement('span');
+            cursor.className = 'typing-cursor';
+            element.appendChild(cursor);
+            
+            let i = 0;
+            const typeInterval = setInterval(() => {
+                if (i < nodes.length) {
+                    const node = nodes[i];
+                    if (node.type === 'char') {
+                        // Insert character before cursor
+                        const textNode = document.createTextNode(node.content);
+                        if (cursor.parentNode) {
+                            cursor.parentNode.insertBefore(textNode, cursor);
+                        } else {
+                            element.appendChild(textNode);
+                        }
+                    } else if (node.type === 'element-start') {
+                        // Create the element and insert it
+                        const tempDiv = document.createElement('div');
+                        tempDiv.innerHTML = node.content;
+                        const newElement = tempDiv.firstChild;
+                        
+                        // Insert element before cursor
+                        if (cursor.parentNode) {
+                            cursor.parentNode.insertBefore(newElement, cursor);
+                        } else {
+                            element.appendChild(newElement);
+                        }
+                        
+                        // Move cursor inside the element
+                        newElement.appendChild(cursor);
+                    } else if (node.type === 'element-end') {
+                        // Close the element by moving cursor back out
+                        if (cursor.parentNode && cursor.parentNode !== element) {
+                            const parent = cursor.parentNode;
+                            parent.parentNode.insertBefore(cursor, parent.nextSibling);
+                        }
+                    }
+                    i++;
+                } else {
+                    clearInterval(typeInterval);
+                    setTimeout(() => {
+                        cursor.remove();
+                    }, 1000);
+                }
+            }, speed);
+        }
+        
+        // Wavy animation for 'man made horrors'
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.wavy-text').forEach(function(el) {
+                const text = el.textContent;
+                el.innerHTML = '';
+                for (let i = 0; i < text.length; i++) {
+                    const span = document.createElement('span');
+                    span.textContent = text[i];
+                    span.style.animationDelay = (i * 0.08) + 's';
+                    el.appendChild(span);
+                }
+            });
+            
+            // Start typing animation after a short delay
+            setTimeout(() => {
+                const greetingElement = document.getElementById('greeting');
+                const originalText = greetingElement.innerHTML;
+                greetingElement.style.visibility = 'visible';
+                greetingElement.style.opacity = '1';
+                typeText(greetingElement, originalText, 30);
+            }, 500);
+        });
+        
+        // Panel interactions are now handled by the brain manager only
+        // No direct event listeners needed here
+    </script>
 
 </body>
 </html> 

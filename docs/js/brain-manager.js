@@ -386,56 +386,102 @@ export class BrainManager {
      * Create the iframe panel
      */
     createPanel() {
-        this.panel = document.createElement('div');
-        this.panel.id = 'brain-panel';
-        this.setupPanelStyles();
-        this.setupPanelContent();
-        document.body.appendChild(this.panel);
+        // Get the existing panel from the DOM instead of creating a new one
+        this.panel = document.getElementById('brain-panel-content');
         
-        logger.scene('Brain panel created');
+        if (!this.panel) {
+            logger.error('Brain panel content element not found in DOM');
+            return;
+        }
+        
+        // Setup the close button functionality
+        this.setupCloseButton();
+        
+        // Enable panel interactions only when brain manager is active
+        this.enablePanelInteractions();
+        
+        logger.scene('Brain panel connected to existing DOM element and interactions enabled');
+    }
+
+    /**
+     * Enable panel interactions
+     */
+    enablePanelInteractions() {
+        if (!this.isActive) {
+            logger.scene('Panel interactions not enabled - brain manager not active');
+            return;
+        }
+        
+        if (this.panel) {
+            this.panel.style.pointerEvents = 'auto';
+            const closeButton = document.getElementById('brain-panel-close');
+            if (closeButton) {
+                closeButton.style.pointerEvents = 'auto';
+            }
+            logger.scene('Panel interactions enabled');
+        }
+    }
+
+    /**
+     * Disable panel interactions
+     */
+    disablePanelInteractions() {
+        if (this.panel) {
+            this.panel.style.pointerEvents = 'none';
+            const closeButton = document.getElementById('brain-panel-close');
+            if (closeButton) {
+                closeButton.style.pointerEvents = 'none';
+            }
+            logger.scene('Panel interactions disabled');
+        }
+    }
+
+    /**
+     * Setup the close button functionality
+     */
+    setupCloseButton() {
+        const closeButton = document.getElementById('brain-panel-close');
+        
+        if (!closeButton) {
+            logger.error('Brain panel close button not found');
+            return;
+        }
+        
+        // Remove existing event listeners to avoid duplicates
+        closeButton.removeEventListener('click', this.handleClosePanel);
+        closeButton.removeEventListener('touchstart', this.handleClosePanel);
+        
+        // Bind the close handler
+        this.handleClosePanel = this.hidePanel.bind(this);
+        
+        closeButton.addEventListener('click', this.handleClosePanel);
+        
+        // Add touch support for mobile
+        closeButton.addEventListener('touchstart', (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            this.handleClosePanel();
+        }, { passive: false });
+        
+        logger.scene('Brain panel close button functionality setup');
     }
 
     /**
      * Setup panel styles
      */
     setupPanelStyles() {
-        // Check if mobile device
-        const isMobile = window.mobileCheck && window.mobileCheck();
-        
-        Object.assign(this.panel.style, {
-            position: 'fixed',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            width: isMobile ? '95%' : '80%',
-            height: isMobile ? '70%' : '80%',
-            zIndex: '1003',
-            backgroundColor: 'rgba(26, 0, 0, 0.95)',
-            borderRadius: '0px',
-            border: '2px solid #ff4444',
-            boxShadow: '0 0 20px rgba(255, 68, 68, 0.3)',
-            opacity: '0',
-            visibility: 'hidden',
-            transition: 'opacity 0.3s ease-in-out',
-            overflow: 'hidden'
-        });
-        
-        // Add responsive styles for very small screens
-        if (isMobile) {
-            this.panel.style.setProperty('--panel-width', '95%');
-            this.panel.style.setProperty('--panel-height', '70%');
-        }
+        // Panel styles are now handled by CSS in index.html
+        // This method is kept for compatibility but doesn't need to do anything
+        logger.scene('Panel styles handled by embedded CSS');
     }
 
     /**
      * Setup panel content (close button and iframe)
      */
     setupPanelContent() {
-        const closeButton = this.createCloseButton();
-        const iframe = this.createIframe();
-        
-        this.panel.appendChild(closeButton);
-        this.panel.appendChild(iframe);
+        // Panel content is now embedded in index.html
+        // This method is kept for compatibility but doesn't need to do anything
+        logger.scene('Panel content handled by embedded HTML');
     }
 
     /**
@@ -443,39 +489,10 @@ export class BrainManager {
      * @returns {HTMLButtonElement}
      */
     createCloseButton() {
-        const closeButton = document.createElement('button');
-        closeButton.innerHTML = '×';
-        
-        Object.assign(closeButton.style, {
-            position: 'absolute',
-            top: '10px',
-            right: '15px',
-            background: 'none',
-            border: 'none',
-            color: '#ff4444',
-            fontSize: '24px',
-            fontWeight: 'bold',
-            cursor: 'pointer',
-            zIndex: '1004',
-            // Add mobile-friendly touch target
-            minWidth: '44px',
-            minHeight: '44px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            userSelect: 'none'
-        });
-        
-        closeButton.onclick = () => this.hidePanel();
-        
-        // Add touch support for mobile
-        closeButton.addEventListener('touchstart', (event) => {
-            event.preventDefault();
-            event.stopPropagation();
-            this.hidePanel();
-        }, { passive: false });
-        
-        return closeButton;
+        // Close button is now embedded in index.html
+        // This method is kept for compatibility but doesn't need to do anything
+        logger.scene('Close button handled by embedded HTML');
+        return null;
     }
 
     /**
@@ -483,34 +500,21 @@ export class BrainManager {
      * @returns {HTMLIFrameElement}
      */
     createIframe() {
-        const iframe = document.createElement('iframe');
-        
-        // Add loading="lazy" for optimized loading
-        iframe.loading = 'lazy';
-        
-        // Start with iframe hidden to prevent flash
-        Object.assign(iframe.style, {
-            width: '100%',
-            height: '100%',
-            border: 'none',
-            borderRadius: '8px',
-            // Add hardware acceleration for smooth rendering
-            transform: 'translateZ(0)',
-            willChange: 'transform, opacity',
-            opacity: '0',
-            transition: 'opacity 0.3s ease-in-out'
-        });
-        
-        // Don't load iframe content until panel is shown
-        this.iframe = iframe;
-        
-        return iframe;
+        // Iframe is no longer needed - content is embedded
+        // This method is kept for compatibility but doesn't need to do anything
+        logger.scene('Iframe not needed - content is embedded');
+        return null;
     }
     
     /**
      * Show the panel with optimized rendering and hide brain
      */
     showPanel() {
+        if (!this.isActive) {
+            logger.scene('Panel not shown - brain manager not active');
+            return;
+        }
+        
         if (!this.panel || this.panelVisible) return;
         
         // Use requestAnimationFrame for smooth panel showing
@@ -520,24 +524,13 @@ export class BrainManager {
             this.panel.style.opacity = '1';
             this.panelVisible = true;
             
-            // Load iframe content with cache busting and proper loading sequence
-            if (this.iframe) {
-                // Load iframe content with cache busting
-                this.iframe.src = 'panel-content.html?t=' + Date.now() + '&v=' + Math.random();
-                
-                // Wait for iframe to load, then fade it in
-                this.iframe.onload = () => {
-                    // Small delay to ensure content is rendered
-                    setTimeout(() => {
-                        this.iframe.style.opacity = '1';
-                    }, 100);
-                };
-            }
+            // Re-enable panel interactions when shown
+            this.enablePanelInteractions();
             
             // Hide brain for better performance when panel is open
             this.hideBrain();
             
-            logger.scene('Brain panel shown with optimized rendering - brain hidden for performance');
+            logger.scene('Brain panel shown with embedded content - brain hidden for performance');
         });
     }
     
@@ -545,6 +538,11 @@ export class BrainManager {
      * Hide the panel and show brain
      */
     hidePanel() {
+        if (!this.isActive) {
+            logger.scene('Panel not hidden - brain manager not active');
+            return;
+        }
+        
         if (!this.panel || !this.panelVisible) return;
         
         this.panel.style.opacity = '0';
@@ -553,11 +551,8 @@ export class BrainManager {
                 this.panel.style.visibility = 'hidden';
                 this.panelVisible = false;
                 
-                // Reset iframe for next time
-                if (this.iframe) {
-                    this.iframe.style.opacity = '0';
-                    this.iframe.src = '';
-                }
+                // Disable panel interactions when hidden
+                this.disablePanelInteractions();
                 
                 // Show brain again when panel is closed
                 this.showBrain();
@@ -894,6 +889,9 @@ export class BrainManager {
         logger.scene('Destroying brain manager...');
 
         this.isActive = false;
+
+        // Disable panel interactions when brain manager is destroyed
+        this.disablePanelInteractions();
 
         // Stop animation
         if (this.animationId) {
