@@ -305,9 +305,31 @@ class PhysicsApp {
      * Setup mobile touch handlers for tunnel navigation and text interaction
      */
     setupMobileTouchHandlers() {
+        // Helper function to check if touch is inside panel
+        const isTouchInPanel = (touch) => {
+            const panelContent = document.getElementById('brain-panel-content');
+            if (!panelContent || !panelContent.classList.contains('panel-visible')) {
+                return false;
+            }
+            
+            const rect = panelContent.getBoundingClientRect();
+            return touch.clientX >= rect.left && touch.clientX <= rect.right &&
+                   touch.clientY >= rect.top && touch.clientY <= rect.bottom;
+        };
+        
         // Touch start handler
         const touchStartHandler = (event) => {
-            event.preventDefault();
+            // Check if we're touching inside the brain panel
+            if (event.touches.length > 0 && isTouchInPanel(event.touches[0])) {
+                // Don't prevent default inside the panel to allow text selection
+                return;
+            }
+            
+            // Only prevent default if the event is cancelable
+            if (event.cancelable) {
+                event.preventDefault();
+            }
+            
             const touch = event.touches[0];
             this.touchStartX = touch.clientX;
             this.touchStartY = touch.clientY;
@@ -316,7 +338,17 @@ class PhysicsApp {
         
         // Touch move handler for tunnel navigation
         const touchMoveHandler = (event) => {
-            event.preventDefault();
+            // Check if we're touching inside the brain panel
+            if (event.touches.length > 0 && isTouchInPanel(event.touches[0])) {
+                // Don't prevent default inside the panel to allow scrolling and text selection
+                return;
+            }
+            
+            // Only prevent default if the event is cancelable
+            if (event.cancelable) {
+                event.preventDefault();
+            }
+            
             const touch = event.touches[0];
             this.touchMoveX = touch.clientX;
             this.touchMoveY = touch.clientY;
@@ -338,7 +370,16 @@ class PhysicsApp {
         
         // Touch end handler for text clicks
         const touchEndHandler = (event) => {
-            event.preventDefault();
+            // Check if we're touching inside the brain panel
+            if (event.changedTouches.length > 0 && isTouchInPanel(event.changedTouches[0])) {
+                // Don't prevent default inside the panel to allow text selection
+                return;
+            }
+            
+            // Only prevent default if the event is cancelable
+            if (event.cancelable) {
+                event.preventDefault();
+            }
             
             if (!this.isDragging) {
                 // Handle text click
@@ -423,7 +464,10 @@ class PhysicsApp {
         
         // Add touch support for mobile
         skipButton.addEventListener('touchstart', (event) => {
-            event.preventDefault();
+            // Only prevent default if the event is cancelable
+            if (event.cancelable) {
+                event.preventDefault();
+            }
             logger.scene('Mobile skip button touched');
             this.handleSceneSkip();
         }, { passive: false });

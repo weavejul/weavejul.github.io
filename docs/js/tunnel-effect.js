@@ -706,7 +706,17 @@ export class TunnelEffect {
         
         // Touch move handler for mobile
         this.touchMoveHandler = (event) => {
-            event.preventDefault();
+            // Check if brain panel is visible - if so, don't handle touch to allow text selection
+            const panelContent = document.getElementById('brain-panel-content');
+            if (panelContent && panelContent.classList.contains('panel-visible')) {
+                return;
+            }
+            
+            // Only prevent default if the event is cancelable
+            if (event.cancelable) {
+                event.preventDefault();
+            }
+            
             if (event.touches.length > 0) {
                 this.mouse.target.x = event.touches[0].clientX;
                 this.mouse.target.y = event.touches[0].clientY;

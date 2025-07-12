@@ -45,6 +45,10 @@ export class BrainManager {
         // Performance optimization properties
         this.pauseBrainAnimation = false;
         this.originalBrainOpacity = null;
+        
+        // Fade-in state tracking
+        this.isFadingIn = false;
+        this.fadeInTimeout = null;
     }
 
     /**
@@ -414,6 +418,7 @@ export class BrainManager {
         
         if (this.panel) {
             this.panel.style.pointerEvents = 'auto';
+            this.panel.classList.add('panel-visible');
             const closeButton = document.getElementById('brain-panel-close');
             if (closeButton) {
                 closeButton.style.pointerEvents = 'auto';
@@ -428,6 +433,7 @@ export class BrainManager {
     disablePanelInteractions() {
         if (this.panel) {
             this.panel.style.pointerEvents = 'none';
+            this.panel.classList.remove('panel-visible');
             const closeButton = document.getElementById('brain-panel-close');
             if (closeButton) {
                 closeButton.style.pointerEvents = 'none';
@@ -458,7 +464,10 @@ export class BrainManager {
         
         // Add touch support for mobile
         closeButton.addEventListener('touchstart', (event) => {
-            event.preventDefault();
+            // Only prevent default if the event is cancelable
+            if (event.cancelable) {
+                event.preventDefault();
+            }
             event.stopPropagation();
             this.handleClosePanel();
         }, { passive: false });
@@ -576,9 +585,17 @@ export class BrainManager {
     handleBrainClick(event) {
         if (!this.brainModel || this.isPulsing) return;
         
+        // If panel is visible, don't handle brain clicks to allow text selection
+        if (this.panelVisible) {
+            return;
+        }
+        
         // Prevent default for touch events to avoid scrolling
         if (event.type === 'touchstart') {
-            event.preventDefault();
+            // Only prevent default if the event is cancelable
+            if (event.cancelable) {
+                event.preventDefault();
+            }
         }
         
         // Get coordinates from either mouse or touch event
@@ -761,9 +778,25 @@ export class BrainManager {
             return;
         }
 
+        // Clear any existing fade-in timeout
+        if (this.fadeInTimeout) {
+            clearTimeout(this.fadeInTimeout);
+            this.fadeInTimeout = null;
+        }
+
+        // Track fade-in state
+        this.isFadingIn = true;
+
         logger.scene('Fading in brain with z-index:', this.container.style.zIndex);
         this.container.style.transition = `opacity ${duration}s ease-in-out`;
         this.container.style.opacity = '1';
+
+        // Clear fade-in state after transition completes
+        this.fadeInTimeout = setTimeout(() => {
+            this.isFadingIn = false;
+            this.fadeInTimeout = null;
+            logger.scene('Brain fade in completed');
+        }, duration * 1000);
 
         logger.scene('Brain fade in initiated');
     }
@@ -789,7 +822,23 @@ export class BrainManager {
         if (!this.container || !this.brainModel) return;
         
         // Store current opacity for restoration
-        this.originalBrainOpacity = this.container.style.opacity || '1';
+        // If fade-in is in progress, store the target opacity ('1') instead of current transitioning value
+        if (this.isFadingIn) {
+            this.originalBrainOpacity = '1';
+            logger.scene('Brain hidden during fade-in - storing target opacity (1)');
+        } else {
+            this.originalBrainOpacity = this.container.style.opacity || '1';
+            logger.scene('Brain hidden - storing current opacity:', this.originalBrainOpacity);
+        }
+        
+        // Clear fade-in state and timeout since we're interrupting it
+        if (this.isFadingIn) {
+            this.isFadingIn = false;
+            if (this.fadeInTimeout) {
+                clearTimeout(this.fadeInTimeout);
+                this.fadeInTimeout = null;
+            }
+        }
         
         // Hide brain with smooth transition
         this.container.style.transition = 'opacity 0.3s ease-out';
@@ -808,9 +857,12 @@ export class BrainManager {
     showBrain() {
         if (!this.container || !this.brainModel) return;
         
+        const targetOpacity = this.originalBrainOpacity || '1';
+        logger.scene('Showing brain with target opacity:', targetOpacity);
+        
         // Restore brain with smooth transition
         this.container.style.transition = 'opacity 0.3s ease-in';
-        this.container.style.opacity = this.originalBrainOpacity || '1';
+        this.container.style.opacity = targetOpacity;
         // Keep pointerEvents as 'none' to avoid interfering with fluid simulation
         this.container.style.pointerEvents = 'none';
         
@@ -906,6 +958,12 @@ export class BrainManager {
             this.animationId = null;
         }
 
+        // Clear fade-in timeout if it exists
+        if (this.fadeInTimeout) {
+            clearTimeout(this.fadeInTimeout);
+            this.fadeInTimeout = null;
+        }
+
         // Remove event listeners
         window.removeEventListener('resize', this.onWindowResize.bind(this));
         document.removeEventListener('click', this.boundHandleBrainClick);
@@ -960,7 +1018,7 @@ export class BrainManager {
         }
 
     /**
-     * Clear all references
+     * Clear all references to prevent memory leaks
      */
     clearReferences() {
         this.scene = null;
@@ -969,14 +1027,20 @@ export class BrainManager {
         this.brainModel = null;
         this.controls = null;
         this.container = null;
+        this.panel = null;
         this.raycaster = null;
         this.mouse = null;
-        this.originalScale = null;
+        this.boundHandleBrainClick = null;
         this.originalMaterials = [];
         this.originalColors = [];
-        this.panel = null;
-        this.panelVisible = false;
-        this.boundHandleBrainClick = null;
+        this.originalScale = null;
+        this.originalBrainOpacity = null;
+        this.fadeInTimeout = null;
+        
+        // Clear fade-in state
+        this.isFadingIn = false;
+        
+        logger.scene('Brain manager references cleared');
     }
 
     /**

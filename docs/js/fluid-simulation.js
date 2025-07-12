@@ -1734,7 +1734,9 @@ window.addEventListener('mouseup', () => {
 });
 
 canvas.addEventListener('touchstart', e => {
-    e.preventDefault();
+    if (e.cancelable) {
+        e.preventDefault();
+    }
     const touches = e.targetTouches;
     while (touches.length >= pointers.length)
         pointers.push(new pointerPrototype());
@@ -1746,7 +1748,9 @@ canvas.addEventListener('touchstart', e => {
 });
 
 canvas.addEventListener('touchmove', e => {
-    e.preventDefault();
+    if (e.cancelable) {
+        e.preventDefault();
+    }
     const touches = e.targetTouches;
     for (let i = 0; i < touches.length; i++) {
         let pointer = pointers[i + 1];

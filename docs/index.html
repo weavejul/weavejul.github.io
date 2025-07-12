@@ -172,18 +172,30 @@
             position: fixed;
             top: 50%;
             left: 50%;
-            transform: translate(-50%, -50%);
             width: 80%;
             height: 80%;
-            z-index: 1003;
+            z-index: 999; /* Below fluid canvas when hidden */
             background-color: rgba(26, 0, 0, 0.95);
             border-radius: 0px;
             border: 2px solid #ff4444;
             box-shadow: 0 0 20px rgba(255, 68, 68, 0.3);
             opacity: 0;
             visibility: hidden;
-            transition: opacity 0.3s ease-in-out;
+            transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out, z-index 0.3s ease-in-out;
             overflow: hidden;
+            /* Ensure no touch interference when hidden */
+            pointer-events: none;
+            touch-action: none;
+            /* Move completely off-screen when hidden */
+            transform: translate(-50%, -150vh) translateZ(0);
+        }
+        
+        /* When panel is visible, enable touch interactions and bring to center */
+        #brain-panel-content.panel-visible {
+            pointer-events: auto;
+            touch-action: manipulation; /* Allow text selection and scrolling */
+            z-index: 1003; /* Above fluid canvas when visible */
+            transform: translate(-50%, -50%) translateZ(0);
         }
         
         /* Mobile responsive panel */
@@ -209,6 +221,17 @@
             /* Hardware acceleration for smooth scrolling and animations */
             transform: translateZ(0);
             will-change: scroll-position;
+            /* Mobile touch scrolling properties */
+            -webkit-overflow-scrolling: touch;
+            overscroll-behavior: contain;
+            touch-action: pan-y;
+            /* Smooth scrolling */
+            scroll-behavior: smooth;
+            /* Enable text selection */
+            -webkit-user-select: text;
+            -moz-user-select: text;
+            -ms-user-select: text;
+            user-select: text;
         }
         
         /* Custom scrollbar */
@@ -217,19 +240,21 @@
         }
         
         #brain-panel-container::-webkit-scrollbar-track {
-            background: rgba(255, 68, 68, 0.1);
+            background: rgba(26, 0, 0, 0.8);
             border-radius: 4px;
         }
         
         #brain-panel-container::-webkit-scrollbar-thumb {
-            background: linear-gradient(180deg, #ff4444, #ff6666);
+            background: linear-gradient(180deg, #2a0000, #3a0000);
             border-radius: 4px;
-            box-shadow: 0 0 5px rgba(255, 68, 68, 0.3);
+            border: 1px solid rgba(255, 68, 68, 0.3);
+            box-shadow: 0 0 5px rgba(255, 68, 68, 0.2);
         }
         
         #brain-panel-container::-webkit-scrollbar-thumb:hover {
-            background: linear-gradient(180deg, #ff6666, #ff8888);
-            box-shadow: 0 0 8px rgba(255, 68, 68, 0.5);
+            background: linear-gradient(180deg, #3a0000, #4a0000);
+            border-color: rgba(255, 68, 68, 0.5);
+            box-shadow: 0 0 8px rgba(255, 68, 68, 0.4);
         }
         
         /* Responsive text scaling */
@@ -777,6 +802,9 @@
             align-items: center;
             justify-content: center;
             user-select: none;
+            /* Ensure close button doesn't interfere with text selection */
+            pointer-events: auto;
+            touch-action: manipulation;
         }
         
         /* Modal styles */
@@ -1366,7 +1394,106 @@
                     }, { once: true });
                 }
             });
+            
+            // Enable mobile touch scrolling for the panel
+            enableMobilePanelScrolling();
         };
+        
+        // Function to enable mobile touch scrolling for the panel
+        function enableMobilePanelScrolling() {
+            // Only apply mobile-specific touch handling on mobile devices
+            if (!isMobileDevice()) {
+                return;
+            }
+            
+            const panelContainer = document.getElementById('brain-panel-container');
+            const panelContent = document.getElementById('brain-panel-content');
+            
+            if (panelContainer && panelContent) {
+                // Ensure proper touch scrolling is enabled
+                panelContainer.style.touchAction = 'pan-y';
+                panelContainer.style.overscrollBehavior = 'contain';
+                
+                // Remove any existing touch event listeners to prevent conflicts
+                // and don't add new ones that might interfere with text selection
+                // The CSS touch-action property will handle the behavior
+                
+                console.log('Mobile panel scrolling enabled');
+            }
+        }
+        
+        // Function to disable mobile touch events when panel is hidden
+        function disableMobilePanelScrolling() {
+            // Only apply mobile-specific touch handling on mobile devices
+            if (!isMobileDevice()) {
+                return;
+            }
+            
+            const panelContent = document.getElementById('brain-panel-content');
+            const panelContainer = document.getElementById('brain-panel-container');
+            
+            if (panelContent) {
+                // Reset touch action to allow fluid simulation to work
+                panelContent.style.touchAction = 'none';
+                console.log('Mobile panel scrolling disabled');
+            }
+            
+            if (panelContainer) {
+                // Reset touch action on container as well
+                panelContainer.style.touchAction = 'none';
+            }
+        }
+        
+        // Utility function to detect mobile devices
+        function isMobileDevice() {
+            return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
+                   ('ontouchstart' in window) ||
+                   (navigator.maxTouchPoints > 0) ||
+                   (navigator.msMaxTouchPoints > 0);
+        }
+        
+        // Monitor panel visibility changes
+        function observePanelVisibility() {
+            const panelContent = document.getElementById('brain-panel-content');
+            
+            if (panelContent) {
+                const observer = new MutationObserver(function(mutations) {
+                    mutations.forEach(function(mutation) {
+                        if (mutation.type === 'attributes' && 
+                            (mutation.attributeName === 'style' || mutation.attributeName === 'class')) {
+                            const isVisible = panelContent.style.visibility === 'visible' || 
+                                             panelContent.style.opacity === '1' ||
+                                             panelContent.classList.contains('panel-visible');
+                            
+                            console.log('Panel visibility change detected:', {
+                                isVisible: isVisible,
+                                opacity: panelContent.style.opacity,
+                                visibility: panelContent.style.visibility,
+                                hasPanelVisibleClass: panelContent.classList.contains('panel-visible')
+                            });
+                            
+                            if (isVisible) {
+                                console.log('Enabling mobile panel scrolling');
+                                enableMobilePanelScrolling();
+                            } else {
+                                console.log('Disabling mobile panel scrolling');
+                                disableMobilePanelScrolling();
+                            }
+                        }
+                    });
+                });
+                
+                observer.observe(panelContent, { 
+                    attributes: true, 
+                    attributeFilter: ['style', 'class'] 
+                });
+                
+                console.log('Panel visibility observer set up with debugging');
+            }
+        }
+        
+        // Start observing panel visibility changes
+        observePanelVisibility();
         
         // Keep the old function name for backward compatibility
         window.startTypingAnimation = window.startPanelAnimations;
