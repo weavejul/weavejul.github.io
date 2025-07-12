@@ -226,7 +226,7 @@ class Logger {
                 this.memory('Auto');
             }, 5000); // 5 seconds
             
-            this.app('Automatic memory logging started (every 5 seconds)');
+            this.app('Automatic memory logging started');
         }
     }
 

@@ -60,7 +60,7 @@ class PhysicsApp {
      * Initialize the application
      */
     initialize() {
-        logger.app('Initializing modular physics app...');
+        logger.app('Initializing physics app...');
         
         this.initializeBackgroundParticles();
         this.initializeSceneManager();
@@ -186,7 +186,7 @@ class PhysicsApp {
                 logger.scene('Ready text already fell or sequence complete, ignoring click');
             }
         } else {
-            logger.scene(`Text "${hangingText.options.text}" clicked, falling normally`);
+            logger.scene(`Text "${hangingText.options.text}" clicked, falling`);
             hangingText.fall();
         }
     }
@@ -294,10 +294,10 @@ class PhysicsApp {
         
         // Create mobile skip button if on mobile
         if (this.isMobile) {
-            logger.app('Mobile device detected - creating mobile skip button');
+            logger.app('Mobile device detected');
             this.createMobileSkipButton();
         } else {
-            logger.app('Desktop device detected - no mobile skip button needed');
+            logger.app('Desktop device detected');
         }
     }
 
@@ -693,14 +693,10 @@ class PhysicsApp {
      */
     logWelcomeMessage() {
         if (APP_CONFIG.DEBUG.ENABLED) {
-            logger.app('Modular Physics App loaded!');
-            logger.app('Features: Scene management, responsive design, memory leak prevention, dynamic physics scaling');
-            logger.app('Collision system: Strings no longer interact with each other, only with text bodies');
-            logger.app('Click system: Click area stays original size, physics body scales independently');
-            logger.app('Three-stage sequence: Hello → I\'m Julian → Ready?');
-            logger.app('  1️⃣ Click "Hello!" to make it fall');
-            logger.app('  2️⃣ "I\'m" and "Julian" appear - click both to make them fall');
-            logger.app('  3️⃣ "Ready?" appears in center - click to complete sequence');
+            logger.app('Physics App loaded!');
+            logger.app('  1️⃣ Click "Hello!" to make it fall (Alternatively, skip)');
+            logger.app('  2️⃣ "Next: I\'m" and "Julian" appear - click both to make them fall');
+            logger.app('  3️⃣ "Next: Ready?" appears in center - click to move to tunnel sequence');
         }
     }
 }

@@ -106,7 +106,7 @@ export class SceneManager {
             return false;
         }
         
-        this.transitionState = type === 'skip' ? 'skipping' : 'transitioning';
+        this.transitionState = type === 'skip' ? 'skipping' : 'scene transitioning';
         logger.scene(`Transition started: ${this.transitionState}`);
         return true;
     }
@@ -191,7 +191,7 @@ export class SceneManager {
         if (this.isRunning) return;
         this.isRunning = true;
         
-        logger.scene('Starting scene sequence with optimized timing...');
+        logger.scene('Starting scene sequence...');
         
         // Defer scene start to next frame for better performance
         requestAnimationFrame(() => {
@@ -297,7 +297,7 @@ export class SceneManager {
                 return;
             }
             
-            logger.scene('Hello text fell, transitioning to Julian scene...');
+            logger.scene('Hello text fell, transitioning to next scene...');
             
             if (!this.beginTransition()) {
                 logger.scene('Transition blocked - skipping to brain scene');
@@ -365,7 +365,7 @@ export class SceneManager {
             
             fallCount++;
             if (fallCount === 2) {
-                logger.scene('Both Julian texts fell, transitioning to Ready scene...');
+                logger.scene('Both texts fell, transitioning to next scene...');
                 
                 if (!this.beginTransition()) {
                     logger.scene('Transition blocked - skipping to brain scene');
@@ -572,7 +572,7 @@ export class SceneManager {
             return;
         }
         
-        logger.scene('Starting psychedelic tunnel effect!');
+        logger.scene('Starting tunnel effect');
         
         try {
             if (!this.tunnelEffect) {

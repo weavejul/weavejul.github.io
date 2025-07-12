@@ -791,7 +791,7 @@ export class TunnelEffect {
         this.forceBlackPalette = this.tunnelPhase === 'fade-out';
         
         // Debug: Log palette time occasionally
-        if (Math.floor(this.paletteTime * 2) % 10 === 0) {
+        if (Math.floor(this.paletteTime * 2) % 100 === 0) {
             console.log(`🎨 Palette time: ${this.paletteTime.toFixed(2)}, Current palette: ${this.currentPaletteIndex}`);
         }
         
@@ -820,7 +820,7 @@ export class TunnelEffect {
         if (Math.floor(this.shapeTransitionTime * 10) % 20 === 0) {
             const currentShapeIndex = Math.floor(this.shapeTransitionTime * this.shapeWaveSpeed) % this.shapeSequence.length;
             const currentShape = this.shapeSequence[currentShapeIndex];
-            logger.scene(`Tunnel shape transitioning: ${currentShape.name} (${currentShape.sides} sides)`);
+            logger.scene(`Tunnel shape transitioning: ${currentShape.name}`);
         }
         
         // Update curve points for mouse interaction (preserve natural downward curve)
@@ -1268,7 +1268,7 @@ export class TunnelEffect {
      * Destroy the tunnel effect and clean up all resources with optimized timing
      */
     destroy() {
-        logger.scene('Destroying tunnel effect with optimized cleanup...');
+        logger.scene('Destroying tunnel effect...');
         
         // Stop animation immediately and prevent new animation frames
         this.isActive = false;
@@ -1287,7 +1287,7 @@ export class TunnelEffect {
             this.removeCanvas();
             this.clearReferences();
             
-            logger.scene('Tunnel effect destroyed with optimized cleanup');
+            logger.scene('Tunnel effect destroyed');
         });
     }
 

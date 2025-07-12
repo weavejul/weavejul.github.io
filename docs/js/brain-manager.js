@@ -61,7 +61,7 @@ export class BrainManager {
             return;
         }
 
-        logger.scene('Initializing brain manager with optimized timing...');
+        logger.scene('Initializing brain manager...');
 
         try {
             // Defer heavy operations to next frame
@@ -95,7 +95,7 @@ export class BrainManager {
             // Make brain manager globally accessible for fluid simulation
             window.brainManager = this;
 
-            logger.scene('Brain manager initialized successfully with optimized timing');
+            logger.scene('Brain manager initialized successfully');
         } catch (error) {
             logger.error('Failed to initialize brain manager:', error);
             throw error;

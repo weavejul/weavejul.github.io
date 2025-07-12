@@ -2057,4 +2057,4 @@ function fillDyeWithBackground() {
     blit(dye.write);
 }
 
-console.log('Fluid simulation initialized successfully with all advanced physics effects');
+console.log('Fluid simulation initialized successfully with all physics effects');
