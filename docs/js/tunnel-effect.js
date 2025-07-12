@@ -791,7 +791,7 @@ export class TunnelEffect {
         this.forceBlackPalette = this.tunnelPhase === 'fade-out';
         
         // Debug: Log palette time occasionally
-        if (Math.floor(this.paletteTime * 2) % 100 === 0) {
+        if (Math.floor(this.paletteTime * 2) % 1000 === 0) {
             console.log(`🎨 Palette time: ${this.paletteTime.toFixed(2)}, Current palette: ${this.currentPaletteIndex}`);
         }
         
