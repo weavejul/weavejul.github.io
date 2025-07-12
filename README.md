@@ -1,4 +1,4 @@
-# Julian Weaver - Interactive Personal Website
+# Julian Weaver's Personal Website
 
 ## Tech Stack
 
