@@ -398,6 +398,12 @@
             /* Hardware acceleration for animated text */
             transform: translateZ(0);
             will-change: text-shadow;
+            transition: all 0.3s ease;
+        }
+        
+        #brain-panel-container h1:hover {
+            color: #ff8888;
+            text-shadow: 0 0 10px rgba(255, 136, 136, 0.3);
         }
         
         @keyframes titlePulse {
