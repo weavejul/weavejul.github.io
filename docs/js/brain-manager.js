@@ -530,6 +530,13 @@ export class BrainManager {
             // Hide brain for better performance when panel is open
             this.hideBrain();
             
+            // Start typing animation when panel becomes visible
+            if (window.startTypingAnimation) {
+                setTimeout(() => {
+                    window.startTypingAnimation();
+                }, 100); // Small delay to ensure panel is fully visible
+            }
+            
             logger.scene('Brain panel shown with embedded content - brain hidden for performance');
         });
     }

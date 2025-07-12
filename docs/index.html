@@ -211,6 +211,27 @@
             will-change: scroll-position;
         }
         
+        /* Custom scrollbar */
+        #brain-panel-container::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        #brain-panel-container::-webkit-scrollbar-track {
+            background: rgba(255, 68, 68, 0.1);
+            border-radius: 4px;
+        }
+        
+        #brain-panel-container::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, #ff4444, #ff6666);
+            border-radius: 4px;
+            box-shadow: 0 0 5px rgba(255, 68, 68, 0.3);
+        }
+        
+        #brain-panel-container::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(180deg, #ff6666, #ff8888);
+            box-shadow: 0 0 8px rgba(255, 68, 68, 0.5);
+        }
+        
         /* Responsive text scaling */
         @media (max-width: 600px) {
             #brain-panel-container {
@@ -298,6 +319,36 @@
                 radial-gradient(circle at 40% 40%, rgba(255, 68, 68, 0.01) 0%, transparent 50%);
             pointer-events: none;
             z-index: -1;
+            /* Remove automatic animation - will be triggered by JavaScript */
+        }
+        
+        /* Scan lines effect */
+        #brain-panel-content::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(
+                0deg,
+                transparent,
+                transparent 2px,
+                rgba(255, 68, 68, 0.02) 2px,
+                rgba(255, 68, 68, 0.02) 4px
+            );
+            pointer-events: none;
+            z-index: 1;
+            animation: scanLines 8s linear infinite;
+        }
+        
+        @keyframes scanLines {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(4px); }
+        }
+        
+        /* Animation class that will be added by JavaScript */
+        #brain-panel-container.animate-background::before {
             animation: backgroundPulse 8s ease-in-out infinite;
         }
         
@@ -311,7 +362,7 @@
             margin: 0 auto;
             position: relative;
             z-index: 1;
-            animation: fadeInUp 2s ease-out;
+            /* Remove automatic animation - will be triggered by JavaScript */
             /* Hardware acceleration for container animations */
             transform: translateZ(0);
             will-change: transform, opacity;
@@ -330,9 +381,8 @@
             }
         }
         
-        /* Ensure container starts hidden and animates in */
-        #brain-panel-container .container {
-            opacity: 0;
+        /* Animation class that will be added by JavaScript */
+        #brain-panel-container .container.animate-in {
             animation: fadeInUp 1s ease-out 0.1s forwards;
         }
         
@@ -378,6 +428,7 @@
             font-size: 1.4em;
             position: relative;
             padding-left: 15px;
+            transition: all 0.3s ease;
         }
         
         #brain-panel-container h2::before {
@@ -386,11 +437,43 @@
             left: 0;
             color: #ff4444;
             font-weight: bold;
+            animation: headerPulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes headerPulse {
+            0%, 100% { opacity: 0.7; }
+            50% { opacity: 1; }
+        }
+        
+        #brain-panel-container h2:hover {
+            color: #ff8888;
+            text-shadow: 0 0 10px rgba(255, 136, 136, 0.3);
+        }
+        
+        #brain-panel-container h2:hover::before {
+            animation: headerGlow 0.5s ease-in-out;
+        }
+        
+        @keyframes headerGlow {
+            0% { text-shadow: 0 0 5px rgba(255, 68, 68, 0.5); }
+            50% { text-shadow: 0 0 15px rgba(255, 68, 68, 0.8), 0 0 25px rgba(255, 68, 68, 0.4); }
+            100% { text-shadow: 0 0 5px rgba(255, 68, 68, 0.5); }
         }
         
         #brain-panel-container p {
             margin-bottom: 12px;
             font-size: 1em;
+        }
+        
+        /* Custom text selection */
+        #brain-panel-container ::selection {
+            background: rgba(255, 68, 68, 0.3);
+            color: #ffffff;
+        }
+        
+        #brain-panel-container ::-moz-selection {
+            background: rgba(255, 68, 68, 0.3);
+            color: #ffffff;
         }
         
         #brain-panel-container .section {
@@ -405,36 +488,45 @@
             position: relative;
             transition: all 0.3s ease;
             opacity: 0;
-            transform: translateY(20px);
-            animation: sectionFadeIn 0.8s ease-out forwards;
+            transform: translateY(20px) translateZ(0);
+            /* Remove automatic animation - will be triggered by JavaScript */
             /* Hardware acceleration for section animations */
-            transform: translateZ(0);
             will-change: transform, opacity, box-shadow;
             /* Start hidden to prevent flash */
             visibility: hidden;
+            /* Disable pointer events during animation */
+            pointer-events: none;
         }
         
-        #brain-panel-container .section:nth-child(1) { animation-delay: 0.2s; }
-        #brain-panel-container .section:nth-child(2) { animation-delay: 0.4s; }
-        #brain-panel-container .section:nth-child(3) { animation-delay: 0.6s; }
-        #brain-panel-container .section:nth-child(4) { animation-delay: 0.8s; }
-        #brain-panel-container .section:nth-child(5) { animation-delay: 1.0s; }
-        #brain-panel-container .section:nth-child(6) { animation-delay: 1.2s; }
-        #brain-panel-container .section:nth-child(7) { animation-delay: 1.4s; }
+        /* Animation classes that will be added by JavaScript */
+        #brain-panel-container .section.animate-in {
+            animation: sectionFadeIn 0.8s ease-out;
+        }
+        
+        #brain-panel-container .section.animate-in:nth-child(1) { animation-delay: 0.2s; }
+        #brain-panel-container .section.animate-in:nth-child(2) { animation-delay: 0.4s; }
+        #brain-panel-container .section.animate-in:nth-child(3) { animation-delay: 0.6s; }
+        #brain-panel-container .section.animate-in:nth-child(4) { animation-delay: 0.8s; }
+        #brain-panel-container .section.animate-in:nth-child(5) { animation-delay: 1.0s; }
+        #brain-panel-container .section.animate-in:nth-child(6) { animation-delay: 1.2s; }
+        #brain-panel-container .section.animate-in:nth-child(7) { animation-delay: 1.4s; }
         
         @keyframes sectionFadeIn {
             to {
                 opacity: 1;
-                transform: translateY(0);
+                transform: translateY(0) translateZ(0);
                 visibility: visible;
             }
         }
         
         #brain-panel-container .section:hover {
-            transform: translateY(-2px);
+            transform: translateY(-2px) scale(1.01) translateZ(0);
             box-shadow: 
-                0 6px 20px rgba(255, 68, 68, 0.15),
-                inset 0 1px 0 rgba(255, 255, 255, 0.05);
+                0 12px 30px rgba(255, 68, 68, 0.25),
+                0 8px 20px rgba(255, 68, 68, 0.15),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            border-color: #ff6666;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
         
         #brain-panel-container .section::before {
@@ -446,6 +538,13 @@
             height: 1px;
             background: linear-gradient(90deg, transparent, #ff4444, transparent);
             animation: borderGlow 3s ease-in-out infinite;
+            transition: all 0.4s ease;
+        }
+        
+        #brain-panel-container .section:hover::before {
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #ff6666, #ff8888, #ff6666, transparent);
+            box-shadow: 0 0 10px rgba(255, 102, 102, 0.5);
         }
         
         @keyframes borderGlow {
@@ -554,6 +653,24 @@
             transition: all 0.3s ease;
             position: relative;
             overflow: hidden;
+        }
+        
+        /* Data stream effect on contact links */
+        #brain-panel-container .contact-link::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 102, 102, 0.1), transparent);
+            animation: dataStream 3s ease-in-out infinite;
+        }
+        
+        @keyframes dataStream {
+            0% { left: -100%; }
+            50% { left: 100%; }
+            100% { left: 100%; }
         }
         
         #brain-panel-container .contact-link::before {
@@ -991,7 +1108,7 @@
         // Add hover effects to sections
         document.querySelectorAll('.section').forEach(section => {
             section.addEventListener('mouseenter', function() {
-                this.style.transform = 'translateY(-5px) scale(1.02)';
+                this.style.transform = 'translateY(-2px) scale(1.01)';
             });
             
             section.addEventListener('mouseleave', function() {
@@ -1083,23 +1200,7 @@
             });
         });
         
-        // Add text reveal animation to sections
-        const observerOptions = {
-            threshold: 0.1,
-            rootMargin: '0px 0px -50px 0px'
-        };
-        
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.style.animation = 'sectionFadeIn 0.8s ease-out forwards';
-                }
-            });
-        }, observerOptions);
-        
-        document.querySelectorAll('.section').forEach(section => {
-            observer.observe(section);
-        });
+        // Section animations will be triggered when panel becomes visible
         
         // Add keyboard shortcuts
         document.addEventListener('keydown', function(event) {
@@ -1217,16 +1318,52 @@
                     el.appendChild(span);
                 }
             });
-            
-            // Start typing animation after a short delay
-            setTimeout(() => {
-                const greetingElement = document.getElementById('greeting');
+        });
+        
+        // Function to start all panel animations when panel becomes visible
+        window.startPanelAnimations = function() {
+            // Start typing animation
+            const greetingElement = document.getElementById('greeting');
+            if (greetingElement && !greetingElement.dataset.animationStarted) {
                 const originalText = greetingElement.innerHTML;
                 greetingElement.style.visibility = 'visible';
                 greetingElement.style.opacity = '1';
+                greetingElement.dataset.animationStarted = 'true';
                 typeText(greetingElement, originalText, 30);
-            }, 500);
-        });
+            }
+            
+            // Start container animation
+            const container = document.querySelector('#brain-panel-container .container');
+            if (container && !container.classList.contains('animate-in')) {
+                container.classList.add('animate-in');
+            }
+            
+            // Start background animation
+            const panelContainer = document.getElementById('brain-panel-container');
+            if (panelContainer && !panelContainer.classList.contains('animate-background')) {
+                panelContainer.classList.add('animate-background');
+            }
+            
+            // Start section animations
+            const sections = document.querySelectorAll('#brain-panel-container .section');
+            sections.forEach((section, index) => {
+                if (!section.classList.contains('animate-in')) {
+                    section.classList.add('animate-in');
+                    
+                    // Listen for animation end to enable hover effects
+                    section.addEventListener('animationend', function() {
+                        // Animation is complete, set final state and enable hover effects
+                        this.style.opacity = '1';
+                        this.style.transform = 'translateY(0) translateZ(0)';
+                        this.style.visibility = 'visible';
+                        this.style.pointerEvents = 'auto';
+                    }, { once: true });
+                }
+            });
+        };
+        
+        // Keep the old function name for backward compatibility
+        window.startTypingAnimation = window.startPanelAnimations;
         
         // Panel interactions are now handled by the brain manager only
         // No direct event listeners needed here
