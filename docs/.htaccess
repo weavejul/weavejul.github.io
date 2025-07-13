@@ -1,0 +1,8 @@
+# Redirect www to non-www
+RewriteEngine On
+RewriteCond %{HTTP_HOST} ^www\.juliver\.xyz$ [NC]
+RewriteRule ^(.*)$ https://juliver.xyz/$1 [R=301,L]
+
+# Force HTTPS
+RewriteCond %{HTTPS} off
+RewriteRule ^(.*)$ https://juliver.xyz/$1 [R=301,L] 

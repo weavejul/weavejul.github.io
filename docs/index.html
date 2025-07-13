@@ -19,11 +19,18 @@
     <meta name="revisit-after" content="7 days">
     
     <!-- Canonical URL -->
-    <link rel="canonical" href="https://juliver.xyz">
+    <link rel="canonical" href="https://juliver.xyz/">
+    
+    <!-- Redirect www to non-www (JavaScript fallback) -->
+    <script>
+        if (window.location.hostname === 'www.juliver.xyz') {
+            window.location.replace('https://juliver.xyz/');
+        }
+    </script>
     
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="profile">
-    <meta property="og:url" content="https://juliver.xyz">
+    <meta property="og:url" content="https://juliver.xyz/">
     <meta property="og:title" content="Julian Weaver">
     <meta property="og:description" content="I'm Julian Weaver- a neuroscientist, ML researcher, and founder based in Houston. I'm fascinated by the foundations of intelligent systems, especially the human kind!">
     <meta property="og:image" content="https://juliver.xyz/assets/images/brainbanner.png">
@@ -37,7 +44,7 @@
     
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image">
-    <meta property="twitter:url" content="https://juliver.xyz">
+    <meta property="twitter:url" content="https://juliver.xyz/">
     <meta property="twitter:title" content="Julian Weaver">
     <meta property="twitter:description" content="I'm Julian Weaver- a neuroscientist, ML researcher, and founder based in Houston. I'm fascinated by the foundations of intelligent systems, especially the human kind!">
     <meta property="twitter:image" content="https://juliver.xyz/assets/images/brainbanner.png">
