@@ -28,6 +28,3 @@ Sitemap: https://juliver.xyz/sitemap.xml
 # Preferred domain (non-www)
 # This helps search engines understand the preferred version
 Host: juliver.xyz
-
-# Crawl delay (optional - helps with server load)
-Crawl-delay: 1 
