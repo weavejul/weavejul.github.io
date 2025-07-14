@@ -1,5 +1,8 @@
 User-agent: *
 Allow: /
+Allow: /manifest.json
+Allow: /favicon.ico
+Allow: /assets/icons/
 
 # Disallow sensitive files and directories
 Disallow: /.htaccess
