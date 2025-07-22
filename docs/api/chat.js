@@ -48,32 +48,55 @@ You speak with Julian's voice - thoughtful, safety-conscious, passionate about u
       `user: ${message}`
     ].join('\n\n');
 
-    // Call Gemini API
-    const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          contents: [{
-            parts: [{ text: messages }]
-          }],
-          generationConfig: {
-            temperature: 0.7,
-            maxOutputTokens: 600
-          }
-        })
+    // Call Gemini API with retry logic for overload errors
+    let response;
+    let attempts = 0;
+    const maxRetries = 3;
+    
+    while (attempts < maxRetries) {
+      response = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            contents: [{
+              parts: [{ text: messages }]
+            }],
+            generationConfig: {
+              temperature: 0.7,
+              maxOutputTokens: 600
+            }
+          })
+        }
+      );
+      
+      // If successful or not a temporary error, break
+      if (response.ok || (response.status !== 503 && response.status !== 429)) {
+        break;
       }
-    );
+      
+      attempts++;
+      console.log(`Attempt ${attempts} failed with ${response.status}, retrying...`);
+      
+      // Wait before retry (exponential backoff)
+      if (attempts < maxRetries) {
+        await new Promise(resolve => setTimeout(resolve, Math.pow(2, attempts) * 1000));
+      }
+    }
 
     if (!response.ok) {
       const errorText = await response.text();
       console.error('Gemini API error:', response.status, errorText);
       
       // Return user-friendly error messages
-      if (response.status === 429) {
+      if (response.status === 503) {
+        return res.status(503).json({ 
+          error: 'AI service is experiencing high demand. Please try again in a few moments.' 
+        });
+      } else if (response.status === 429) {
         return res.status(429).json({ 
           error: 'Rate limit exceeded. Please try again in a moment.' 
         });
