@@ -6,7 +6,7 @@ class BrainAI {
         this.isInitialized = false;
         this.isLoading = false;
         this.conversationHistory = [];
-        this.apiEndpoint = '/api/chat'; // Proxy endpoint
+        this.apiEndpoint = 'https://weavejul-github-io.vercel.app/api/chat';
         this.maxRetries = 3;
         this.initializeInterface();
     }
