@@ -144,7 +144,7 @@ COMMUNICATION GUIDELINES:
         });
       } else if (response.status === 429) {
         return res.status(429).json({ 
-          error: 'I\'m going to go get some coffee. Gimme a sec... \n\n(Rate limit exceeded. Please try again in a moment.)' 
+          error: 'I\'m going to go get some coffee. Gimme a sec... \n\n(Rate limit exceeded because I don\'t want to pay for the API. Blame google. Please try again in a moment.)' 
         });
       } else if (response.status === 400) {
         return res.status(400).json({ 
