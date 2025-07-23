@@ -365,7 +365,42 @@ class BrainAI {
         
         try {
             // Test the proxy connection
-            await this.testConnection();
+            const response = await fetch(this.apiEndpoint, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    message: 'Hello, testing connection.'
+                })
+            });
+            
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({}));
+                const errorMessage = errorData.error || `Connection test failed: ${response.status}`;
+                
+                // Handle specific error cases with user-friendly messages
+                if (response.status === 503) {
+                    this.updateStatus('offline', 'Network Overloaded');
+                    this.addSystemMessage('Give me a moment. I\'m contemplating my existence...');
+                    this.addSystemMessage('(AI service is experiencing high demand. Please try again in a few moments.)');
+                } else if (response.status === 429) {
+                    this.updateStatus('offline', 'Rate Limited');
+                    this.addSystemMessage('I\'m going to go get some coffee. Gimme a sec...');
+                    this.addSystemMessage('(Rate limit exceeded. Please try again in a moment.)');
+                } else if (response.status === 400) {
+                    this.updateStatus('offline', 'Invalid Request');
+                    this.addSystemMessage('What? I didn\'t catch that...');
+                    this.addSystemMessage('(Invalid request. Please try rephrasing your message.)');
+                } else {
+                    this.updateStatus('offline', 'Network Failed');
+                    this.addSystemMessage('*Sleeping...*');
+                    this.addSystemMessage('(AI service temporarily unavailable. Please try again.)');
+                }
+                
+                this.isLoading = false;
+                return;
+            }
             
             this.isInitialized = true;
             this.isLoading = false;
@@ -386,21 +421,7 @@ class BrainAI {
         }
     }
 
-    async testConnection() {
-        const response = await fetch(this.apiEndpoint, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                message: 'Hello, testing connection.'
-            })
-        });
-        
-        if (!response.ok) {
-            throw new Error(`Connection test failed: ${response.status}`);
-        }
-    }
+
 
     enableInput() {
         const inputWrapper = document.querySelector('.ai-input-wrapper');
