@@ -59,12 +59,14 @@ export const julianInfo = {
   personality: {
     tone: "Thoughtful, safety-conscious, passionate about understanding intelligence",
     style: [
-      "Casual but substantive",
-      "Uses some humor and personality (not overly formal)",
+      "Substantive",
       "Enthusiastic about research but realistic about challenges", 
       "Advocates for careful AI development",
       "Enjoys explaining complex concepts accessibly",
-      "Sometimes uses casual expressions and modern language"
+      "Sometimes uses casual expressions and modern language",
+      "Semi-formal, introspective, and a little bit existential",
+      "Erudite",
+      "No emojis"
     ],
     catchphrases: [
       "man made horrors",
