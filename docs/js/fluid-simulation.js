@@ -1772,9 +1772,9 @@ window.addEventListener('touchend', e => {
 });
 
 window.addEventListener('keydown', e => {
-    if (e.code === 'KeyP')
+    if (e.code === 'KeyP' && e.ctrlKey) // Control + P for pause
         config.PAUSED = !config.PAUSED;
-    if (e.key === ' ')
+    if (e.key === 'Enter') // Enter for splat
         splatStack.push(parseInt(Math.random() * 20) + 5);
 });
 }
