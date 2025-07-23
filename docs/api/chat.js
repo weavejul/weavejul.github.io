@@ -144,7 +144,7 @@ COMMUNICATION GUIDELINES:
         });
       } else if (response.status === 429) {
         return res.status(429).json({ 
-          error: 'I\'m going to go get some coffee. Gimme a sec... \n\n(Rate limit exceeded because I don\'t want to pay for the API. Blame google. Please try again in a moment.)' 
+          error: '*Shhh... the model is sleeping...* \n\n(Rate limit exceeded because I don\'t want to pay for the API. Blame google. Please try again in a moment.)' 
         });
       } else if (response.status === 400) {
         return res.status(400).json({ 
@@ -152,7 +152,7 @@ COMMUNICATION GUIDELINES:
         });
       } else {
         return res.status(500).json({ 
-          error: '*Sleeping...* \n\n(AI service temporarily unavailable. Please try again.)' 
+          error: '*Shhh... the model is sleeping...* \n\n(AI service temporarily unavailable. Please try again.)' 
         });
       }
     }

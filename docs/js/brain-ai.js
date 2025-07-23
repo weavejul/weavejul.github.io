@@ -386,15 +386,15 @@ class BrainAI {
                     this.addSystemMessage('(AI service is experiencing high demand. Please try again in a few moments.)');
                 } else if (response.status === 429) {
                     this.updateStatus('offline', 'Rate Limited');
-                    this.addSystemMessage('I\'m going to go get some coffee. Gimme a sec...');
-                    this.addSystemMessage('(Rate limit exceeded. Please try again in a moment.)');
+                    this.addSystemMessage('*Shhh... the model is sleeping...*');
+                    this.addSystemMessage('(Rate limit exceeded because I don\'t want to pay for the API. Blame google. Please try again in a moment.)');
                 } else if (response.status === 400) {
                     this.updateStatus('offline', 'Invalid Request');
                     this.addSystemMessage('What? I didn\'t catch that...');
                     this.addSystemMessage('(Invalid request. Please try rephrasing your message.)');
                 } else {
                     this.updateStatus('offline', 'Network Failed');
-                    this.addSystemMessage('*Sleeping...*');
+                    this.addSystemMessage('*Shhh... the model is sleeping...*');
                     this.addSystemMessage('(AI service temporarily unavailable. Please try again.)');
                 }
                 
