@@ -10,6 +10,11 @@
 - **Matter.js**
 - **Three.js**
 
+### AI System
+
+- **Google Gemini API**: LLM backend via Vercel serverless functions
+- **Secure Proxy**: API key protection with CORS handling
+
 ## Architecture
 
 ```text
@@ -23,10 +28,15 @@ js/
 ├── tunnel-effect.js       # 3D tunnel visual effects
 ├── fluid-integration.js   # Fluid simulation integration
 ├── brain-manager.js       # Neural network visualization
+├── brain-ai.js           # JULIVER.AI chat interface
 ├── ground-manager.js      # Ground physics and interactions
 ├── responsive.js          # Responsive design utilities
 ├── utils.js              # Utility functions and cleanup
 └── logger.js             # Debugging and logging system
+
+api/
+├── chat.js               # Gemini API proxy with secure authentication
+└── julian-info.js        # A small knowledge base and LLM personality config
 ```
 
 ### Core Components
@@ -51,6 +61,13 @@ js/
 - **Object Pooling**: Efficient memory management for particles
 - **Cleanup Systems**: Automatic removal of off-screen objects
 - **Frame Rate Optimization**: Adaptive performance monitoring
+
+#### 4. JULIVER.AI System
+
+- **BrainAI Class**: Chat interface
+- **Secure API Proxy**: Vercel serverless function protecting API keys
+- **Conversation Management**: Context-aware dialogue with memory
+- **Personality Engine**: Responses representing my background
 
 ## Visual Features
 
@@ -148,3 +165,10 @@ PARTICLES: {
 1. Update colors in `APP_CONFIG.COLORS`
 2. Modify particle settings in `APP_CONFIG.PARTICLES`
 3. Adjust animation timing in `APP_CONFIG.ANIMATION`
+
+### AI Customization
+
+1. Modify personality in `julian-info.js`
+2. Update system prompts in `chat.js`
+3. Adjust response length via `maxOutputTokens`
+4. Configure conversation guidelines and examples
