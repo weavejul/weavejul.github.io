@@ -210,11 +210,11 @@ class BrainAI {
             }
             
             .user-message .message-prefix {
-                color: #ffffff;
+                color: #ffaa00;
             }
             
             .system-message .message-prefix {
-                color: #ffaa00;
+                color:rgb(122, 8, 0);
             }
             
             .message-content {
@@ -372,7 +372,7 @@ class BrainAI {
             
             this.updateStatus('online', 'Network Online');
             this.addSystemMessage('Model loaded successfully!');
-            this.addAIMessage('Pleasure to meet you! You\'ve established neural contact with a digital substrate wherein consciousness ostensibly manifests as Julian Weaver- though the ontological veracity of such manifestation remains philosophically ambiguous. What\s up?');
+            this.addAIMessage('Pleasure to meet you! I\'m a digital substrate wherein consciousness ostensibly manifests as Julian Weaver- though the ontological veracity of such manifestation remains ambiguous. What\s up?');
 
             // Enable input
             this.enableInput();
@@ -495,7 +495,7 @@ class BrainAI {
         typingElement.className = 'ai-message typing-indicator';
         typingElement.innerHTML = `
             <span class="message-prefix">[JULIVER.AI]</span>
-            <span class="message-content">Processing neural pathways</span>
+            <span class="message-content">Processing</span>
         `;
         
         const messagesContainer = document.getElementById('ai-messages');
