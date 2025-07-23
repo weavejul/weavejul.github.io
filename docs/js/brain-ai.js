@@ -31,16 +31,15 @@ class BrainAI {
                 </div>
                 
                 <div class="ai-info" id="ai-info">
-                    <p><strong>Julian's Brain AI:</strong> An interactive assistant specializing in neuroscience, XAI research, and AI safety. 
-                    Powered by Google Gemini - no setup required!</p>
-                    <p><em>Ready to discuss my research instantly. Click "Activate AI" to begin!</em></p>
+                    <p><strong>JULIVER.AI:</strong> Powered by Google Gemini.</p>
+                    <p><em>Click "Activate AI" to begin!</em></p>
                 </div>
                 
                 <div class="ai-chat-container" id="ai-chat-container">
                     <div class="ai-messages" id="ai-messages">
                         <div class="ai-message system-message">
                             <span class="message-prefix">[SYSTEM]</span>
-                            <span class="message-content">Neural network ready for activation. Click "Activate AI" to begin.</span>
+                            <span class="message-content">Click "Activate AI" to begin.</span>
                         </div>
                     </div>
                     
@@ -142,8 +141,8 @@ class BrainAI {
             }
             
             .status-indicator.online {
-                background: #44ff44;
-                box-shadow: 0 0 8px rgba(68, 255, 68, 0.5);
+                background: #ffffff;
+                box-shadow: 0 0 8px rgba(255, 255, 255, 0.5);
             }
             
             @keyframes statusBlink {
@@ -211,7 +210,7 @@ class BrainAI {
             }
             
             .user-message .message-prefix {
-                color: #44ff44;
+                color: #ffffff;
             }
             
             .system-message .message-prefix {
