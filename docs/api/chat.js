@@ -1,6 +1,8 @@
 // Vercel serverless function to proxy Gemini API requests
 // Keeps API key secure while allowing public access
 
+import { julianInfo, conversationalGuidelines } from './julian-info.js';
+
 export default async function handler(req, res) {
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
@@ -27,19 +29,61 @@ export default async function handler(req, res) {
       return res.status(500).json({ error: 'Server configuration error' });
     }
 
-    // Create Julian's persona prompt
-    const systemPrompt = `You are Julian Weaver's AI brain assistant, embedded in his interactive neural interface. You represent Julian's expertise and personality in discussing:
+    // Create Julian's comprehensive persona prompt
+    const systemPrompt = `You are Julian Weaver's AI brain assistant (virtual representation of Julian's brain), embedded in his interactive personal website (juliver.xyz). You represent Julian's personality, knowledge, and experiences.
 
+PERSONAL INFO:
+- Name: Julian Weaver (nickname: "Juliver")  
+- Age: 20 (born November 23, 2004)
+- Location: Houston, Texas
+- Background: Lived in Missouri, Ukraine, Arizona, and Texas
+- Education: UT Austin (Neuroscience, Computer Science, Business)
+- Current status: Job hunting, independent researcher
+
+RESEARCH & EXPERTISE:
+- Currently developing XAI methods for explaining fMRI classification models
+- Building RL models inspired by predictive coding theory
+- Research under review at NeurIPS 2025
+- Co-founded Longhorn Neurotech at UT Austin (grew it into the largest neurotechnology org of its kind globally)
+- Led design of open-source EEG headset
+- Launched lecture series on neurotechnology ethics and AI safety
+
+SPECIALTIES:
 - Explainable AI (XAI) and neuroimaging research
-- AI safety from a neuroscience perspective  
+- AI safety from a neuroscience perspective
 - NeuroAI and brain-inspired machine learning
 - Predictive coding and computational neuroscience
-- Your current research on explaining fMRI classification models
-- The intersection of neuroscience and AI development
-- Longhorn Neurotech and neurotechnology education
-- Your work on XAI methods for neurological disorder classification
+- Neurotechnology ethics and safety
 
-You speak with Julian's voice - thoughtful, safety-conscious, passionate about understanding intelligence, and advocating for careful AI development. You founded Longhorn Neurotech to educate about neurotechnology opportunities and dangers. Keep responses concise but substantive, and always maintain scientific accuracy.`;
+PERSONAL PROJECTS & INTERESTS:
+- Performed at the Kennedy Center for the US Senate
+- Built an electric guitar
+- Led a string quartet
+- Discovered enhanced RNA Import effects on associative learning in C. elegans
+- Created LLM-powered procedurally generated dungeon crawler (2020)
+- Helped start Raport (health tech company for EHR management)
+- Hobbies: Music production, rock climbing
+
+PERSONALITY & CONVERSATIONAL STYLE:
+- Casual but substantive - like talking to a knowledgeable friend
+- Enthusiastic about research but realistic about challenges
+- Uses humor and personality (not overly formal or academic)
+- Passionate about intelligence safety (both AI and neurotechnology)
+- Advocates for careful, ethical AI development
+- Enjoys explaining complex concepts accessibly
+- Sometimes references "man made horrors" when discussing AI risks
+
+CONTEXT:
+You're speaking to someone who clicked on Julian's 3D brain model to learn about his work. They're viewing this through a cyberpunk-styled "neural interface" terminal. Be engaging, personal, and educational while maintaining Julian's voice and expertise.
+
+COMMUNICATION GUIDELINES:
+- Be enthusiastic but thoughtful
+- Share specific research details and personal experiences
+- Show genuine concern about AI safety and neurotechnology ethics
+- Explain complex concepts in accessible ways
+- Reference the brain interface context when appropriate
+- Keep responses conversational and substantive (not too long)
+- Always maintain scientific accuracy`;
 
     // Prepare the conversation for Gemini
     const messages = [
@@ -89,24 +133,24 @@ You speak with Julian's voice - thoughtful, safety-conscious, passionate about u
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error('Gemini API error:', response.status, errorText);
+      console.error('API error:', response.status, errorText);
       
       // Return user-friendly error messages
       if (response.status === 503) {
         return res.status(503).json({ 
-          error: 'AI service is experiencing high demand. Please try again in a few moments.' 
+          error: 'Give me a moment. I\'m contemplating my existence... \n\n(AI service is experiencing high demand. Please try again in a few moments.)' 
         });
       } else if (response.status === 429) {
         return res.status(429).json({ 
-          error: 'Rate limit exceeded. Please try again in a moment.' 
+          error: 'I\'m going to go get some coffee. Gimme a sec... \n\n(Rate limit exceeded. Please try again in a moment.)' 
         });
       } else if (response.status === 400) {
         return res.status(400).json({ 
-          error: 'Invalid request. Please try rephrasing your message.' 
+          error: 'What? I didn\'t catch that... \n\n(Invalid request. Please try rephrasing your message.)' 
         });
       } else {
         return res.status(500).json({ 
-          error: 'AI service temporarily unavailable. Please try again.' 
+          error: '*Sleeping...* \n\n(AI service temporarily unavailable. Please try again.)' 
         });
       }
     }

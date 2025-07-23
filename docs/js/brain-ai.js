@@ -24,10 +24,10 @@ class BrainAI {
         const aiInterface = document.createElement('div');
         aiInterface.innerHTML = `
             <div class="ai-section section" id="brain-ai-section">
-                <h2>🧠 Neural Interface</h2>
+                <h2>Neural Interface</h2>
                 <div class="ai-status" id="ai-status">
                     <span class="status-indicator offline"></span>
-                    <span id="status-text">AI Neural Network Offline</span>
+                    <span id="status-text">Network Offline</span>
                 </div>
                 
                 <div class="ai-info" id="ai-info">
@@ -371,16 +371,16 @@ class BrainAI {
             this.isInitialized = true;
             this.isLoading = false;
             
-            this.updateStatus('online', 'Neural Network Online');
-            this.addSystemMessage('Julian\'s Brain AI initialized successfully!');
-            this.addAIMessage('Hello! I\'m Julian\'s AI brain assistant. I can discuss my research in neuroscience, XAI, neuroimaging, and AI safety. I\'m particularly passionate about building safer AI systems by understanding how biological intelligence works. What would you like to explore?');
+            this.updateStatus('online', 'Network Online');
+            this.addSystemMessage('Model loaded successfully!');
+            this.addAIMessage('Pleasure to meet you! I\'m a virtual representation of Julian\'s brain (hallucinations notwithstanding)! A lot is happening in here... what\'s on your mind?');
             
             // Enable input
             this.enableInput();
             
         } catch (error) {
             console.error('Failed to initialize AI:', error);
-            this.updateStatus('offline', 'Neural Network Failed to Initialize');
+            this.updateStatus('offline', 'Network Failed to Initialize');
             this.addSystemMessage(`Error: ${error.message}`);
             this.addSystemMessage('Please check your internet connection and try again.');
             this.isLoading = false;
@@ -459,7 +459,7 @@ class BrainAI {
     }
 
     addAIMessage(content) {
-        this.addMessage('JULIAN.AI', content, 'ai-message');
+        this.addMessage('JULIVER.AI', content, 'ai-message');
     }
 
     addMessage(prefix, content, className) {
@@ -495,7 +495,7 @@ class BrainAI {
         const typingElement = document.createElement('div');
         typingElement.className = 'ai-message typing-indicator';
         typingElement.innerHTML = `
-            <span class="message-prefix">[JULIAN.AI]</span>
+            <span class="message-prefix">[JULIVER.AI]</span>
             <span class="message-content">Processing neural pathways</span>
         `;
         
