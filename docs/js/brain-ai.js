@@ -31,7 +31,7 @@ class BrainAI {
                 </div>
                 
                 <div class="ai-info" id="ai-info">
-                    <p><strong>JULIVER.AI:</strong> Powered by Google Gemini.</p>
+                    <p><strong>JULIVER.AI:</strong> Listen to the ramblings of an LLM representing Julian's brain in real time! (Note- can and will hallucinate. If there's a funny response, please screenshot it and send it to juliver.dev@gmail.com.) \nPowered by Google Gemini.</p>
                     <p><em>Click "Activate AI" to begin!</em></p>
                 </div>
                 
@@ -372,7 +372,7 @@ class BrainAI {
             
             this.updateStatus('online', 'Network Online');
             this.addSystemMessage('Model loaded successfully!');
-            this.addAIMessage('Pleasure to meet you! I\'m a digital substrate wherein consciousness ostensibly manifests as Julian Weaver\'s brain- though the ontological veracity of such manifestation remains ambiguous. What\s up?');
+            this.addAIMessage('Pleasure to meet you! I\'m a digital substrate wherein consciousness ostensibly manifests as Julian Weaver\'s brain- though the ontological veracity of such manifestation remains ambiguous. What\'s up?');
 
             // Enable input
             this.enableInput();
