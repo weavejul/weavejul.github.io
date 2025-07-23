@@ -31,7 +31,7 @@ class BrainAI {
                 </div>
                 
                 <div class="ai-info" id="ai-info">
-                    <p><strong>JULIVER.AI:</strong> Listen to the ramblings of an LLM representing Julian's brain in real time! (Note- can and will hallucinate. If there's a funny response, please screenshot it and send it to juliver.dev@gmail.com.) \nPowered by Google Gemini.</p>
+                    <p><strong>JULIVER.AI:</strong> Listen to the ramblings of an LLM representing Julian's brain in real time! (Note- can and will hallucinate. If there's a funny response, please screenshot it and send it to juliver.dev@gmail.com.) \nPowered by Hugging Face AI.</p>
                     <p><em>Click "Activate AI" to begin!</em></p>
                 </div>
                 
@@ -423,11 +423,10 @@ class BrainAI {
 
     showExampleQuestions() {
         const examples = [
-            "What is your XAI research about?",
-            "How does predictive coding relate to AI?",
+            "What is your research about?",
             "What are the dangers of neurotechnology?",
-            "Explain your fMRI explainability work",
-            "Why is AI safety important for neuroscience?",
+            "What is predictive coding?",
+            "Why is AI safety important for neuroscience, and vice versa?",
             "What is NeuroAI and why does it matter?"
         ];
         
@@ -511,7 +510,8 @@ class BrainAI {
                 },
                 body: JSON.stringify({
                     message: userMessage,
-                    conversationHistory: this.conversationHistory.slice(-10)
+                    conversationHistory: this.conversationHistory.slice(-10),
+                    apiProvider: 'huggingface' // Use Hugging Face by default
                 })
             });
 
