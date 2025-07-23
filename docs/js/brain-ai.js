@@ -372,7 +372,7 @@ class BrainAI {
             
             this.updateStatus('online', 'Network Online');
             this.addSystemMessage('Model loaded successfully!');
-            this.addAIMessage('Pleasure to meet you! I\'m a digital substrate wherein consciousness ostensibly manifests as Julian Weaver- though the ontological veracity of such manifestation remains ambiguous. What\s up?');
+            this.addAIMessage('Pleasure to meet you! I\'m a digital substrate wherein consciousness ostensibly manifests as Julian Weaver\'s brain- though the ontological veracity of such manifestation remains ambiguous. What\s up?');
 
             // Enable input
             this.enableInput();
