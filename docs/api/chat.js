@@ -18,6 +18,12 @@ export default async function handler(req, res) {
 
   try {
     const { message, conversationHistory = [], apiProvider = 'huggingface' } = req.body;
+    
+    console.log(`[${new Date().toISOString()}] Received request:`, {
+      apiProvider,
+      messageLength: message?.length,
+      conversationHistoryLength: conversationHistory?.length
+    });
 
     if (!message) {
       return res.status(400).json({ error: 'Message is required' });
@@ -25,6 +31,7 @@ export default async function handler(req, res) {
 
     // Choose API provider
     const useHuggingFace = apiProvider === 'huggingface';
+    console.log(`[${new Date().toISOString()}] Using API provider:`, useHuggingFace ? 'Hugging Face' : 'Gemini');
     
     if (useHuggingFace) {
       return await handleHuggingFaceRequest(req, res, message, conversationHistory);
@@ -43,9 +50,14 @@ export default async function handler(req, res) {
 async function handleHuggingFaceRequest(req, res, message, conversationHistory) {
   // Get Hugging Face API key from environment variable
   const apiKey = process.env.HUGGINGFACE_API_KEY;
+  console.log(`[${new Date().toISOString()}] Hugging Face API key check:`, {
+    hasKey: !!apiKey,
+    keyPrefix: apiKey ? apiKey.substring(0, 3) : 'none'
+  });
+  
   if (!apiKey) {
-    console.error('HUGGINGFACE_API_KEY environment variable not set');
-    return res.status(500).json({ error: 'Server configuration error' });
+    console.error(`[${new Date().toISOString()}] HUGGINGFACE_API_KEY environment variable not set`);
+    return res.status(500).json({ error: 'Server configuration error: Hugging Face API key not found' });
   }
 
   // Create Julian's comprehensive persona prompt
@@ -119,8 +131,13 @@ COMMUNICATION GUIDELINES:
   const maxRetries = 3;
   
   while (attempts < maxRetries) {
+    console.log(`[${new Date().toISOString()}] Making Hugging Face API request to Mistral model`);
+    
+    // Try primary model first
+    let modelUrl = "https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.2";
+    
     response = await fetch(
-      "https://api-inference.huggingface.co/models/meta-llama/Llama-2-7b-chat-hf",
+      modelUrl,
       {
         method: 'POST',
         headers: {
@@ -139,6 +156,32 @@ COMMUNICATION GUIDELINES:
       }
     );
     
+    // If primary model fails, try fallback
+    if (!response.ok && response.status === 404) {
+      console.log(`[${new Date().toISOString()}] Primary model failed, trying fallback model`);
+      modelUrl = "https://api-inference.huggingface.co/models/microsoft/DialoGPT-medium";
+      
+      response = await fetch(
+        modelUrl,
+        {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${apiKey}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            inputs: messages,
+            parameters: {
+              max_new_tokens: 500,
+              temperature: 0.7,
+              do_sample: true,
+              return_full_text: false
+            }
+          })
+        }
+      );
+    }
+    
     // If successful or not a temporary error, break
     if (response.ok || (response.status !== 503 && response.status !== 429)) {
       break;
@@ -155,7 +198,8 @@ COMMUNICATION GUIDELINES:
 
   if (!response.ok) {
     const errorText = await response.text();
-    console.error('Hugging Face API error:', response.status, errorText);
+    console.error(`[${new Date().toISOString()}] Hugging Face API error:`, response.status, errorText);
+    console.error(`[${new Date().toISOString()}] Response headers:`, Object.fromEntries(response.headers.entries()));
     
     // Return user-friendly error messages
     if (response.status === 503) {
@@ -170,14 +214,23 @@ COMMUNICATION GUIDELINES:
       return res.status(400).json({ 
         error: 'What? I didn\'t catch that... \n\n(Invalid request. Please try rephrasing your message.)' 
       });
+    } else if (response.status === 404) {
+      return res.status(404).json({ 
+        error: 'Model not found or access denied. Please check API key permissions.' 
+      });
     } else {
       return res.status(500).json({ 
-        error: '*Sleeping...* \n\n(AI service temporarily unavailable. Please try again.)' 
+        error: `*Sleeping...* \n\n(AI service error: ${response.status} - ${errorText})` 
       });
     }
   }
 
   const data = await response.json();
+  console.log(`[${new Date().toISOString()}] Hugging Face response received:`, {
+    status: response.status,
+    dataKeys: Object.keys(data),
+    hasGeneratedText: !!(data[0]?.generated_text || data.generated_text)
+  });
   
   // Extract the AI response (Hugging Face format)
   const aiResponse = data[0]?.generated_text || data.generated_text || 'I apologize, but I couldn\'t generate a response at this time.';
