@@ -785,7 +785,7 @@ export class HangingText {
      * @param {Object} effectParams - Effect parameters
      */
     drawTextGlowLayers(ctx, effectParams) {
-        for (let i = 0; i < 3; i++) {
+        for (let i = 0; i < 2; i++) {
             ctx.save();
             
             const layerTime = effectParams.time + (i * 0.5);
@@ -856,7 +856,7 @@ export class HangingText {
             ctx.lineJoin = 'round';
             
             // Draw multiple glow layers
-            for (let glowPass = 0; glowPass < 4; glowPass++) {
+            for (let glowPass = 0; glowPass < 2; glowPass++) {
                 ctx.save();
                 
                 const layerTime = stringTime + (glowPass * 0.3);

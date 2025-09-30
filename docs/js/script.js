@@ -694,9 +694,14 @@ class PhysicsApp {
     logWelcomeMessage() {
         if (APP_CONFIG.DEBUG.ENABLED) {
             logger.app('Physics App loaded!');
-            logger.app('  1️⃣ Click "Hello!" to make it fall (Alternatively, skip)');
-            logger.app('  2️⃣ "Next: I\'m" and "Julian" appear - click both to make them fall');
-            logger.app('  3️⃣ "Next: Ready?" appears in center - click to move to tunnel sequence');
+
+            if (APP_CONFIG.FEATURE_FLAGS?.SKIP_HANGING_TEXT_SCENES) {
+                logger.app('  🚀 Hanging text intro skipped – tunnel launches right away (press s to skip)');
+            } else {
+                logger.app('  1️⃣ Click "Hello!" to make it fall (Alternatively, skip)');
+                logger.app('  2️⃣ "Next: I\'m" and "Julian" appear - click both to make them fall');
+                logger.app('  3️⃣ "Next: Ready?" appears in center - click to move to tunnel sequence');
+            }
         }
     }
 }

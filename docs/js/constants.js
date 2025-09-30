@@ -23,13 +23,13 @@ export const APP_CONFIG = {
         /** Gravity strength */
         GRAVITY: 1,
         /** Number of constraint iterations for physics simulation */
-        CONSTRAINT_ITERATIONS: 10,
+        CONSTRAINT_ITERATIONS: 3,
         /** Number of position iterations for physics simulation */
-        POSITION_ITERATIONS: 10,
+        POSITION_ITERATIONS: 3,
         /** Number of velocity iterations for physics simulation */
-        VELOCITY_ITERATIONS: 10,
+        VELOCITY_ITERATIONS: 3,
         /** Pixels per segment for string physics */
-        STRING_SEGMENTS: 15
+        STRING_SEGMENTS: 50
     },
     
     /**
@@ -159,6 +159,15 @@ export const APP_CONFIG = {
         SHOW_COLOR_INFO: true,
         /** Whether to log scene changes */
         LOG_SCENE_CHANGES: true
+    },
+
+    /**
+     * Feature flags for runtime experiments and fallbacks
+     * @type {Object}
+     */
+    FEATURE_FLAGS: {
+        /** Skip the hanging text intro and jump straight to the tunnel */
+        SKIP_HANGING_TEXT_SCENES: true
     }
 };
 

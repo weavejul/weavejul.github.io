@@ -195,10 +195,14 @@ export class SceneManager {
         
         // Defer scene start to next frame for better performance
         requestAnimationFrame(() => {
-            this.runHelloScene();
+            if (APP_CONFIG.FEATURE_FLAGS?.SKIP_HANGING_TEXT_SCENES) {
+                this.runTunnelSceneDirectly();
+            } else {
+                this.runHelloScene();
+            }
         });
     }
-    
+
     /**
      * Show skip text overlay
      */
@@ -273,11 +277,33 @@ export class SceneManager {
         
         ctx.restore();
     }
-    
+
+    /**
+     * Skip hanging text scenes and start directly with the tunnel effect
+     */
+    runTunnelSceneDirectly() {
+        logger.scene('Skipping hanging text scenes - starting tunnel effect immediately');
+
+        this.showSkipTextOverlay();
+
+        if (!this.beginTransition()) {
+            logger.scene('Transition blocked - tunnel sequence already in progress');
+            return;
+        }
+
+        this.startTunnelEffect();
+    }
+
     /**
      * Scene 1: Hello text appears and waits to be clicked
      */
     runHelloScene() {
+        if (APP_CONFIG.FEATURE_FLAGS?.SKIP_HANGING_TEXT_SCENES) {
+            logger.scene('Feature flag active - bypassing hello scene for tunnel start');
+            this.runTunnelSceneDirectly();
+            return;
+        }
+
         logger.scene('Scene 1: Hello');
         this.currentScene = 'hello';
         this.emitSceneChange('hello');

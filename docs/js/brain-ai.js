@@ -382,7 +382,7 @@ class BrainAI {
                 // Handle specific error cases with user-friendly messages
                 if (response.status === 503) {
                     this.updateStatus('offline', 'Network Overloaded');
-                    this.addSystemMessage('Give me a moment. I\'m contemplating my existence...');
+                    this.addAIMessage('Give me a moment. I\'m contemplating my existence...');
                     this.addSystemMessage('(AI service is experiencing high demand. Please try again in a few moments.)');
                 } else if (response.status === 429) {
                     this.updateStatus('offline', 'Rate Limited');
@@ -390,7 +390,7 @@ class BrainAI {
                     this.addSystemMessage('(Rate limit exceeded because I don\'t want to pay for the API. Blame google. Please try again in a moment.)');
                 } else if (response.status === 400) {
                     this.updateStatus('offline', 'Invalid Request');
-                    this.addSystemMessage('What? I didn\'t catch that...');
+                    this.addAIMessage('What? I didn\'t catch that...');
                     this.addSystemMessage('(Invalid request. Please try rephrasing your message.)');
                 } else {
                     this.updateStatus('offline', 'Network Failed');
