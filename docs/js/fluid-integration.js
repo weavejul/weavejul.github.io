@@ -1,4 +1,5 @@
 import { logger } from './logger.js';
+import performanceManager from './perf-manager.js';
 
 /**
  * FluidIntegration class for managing fluid simulation canvas and animations
@@ -115,6 +116,8 @@ export class FluidIntegration {
         setTimeout(() => {
             if (window.initializeFluidSimulation) {
                 try {
+                    // Provide quality settings to the simulation script
+                    window.FluidQualitySettings = performanceManager.getFluidSettings();
                     window.initializeFluidSimulation();
                     logger.scene('Fluid simulation initialized');
                     resolve();

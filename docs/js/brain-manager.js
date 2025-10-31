@@ -1,4 +1,5 @@
 import { logger } from './logger.js';
+import performanceManager from './perf-manager.js';
 
 /**
  * BrainManager class for handling 3D brain visualization and interaction
@@ -49,6 +50,17 @@ export class BrainManager {
         // Fade-in state tracking
         this.isFadingIn = false;
         this.fadeInTimeout = null;
+
+        // Hover interaction properties
+        this.isHovered = false;
+        this.hoverScale = 1.04;
+        this.hoverEmissiveIntensity = 0.15;
+        this.boundHandlePointerMove = null;
+        this.previousCursor = '';
+        this.currentHoverAmount = 0; // 0 = no hover, 1 = full hover
+        this.targetHoverAmount = 0;
+        this.hoverLerpSpeed = 0.5; // smoothing factor per frame
+        this.hoverLightenFactor = 0.2; // max fraction toward white when fully hovered
     }
 
     /**
@@ -206,9 +218,13 @@ export class BrainManager {
             alpha: true,
             preserveDrawingBuffer: false
         });
+        if (this.renderer.setPixelRatio) {
+            this.renderer.setPixelRatio(performanceManager.getThreePixelRatioCap());
+        }
         this.renderer.setSize(window.innerWidth, window.innerHeight);
         this.renderer.setClearColor(0x000000, 0);
-        this.renderer.shadowMap.enabled = true;
+        const brainSettings = performanceManager.getBrainSettings();
+        this.renderer.shadowMap.enabled = !!brainSettings.shadows;
         this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
         this.container.appendChild(this.renderer.domElement);
         
@@ -232,9 +248,10 @@ export class BrainManager {
         // Main directional light
         const directionalLight = new THREE.DirectionalLight(0xffffff, 3.0);
         directionalLight.position.set(5, 5, 5);
-        directionalLight.castShadow = true;
-        directionalLight.shadow.mapSize.width = 2048;
-        directionalLight.shadow.mapSize.height = 2048;
+        const brainSettings = performanceManager.getBrainSettings();
+        directionalLight.castShadow = !!brainSettings.shadows;
+        directionalLight.shadow.mapSize.width = 1024;
+        directionalLight.shadow.mapSize.height = 1024;
         this.scene.add(directionalLight);
 
         // Secondary directional light for fill
@@ -382,6 +399,10 @@ export class BrainManager {
             document.addEventListener('touchstart', this.boundHandleBrainClick, { passive: false });
             logger.scene('Brain touch detection initialized for mobile');
         }
+        
+        // Hover detection on pointer move
+        this.boundHandlePointerMove = this.handlePointerMove.bind(this);
+        document.addEventListener('mousemove', this.boundHandlePointerMove);
         
         logger.scene('Brain click detection initialized');
     }
@@ -630,6 +651,75 @@ export class BrainManager {
     }
 
     /**
+     * Handle pointer move for hover detection
+     * @param {MouseEvent} event - The mouse move event
+     */
+    handlePointerMove(event) {
+        if (!this.brainModel) return;
+        
+        // If panel is visible, ignore hover to allow text selection and UI usage
+        if (this.panelVisible) {
+            if (this.isHovered) this.setHovered(false);
+            return;
+        }
+        
+        // Calculate position in normalized device coordinates
+        this.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+        this.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+        
+        // Update the picking ray with the camera and mouse position
+        this.raycaster.setFromCamera(this.mouse, this.camera);
+        
+        // Calculate objects intersecting the picking ray
+        const intersects = this.raycaster.intersectObject(this.brainModel, true);
+        
+        this.setHovered(intersects.length > 0);
+    }
+
+    /**
+     * Update hovered state and apply or clear effects
+     * @param {boolean} hovered - Whether the brain is hovered
+     */
+    setHovered(hovered) {
+        if (this.isHovered === hovered) {
+            this.updateCursor();
+            return;
+        }
+        this.isHovered = hovered;
+        if (hovered) {
+            this.applyHoverEffect();
+        } else {
+            this.clearHoverEffect();
+        }
+        this.updateCursor();
+    }
+
+    /**
+     * Apply hover visual effect (slight lightening and scale-up)
+     */
+    applyHoverEffect() {
+        if (!this.brainModel) return;
+        // Set target; updateHover will animate smoothly, even if pulse just ended
+        this.targetHoverAmount = 1;
+    }
+
+    /**
+     * Clear hover visual effect and restore base state
+     */
+    clearHoverEffect() {
+        if (!this.brainModel) return;
+        // Set target back to zero; updateHover will animate smoothly
+        this.targetHoverAmount = 0;
+    }
+
+    /**
+     * Update document cursor based on hover state
+     */
+    updateCursor() {
+        document.body.style.cursor = (this.isHovered && !this.panelVisible) ? 'pointer' : '';
+    }
+
+    /**
      * Start pulse animation
      */
     startPulse() {
@@ -719,6 +809,13 @@ export class BrainManager {
             });
             
             logger.scene('Brain pulse animation completed');
+
+            // Reapply hover effect if still hovered, otherwise ensure cleared
+            if (this.isHovered) {
+                this.applyHoverEffect();
+            } else {
+                this.clearHoverEffect();
+            }
         }
 
     /**
@@ -743,6 +840,18 @@ export class BrainManager {
                 return;
             }
 
+            // If page is hidden, skip heavy work
+            if (typeof document !== 'undefined' && document.hidden) {
+                this.animationId = requestAnimationFrame(animate);
+                return;
+            }
+
+            // Adaptive frame skipping
+            const brainSettings = performanceManager.getBrainSettings();
+            this._frameCounter = (this._frameCounter || 0) + 1;
+            const skip = brainSettings.frameSkip || 0;
+            const shouldRenderThisFrame = (this._frameCounter % (skip + 1)) === 0;
+
             // Auto-rotate the brain
             if (this.brainModel && this.autoRotate) {
                 this.brainModel.rotation.y += this.rotationSpeed;
@@ -756,8 +865,11 @@ export class BrainManager {
             // Update pulse animation
             this.updatePulse();
 
-            // Render the scene
-            if (this.renderer && this.scene && this.camera) {
+            // Update hover animation (smooth growth/lightening)
+            this.updateHover();
+
+            // Render the scene (conditionally)
+            if (shouldRenderThisFrame && this.renderer && this.scene && this.camera) {
                 this.renderer.render(this.scene, this.camera);
             }
 
@@ -766,6 +878,51 @@ export class BrainManager {
 
         animate();
         logger.scene('Brain animation started with pause support');
+    }
+
+    /**
+     * Smoothly animate hover effects (scale and emissive intensity)
+     */
+    updateHover() {
+        if (!this.brainModel) return;
+        
+        // During pulse, avoid applying hover visuals but keep target updated
+        if (this.isPulsing) return;
+        
+        // Lerp current amount towards target
+        const delta = this.targetHoverAmount - this.currentHoverAmount;
+        if (Math.abs(delta) < 0.001) {
+            this.currentHoverAmount = this.targetHoverAmount;
+        } else {
+            this.currentHoverAmount += delta * this.hoverLerpSpeed;
+        }
+        
+        // Apply smooth scale based on current hover amount
+        if (this.originalScale) {
+            const scale = this.originalScale.x * (1 + (this.hoverScale - 1) * this.currentHoverAmount);
+            this.brainModel.scale.setScalar(scale);
+        }
+        
+        // Apply smooth emissive intensity
+        const baseEmissive = 0.05;
+        const targetEmissive = baseEmissive + (this.hoverEmissiveIntensity - baseEmissive) * this.currentHoverAmount;
+        this.brainModel.traverse((child) => {
+            if (child.isMesh && child.material && 'emissiveIntensity' in child.material) {
+                child.material.emissiveIntensity = targetEmissive;
+            }
+        });
+
+        // Lighten base color slightly toward white for clearer feedback
+        const lightenTowardWhite = this.hoverLightenFactor * this.currentHoverAmount;
+        if (lightenTowardWhite > 0 || this.currentHoverAmount === 0) {
+            this.originalMaterials.forEach((materialData, index) => {
+                if (materialData.mesh && materialData.mesh.material && this.originalColors[index]) {
+                    const baseColor = this.originalColors[index];
+                    const lightened = baseColor.clone().lerp(this.pulseColor, lightenTowardWhite);
+                    materialData.mesh.material.color.copy(lightened);
+                }
+            });
+        }
     }
 
     /**
@@ -967,6 +1124,7 @@ export class BrainManager {
         // Remove event listeners
         window.removeEventListener('resize', this.onWindowResize.bind(this));
         document.removeEventListener('click', this.boundHandleBrainClick);
+        document.removeEventListener('mousemove', this.boundHandlePointerMove);
 
         // Dispose of Three.js resources
         this.disposeThreeJSResources();

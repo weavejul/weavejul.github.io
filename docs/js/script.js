@@ -22,6 +22,7 @@ import {
 } from './utils.js';
 import { APP_CONFIG } from './constants.js';
 import { logger } from './logger.js';
+import performanceManager from './perf-manager.js';
 
 /**
  * Mobile detection function
@@ -265,6 +266,8 @@ class PhysicsApp {
     setupVisibilityHandler() {
         const visibilityHandler = () => {
             this.isWindowVisible = !document.hidden;
+            // Inform performance manager
+            performanceManager.setHidden(document.hidden);
         };
         
         document.addEventListener('visibilitychange', visibilityHandler);
@@ -559,6 +562,12 @@ class PhysicsApp {
      */
     startSceneSequence() {
         this.sceneManager.run();
+        // Begin perf sampling loop
+        const perfTick = (t) => {
+            performanceManager.tick(t);
+            requestAnimationFrame(perfTick);
+        };
+        requestAnimationFrame(perfTick);
     }
 
     /**

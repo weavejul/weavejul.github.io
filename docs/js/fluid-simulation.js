@@ -147,6 +147,12 @@ let brainTurbulence = {
     intensity: 0.8
 };
 
+// Adaptive quality knobs (overridden by integration)
+let simulationStepDivisor = 1;
+let simFrameCounter = 0;
+let brainTurbulenceInterval = 1;
+let brainTurbulencePoints = 12;
+
 // Initialize ditheringTexture only if not already initialized
 if (typeof ditheringTexture === 'undefined') {
     // Don't initialize ditheringTexture here - it needs gl context
@@ -218,6 +224,24 @@ if (!canvas) {
     SUNRAYS_RESOLUTION: 196,
     SUNRAYS_WEIGHT: 0.5,
     };
+    
+    // Merge adaptive quality settings if provided
+    try {
+        const q = window.FluidQualitySettings || null;
+        if (q && typeof q === 'object') {
+            if (q.SIM_RESOLUTION) config.SIM_RESOLUTION = q.SIM_RESOLUTION;
+            if (q.DYE_RESOLUTION) config.DYE_RESOLUTION = q.DYE_RESOLUTION;
+            if (q.PRESSURE_ITERATIONS != null) config.PRESSURE_ITERATIONS = q.PRESSURE_ITERATIONS;
+            if (q.BLOOM != null) config.BLOOM = q.BLOOM;
+            if (q.BLOOM_ITERATIONS != null) config.BLOOM_ITERATIONS = q.BLOOM_ITERATIONS;
+            if (q.BLOOM_RESOLUTION) config.BLOOM_RESOLUTION = q.BLOOM_RESOLUTION;
+            if (q.SUNRAYS != null) config.SUNRAYS = q.SUNRAYS;
+            simulationStepDivisor = q.simulationStepDivisor || 1;
+            brainTurbulencePoints = q.brainTurbulencePoints || brainTurbulencePoints;
+            brainTurbulenceInterval = q.brainTurbulenceInterval || brainTurbulenceInterval;
+            window._fluidQuality = q;
+        }
+    } catch (_) {}
     
     // Initialize WebGL context
     const webGLContext = getWebGLContext(canvas);
@@ -1399,12 +1423,18 @@ function updateKeywords () {
  * @function update
  */
 function update () {
+    // Throttle heavily when page is hidden
+    if (typeof document !== 'undefined' && document.hidden) {
+        requestAnimationFrame(update);
+        return;
+    }
     const dt = calcDeltaTime();
     if (resizeCanvas())
         initFramebuffers();
     updateColors(dt);
     applyInputs();
-    if (!config.PAUSED)
+    simFrameCounter++;
+    if (!config.PAUSED && (simFrameCounter % simulationStepDivisor === 0))
         step(dt);
     render(null);
     requestAnimationFrame(update);
@@ -1913,6 +1943,10 @@ function getTextureScale (texture, width, height) {
 
 function scaleByPixelRatio (input) {
     let pixelRatio = window.devicePixelRatio || 1;
+    try {
+        const cap = (window._fluidQuality && window._fluidQuality.maxDevicePixelRatio) || null;
+        if (cap) pixelRatio = Math.min(pixelRatio, cap);
+    } catch (_) {}
     return Math.floor(input * pixelRatio);
 }
 
@@ -1972,6 +2006,8 @@ window.initializeFluidSimulation = initializeFluidSimulation;
  * @function updateBrainTurbulence
  */
 function updateBrainTurbulence() {
+    updateBrainTurbulence._counter = (updateBrainTurbulence._counter || 0) + 1;
+    if (updateBrainTurbulence._counter % brainTurbulenceInterval !== 0) return;
     const now = Date.now();
     const dt = (now - brainTurbulence.lastUpdateTime) / 1000;
     brainTurbulence.lastUpdateTime = now;
@@ -2016,7 +2052,7 @@ function updateBrainTurbulence() {
 function createBrainTurbulence() {
     // Create velocity disturbances around the brain's position
     const brain = brainTurbulence;
-    const numPoints = 12; // More points for brain-like turbulence
+    const numPoints = brainTurbulencePoints; // Adaptive turbulence complexity
     
     for (let i = 0; i < numPoints; i++) {
         const angle = (i / numPoints) * Math.PI * 2 + brain.angle;

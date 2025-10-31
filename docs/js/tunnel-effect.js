@@ -1,4 +1,5 @@
 import { logger } from './logger.js';
+import performanceManager from './perf-manager.js';
 
 /**
  * TunnelEffect class for creating immersive 3D tunnel visualizations
@@ -55,6 +56,14 @@ export class TunnelEffect {
         ];
         this.currentShapeIndex = 0;
         this.shapeTransitionTime = 0;
+        
+        // Performance-related settings
+        const tunnelSettings = performanceManager.getTunnelSettings();
+        this.geometryComplexity = tunnelSettings.geometryComplexity;
+        this.enableInnerTube = tunnelSettings.innerTube;
+        this.maxRings = tunnelSettings.rings;
+        this.normalsFrameSkip = 2; // compute normals every 3rd frame
+        this._normalsFrameCounter = 0;
         
         // Color animation parameters
         this.colorWaveSpeed = 0.3;
@@ -190,6 +199,10 @@ export class TunnelEffect {
             antialias: true,
             alpha: true
         });
+        // Cap pixel ratio to reduce GPU load
+        if (this.renderer.setPixelRatio) {
+            this.renderer.setPixelRatio(performanceManager.getThreePixelRatioCap());
+        }
         this.renderer.setSize(window.innerWidth, window.innerHeight);
         this.renderer.setClearColor(0x000000, 0);
     }
@@ -577,27 +590,23 @@ export class TunnelEffect {
     // Create additional tunnel layers for more complex visuals
     createAdditionalLayers() {
         // Create inner tunnel with smaller radius but same morphing capability
-        this.innerTubeGeometry = this.createMorphingTubeGeometry(0.6); // 60% of original size
+        if (this.enableInnerTube) {
+            this.innerTubeGeometry = this.createMorphingTubeGeometry(0.6); // 60% of original size
+            this.innerTubeMaterial = new THREE.MeshBasicMaterial({
+                side: THREE.BackSide,
+                vertexColors: true,
+                transparent: true,
+                opacity: 0.0
+            });
+            this.applyProceduralColors(this.innerTubeGeometry, 0.5, 2.5);
+            this.innerTubeMesh = new THREE.Mesh(this.innerTubeGeometry, this.innerTubeMaterial);
+            this.scene.add(this.innerTubeMesh);
+            this.innerTubeGeometry_o = this.innerTubeGeometry.clone();
+        }
         
-        this.innerTubeMaterial = new THREE.MeshBasicMaterial({
-            side: THREE.BackSide,
-            vertexColors: true,
-            transparent: true,
-            opacity: 0.0 // Start invisible for fade-in
-        });
-        
-        // Apply different color pattern to inner tube (offset palette timing)
-        this.applyProceduralColors(this.innerTubeGeometry, 0.5, 2.5);
-        
-        this.innerTubeMesh = new THREE.Mesh(this.innerTubeGeometry, this.innerTubeMaterial);
-        this.scene.add(this.innerTubeMesh);
-        
-        // Store original for animations
-        this.innerTubeGeometry_o = this.innerTubeGeometry.clone();
-        
-        // Create outer ring patterns with shape-based segments
+        // Create outer ring patterns with shape-based segments (limited by performance)
         this.rings = [];
-        for (let i = 0; i < 3; i++) {
+        for (let i = 0; i < this.maxRings; i++) {
             const ringShape = this.shapeSequence[i % this.shapeSequence.length];
             const ringGeometry = new THREE.RingGeometry(
                 this.tubeRadius * (1.2 + i * 0.2), 
@@ -897,7 +906,11 @@ export class TunnelEffect {
         }
         
         positions.needsUpdate = true;
-        this.tubeGeometry.computeVertexNormals();
+        // Throttle normals recomputation for performance
+        this._normalsFrameCounter = (this._normalsFrameCounter + 1) % (this.normalsFrameSkip + 1);
+        if (this._normalsFrameCounter === 0) {
+            this.tubeGeometry.computeVertexNormals();
+        }
     }
     
     // Update inner tunnel geometry with offset shape transitions
@@ -961,7 +974,9 @@ export class TunnelEffect {
         }
         
         positions.needsUpdate = true;
-        this.innerTubeGeometry.computeVertexNormals();
+        if (this._normalsFrameCounter === 0) {
+            this.innerTubeGeometry.computeVertexNormals();
+        }
     }
     
     // Update ring animations based on current shapes
@@ -1237,6 +1252,12 @@ export class TunnelEffect {
             return;
         }
         
+        // Skip heavy work when page is hidden
+        if (typeof document !== 'undefined' && document.hidden) {
+            this.animationId = requestAnimationFrame(() => this.animate());
+            return;
+        }
+
         const currentTime = performance.now();
         const delta = currentTime - this.startTime;
         
