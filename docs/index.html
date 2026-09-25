@@ -248,7 +248,7 @@
             --L: calc(var(--len) * 1svh); --dx: 0em; --ay: 0.045em;
             position: absolute; top: 0; left: calc(var(--x) - var(--dx)); width: 0; height: calc(var(--L) + 1em);
             font-family: var(--serif); font-size: clamp(4.4rem, 10vw, 12rem); line-height: 1;
-            transform-origin: 0 0; will-change: transform;
+            transform-origin: 0 0;
         }
         .name .l::before {
             content: ''; position: absolute; left: 0; top: 0; width: 1px; height: calc(var(--L) + 0.02em);
@@ -257,6 +257,10 @@
         .name .jv::before { background: var(--blood); opacity: 0.9; }
         .name .g { position: absolute; top: calc(var(--L) - var(--ay)); left: var(--dx); transform: translateX(-50%); cursor: grab; user-select: none; -webkit-user-select: none; touch-action: none; }
         .name .l.held .g { cursor: grabbing; color: var(--blood); }
+        /* With JS the strings are drawn as SVG lines and only the glyphs move (see home.js). */
+        .strings { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+        .hero.hang-js .name .l::before { display: none; }
+        .hero.hang-js .name .g { left: 0; top: 0; transform-origin: 0 0; will-change: transform; }
         .hero p { margin: 0; position: absolute; }
         .hero-role { right: var(--gutter); bottom: 5svh; width: min(25rem, 36vw); text-align: right; font-size: clamp(1.05rem, 1.3vw, 1.3rem); line-height: 1.35; }
         .hero-role .co { font-size: 1.6em; line-height: 1.05; display: block; margin-bottom: 0.4rem; }

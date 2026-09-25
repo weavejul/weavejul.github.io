@@ -1,5 +1,7 @@
 /* juliver.xyz
  * 1. The name hangs from the top of the page. Each letter is a pendulum.
+ *    Only the small glyphs rotate; the strings are SVG lines redrawn from the same state each frame.
+ *    (Rotating the whole tall letter box let some browsers redraw half a string a frame late.)
  * 2. Plate I: a live 3D brain with leader lines to labelled regions.
  * 3. Cerebrospinal fluid: a fluid simulation behind a live age counter.
  * All of it is progressive enhancement. Without JS the page is plain text and images.
@@ -52,21 +54,48 @@
       return {
         el: el, glyph: el.querySelector('.g'),
         a: reduceMotion ? 0 : (Math.random() - 0.5) * 0.24, v: 0,
-        L: 300, px: 0, py: 0, ox: 0, oy: 300, grab: 0, drag: false
+        L: 300, px: 0, py: 0, ox: 0, oy: 300, gx: 0, gy: 0, len: 300, grab: 0, drag: false
       };
     });
-    function paint(s) { s.el.style.transform = 'rotate(' + (-s.a) + 'rad)'; }
 
+    var NS = 'http://www.w3.org/2000/svg';
+    var svg = document.createElementNS(NS, 'svg');
+    svg.setAttribute('class', 'strings');
+    svg.setAttribute('aria-hidden', 'true');
+    hero.insertBefore(svg, hero.firstChild);
+    state.forEach(function (s) {
+      s.line = document.createElementNS(NS, 'line');
+      s.line.setAttribute('stroke-width', '1');
+      svg.appendChild(s.line);
+    });
+
+    function paint(s) {
+      var sa = Math.sin(s.a), ca = Math.cos(s.a);
+      s.glyph.style.transform = 'rotate(' + (-s.a) + 'rad) translate(' + s.gx + 'px,' + s.gy + 'px)';
+      s.line.setAttribute('x2', s.px + s.len * sa);
+      s.line.setAttribute('y2', s.py + s.len * ca);
+    }
+
+    // Read the resting layout from the CSS version (strings as ::before), then switch to SVG strings.
     function measure() {
+      hero.classList.remove('hang-js');
+      state.forEach(function (s) { s.glyph.style.transform = ''; });
       var hr = hero.getBoundingClientRect();
       state.forEach(function (s) {
-        s.el.style.transform = 'none';
         var er = s.el.getBoundingClientRect(), gr = s.glyph.getBoundingClientRect();
+        var str = getComputedStyle(s.el, '::before');
         s.px = er.left - hr.left; s.py = er.top - hr.top;
-        s.ox = (gr.left + gr.width / 2) - er.left; s.oy = (gr.top + gr.height / 2) - er.top;
+        s.gx = gr.left - er.left; s.gy = gr.top - er.top;
+        s.ox = s.gx + gr.width / 2; s.oy = s.gy + gr.height / 2;
         s.L = Math.max(80, Math.hypot(s.ox, s.oy));
-        paint(s);
+        s.len = parseFloat(str.height) || s.oy;
+        s.line.setAttribute('stroke', str.backgroundColor);
+        s.line.setAttribute('stroke-opacity', str.opacity);
+        s.line.setAttribute('x1', s.px);
+        s.line.setAttribute('y1', s.py);
       });
+      hero.classList.add('hang-js');
+      state.forEach(paint);
     }
 
     var last = null;
