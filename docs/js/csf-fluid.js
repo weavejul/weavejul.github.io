@@ -1745,9 +1745,8 @@ function localPos(e) {
     var r = canvas.getBoundingClientRect();
     return [scaleByPixelRatio(e.clientX - r.left), scaleByPixelRatio(e.clientY - r.top)];
 }
-host.addEventListener('pointermove', function (e) {
+function stir(id, e) {
     var p = localPos(e);
-    var id = e.pointerType === 'mouse' ? -1 : e.pointerId;
     var pointer = pointers.find(function (q) { return q.id == id; });
     if (!pointer) {
         pointer = pointers.find(function (q) { return !q.down; }) || new pointerPrototype();
@@ -1757,15 +1756,32 @@ host.addEventListener('pointermove', function (e) {
     }
     if (!pointer.down) { updatePointerDownData(pointer, id, p[0], p[1]); return; }
     updatePointerMoveData(pointer, p[0], p[1]);
-}, { passive: true });
-function release(e) {
-    var id = e.pointerType === 'mouse' ? -1 : e.pointerId;
+}
+function releaseId(id) {
     var pointer = pointers.find(function (q) { return q.id == id; });
     if (pointer) { updatePointerUpData(pointer); pointer.id = -2; }
+}
+// Mouse and pen stir on hover. Touch uses passive touch events instead, because pointer
+// events stop as soon as the page starts scrolling; this way a finger stirs while it scrolls.
+host.addEventListener('pointermove', function (e) {
+    if (e.pointerType === 'touch') return;
+    stir(e.pointerType === 'mouse' ? -1 : e.pointerId, e);
+}, { passive: true });
+function release(e) {
+    if (e.pointerType === 'touch') return;
+    releaseId(e.pointerType === 'mouse' ? -1 : e.pointerId);
 }
 host.addEventListener('pointerleave', release, { passive: true });
 host.addEventListener('pointercancel', release, { passive: true });
 host.addEventListener('pointerup', function (e) { if (e.pointerType !== 'mouse') release(e); }, { passive: true });
+host.addEventListener('touchmove', function (e) {
+    for (var i = 0; i < e.changedTouches.length; i++) stir('t' + e.changedTouches[i].identifier, e.changedTouches[i]);
+}, { passive: true });
+function touchEnd(e) {
+    for (var i = 0; i < e.changedTouches.length; i++) releaseId('t' + e.changedTouches[i].identifier);
+}
+host.addEventListener('touchend', touchEnd, { passive: true });
+host.addEventListener('touchcancel', touchEnd, { passive: true });
 }
 
 function updatePointerDownData (pointer, id, posX, posY) {

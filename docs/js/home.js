@@ -52,7 +52,7 @@
       return {
         el: el, glyph: el.querySelector('.g'),
         a: reduceMotion ? 0 : (Math.random() - 0.5) * 0.24, v: 0,
-        L: 300, px: 0, py: 0, drag: false
+        L: 300, px: 0, py: 0, ox: 0, oy: 300, grab: 0, drag: false
       };
     });
     function paint(s) { s.el.style.transform = 'rotate(' + (-s.a) + 'rad)'; }
@@ -63,7 +63,8 @@
         s.el.style.transform = 'none';
         var er = s.el.getBoundingClientRect(), gr = s.glyph.getBoundingClientRect();
         s.px = er.left - hr.left; s.py = er.top - hr.top;
-        s.L = Math.max(80, (gr.top + gr.height / 2) - er.top);
+        s.ox = (gr.left + gr.width / 2) - er.left; s.oy = (gr.top + gr.height / 2) - er.top;
+        s.L = Math.max(80, Math.hypot(s.ox, s.oy));
         paint(s);
       });
     }
@@ -76,7 +77,8 @@
         var vx = (x - last.x) / (Math.max(8, t - last.t) / 1000);
         state.forEach(function (s) {
           if (s.drag) return;
-          var gx = s.px + Math.sin(s.a) * s.L, gy = s.py + Math.cos(s.a) * s.L;
+          var ca = Math.cos(s.a), sa = Math.sin(s.a);
+          var gx = s.px + s.ox * ca + s.oy * sa, gy = s.py - s.ox * sa + s.oy * ca;
           var d = Math.hypot(x - gx, y - gy);
           if (d < 110) s.v += (vx / s.L) * 0.05 * (1 - d / 110);
         });
@@ -88,15 +90,18 @@
 
     state.forEach(function (s) {
       var prev = null;
+      function angleAt(e) {
+        var hr = hero.getBoundingClientRect();
+        return Math.atan2(e.clientX - hr.left - s.px, Math.max(20, e.clientY - hr.top - s.py));
+      }
       s.glyph.addEventListener('pointerdown', function (e) {
         e.preventDefault();
         s.glyph.setPointerCapture(e.pointerId);
-        s.drag = true; prev = null; s.el.classList.add('held'); start();
+        s.drag = true; prev = null; s.grab = angleAt(e) - s.a; s.el.classList.add('held'); start();
       });
       s.glyph.addEventListener('pointermove', function (e) {
         if (!s.drag) return;
-        var hr = hero.getBoundingClientRect();
-        var a = Math.atan2(e.clientX - hr.left - s.px, Math.max(20, e.clientY - hr.top - s.py));
+        var a = angleAt(e) - s.grab;
         a = Math.max(-1.3, Math.min(1.3, a));
         var t = performance.now();
         if (prev) s.v = (a - prev.a) / Math.max(0.008, (t - prev.t) / 1000);
@@ -152,7 +157,7 @@
     var poke = document.getElementById('poke');
     if (poke) {
       var day = new Date().toLocaleDateString('en-US', { weekday: 'long' });
-      poke.textContent = '(It’s ' + day + '. Do you typically poke at exposed brain matter on ' + day + 's?)';
+      poke.textContent = '(Do you typically poke at exposed brain matter on ' + day + 's?)';
     }
 
     // Surface points in model space, raycast from the left lateral view, with normals.
