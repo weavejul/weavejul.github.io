@@ -2,1700 +2,541 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
-    <!-- SEO Meta Tags -->
-    <title>Julian Weaver</title>
-    <meta name="description" content="Hi, I'm Julian Weaver! I'm a neuroscientist, ML researcher, and founder based in Houston. I'm fascinated by the foundations of intelligent systems, especially the human kind!">
-    <meta name="keywords" content="Julian Weaver, Juliver, Julian Weaver neuroscientist, Julian Weaver AI, Julian Weaver ML researcher, Julian Weaver Houston, Julian Weaver founder, Julian Weaver Longhorn Neurotech, AI engineer, machine learning, deep learning, developer, Python, PyTorch, transformers, LLMs, NeuroAI, 3D graphics, interactive web, neuroscience, neuro-inspired ML, XAI, neuroimaging, neuro-inspired AI safety, AI, ML, RL, computational neuroscience, NeurIPS, UT Austin">
-    <meta name="author" content="Julian Weaver">
-    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
-    <meta name="language" content="English">
-    <meta name="geo.region" content="US-TX">
-    <meta name="geo.placename" content="Houston">
-    <meta name="classification" content="Personal Website">
-    <meta name="rating" content="General">
-    <meta name="distribution" content="Global">
-    <meta name="revisit-after" content="7 days">
-    <meta name="coverage" content="Worldwide">
-    <meta name="target" content="all">
-    <meta name="audience" content="all">
-    <meta name="subject" content="Julian Weaver, Juliver, Neuroscientist, AI Researcher, ML Engineer">
-    <meta name="abstract" content="Julian Weaver is a neuroscientist, ML researcher, AI safety advocate, and founder specializing in XAI, neuroimaging, and NeuroAI research.">
-    <meta name="topic" content="Neuroscience, Machine Learning, AI Safety, XAI, Neuroimaging">
-    <meta name="summary" content="Personal website of Julian Weaver.">
-    <meta name="category" content="Science, Technology, Research">
-    <meta name="pagename" content="Julian Weaver">
-    <meta name="page-type" content="Personal Homepage">
-    <meta name="publisher" content="Julian Weaver">
-    <meta name="copyright" content="Julian Weaver">
-    <meta name="designer" content="Julian Weaver">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <!-- Canonical URL -->
+    <title>Julian Weaver (juliver) | Founder &amp; CEO of Dydema</title>
+    <meta name="description" content="Julian Weaver (juliver) is the founder and CEO of Dydema (YC F26), a neurotech model and data company. Neuroscientist and ML researcher in San Francisco.">
+    <meta name="author" content="Julian Weaver">
+    <meta name="robots" content="index, follow, max-image-preview:large">
     <link rel="canonical" href="https://juliver.xyz/">
-    
-    <!-- Redirect www to non-www (JavaScript fallback) -->
-    <script>
-        if (window.location.hostname === 'www.juliver.xyz') {
-            window.location.replace('https://juliver.xyz/');
-        }
-    </script>
-    
-    <!-- Open Graph / Facebook -->
+    <meta name="theme-color" content="#ffffff">
+
     <meta property="og:type" content="profile">
+    <meta property="og:site_name" content="juliver.xyz">
     <meta property="og:url" content="https://juliver.xyz/">
-    <meta property="og:title" content="Julian Weaver">
-    <meta property="og:description" content="I'm Julian Weaver- a neuroscientist, ML researcher, and founder based in Houston. I'm fascinated by the foundations of intelligent systems, especially the human kind!">
-    <meta property="og:image" content="https://juliver.xyz/assets/images/brainbanner.png">
+    <meta property="og:title" content="Julian Weaver (juliver) | Founder &amp; CEO of Dydema">
+    <meta property="og:description" content="Founder &amp; CEO of Dydema (YC F26), a neurotech model and data company. Neuroscientist and ML researcher in San Francisco.">
+    <meta property="og:image" content="https://juliver.xyz/assets/images/julian-weaver-og.jpg">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
-    <meta property="og:image:alt" content="Julian Weaver's Personal Website">
-    <meta property="og:site_name" content="Julian Weaver">
+    <meta property="og:image:alt" content="Julian Weaver, Founder &amp; CEO of Dydema">
     <meta property="og:locale" content="en_US">
-    <meta property="article:author" content="Julian Weaver">
-    <meta property="article:publisher" content="Julian Weaver">
-    <meta property="article:section" content="Science">
-    <meta property="article:tag" content="Neuroscience">
-    <meta property="article:tag" content="Machine Learning">
-    <meta property="article:tag" content="AI Safety">
-    <meta property="article:tag" content="XAI">
-    <meta property="article:tag" content="Neuroimaging">
-    <meta property="article:tag" content="NeuroAI">
     <meta property="profile:first_name" content="Julian">
     <meta property="profile:last_name" content="Weaver">
-    
-    <!-- Twitter -->
-    <meta property="twitter:card" content="summary_large_image">
-    <meta property="twitter:url" content="https://juliver.xyz/">
-    <meta property="twitter:title" content="Julian Weaver">
-    <meta property="twitter:description" content="I'm Julian Weaver- a neuroscientist, ML researcher, and founder based in Houston. I'm fascinated by the foundations of intelligent systems, especially the human kind!">
-    <meta property="twitter:image" content="https://juliver.xyz/assets/images/brainbanner.png">
-    <meta property="twitter:image:alt" content="Julian Weaver's Personal Website">
-    <meta property="twitter:image:width" content="1200">
-    <meta property="twitter:image:height" content="630">
-    <meta name="twitter:image:src" content="https://juliver.xyz/assets/icons/favicon-512x512.png">
-    <meta property="twitter:creator" content="@juliverian">
-    <meta property="twitter:site" content="@juliverian">
-    
-    <!-- Additional SEO Meta Tags -->
-    <meta name="theme-color" content="#000000">
-    <meta name="msapplication-TileColor" content="#000000">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Julian Weaver">
-    
-    <!-- Favicon and App Icons -->
-    <link rel="icon" type="image/x-icon" href="https://juliver.xyz/favicon.ico">
-    <link rel="shortcut icon" href="https://juliver.xyz/favicon.ico">
-    <link rel="icon" href="https://juliver.xyz/favicon.ico">
-    <link rel="icon" type="image/png" sizes="16x16" href="https://juliver.xyz/assets/icons/favicon-16x16.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="https://juliver.xyz/assets/icons/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="48x48" href="https://juliver.xyz/assets/icons/favicon-48x48.png">
-    <link rel="icon" type="image/png" sizes="512x512" href="https://juliver.xyz/assets/icons/favicon-512x512.png">
-    <link rel="apple-touch-icon" sizes="512x512" href="https://juliver.xyz/assets/icons/favicon-512x512.png">
-    <link rel="apple-touch-icon" sizes="48x48" href="https://juliver.xyz/assets/icons/favicon-48x48.png">
-    <link rel="apple-touch-icon" sizes="32x32" href="https://juliver.xyz/assets/icons/favicon-32x32.png">
-    <link rel="apple-touch-icon" sizes="16x16" href="https://juliver.xyz/assets/icons/favicon-16x16.png">
-    
-    <!-- High-quality icon for search engines and social media -->
-    <meta property="og:image:secure_url" content="https://juliver.xyz/assets/icons/favicon-512x512.png">
-    <meta property="og:image:type" content="image/png">
-    <meta property="og:image:width" content="512">
-    <meta property="og:image:height" content="512">
-    
-    <!-- Web App Manifest -->
-    <link rel="manifest" href="https://juliver.xyz/manifest.json">
-    <link rel="me" href="https://orcid.org/0009-0008-6358-170X">
-    
-    <!-- Preconnect to external domains for performance -->
-    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
-    <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
-    
-    <!-- ProfilePage Structured Data (JSON-LD) -->
+    <meta property="profile:username" content="juliver">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="@juliverian">
+    <meta name="twitter:creator" content="@juliverian">
+    <meta name="twitter:title" content="Julian Weaver (juliver) | Founder &amp; CEO of Dydema">
+    <meta name="twitter:description" content="Founder &amp; CEO of Dydema (YC F26), a neurotech model and data company.">
+    <meta name="twitter:image" content="https://juliver.xyz/assets/images/julian-weaver-og.jpg">
+
+    <link rel="icon" href="/favicon.ico" sizes="any">
+    <link rel="icon" type="image/png" sizes="48x48" href="/assets/icons/favicon-48x48.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="/assets/icons/favicon-512x512.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/icons/favicon-32x32.png">
+    <link rel="apple-touch-icon" href="/assets/icons/favicon-512x512.png">
+    <link rel="manifest" href="/manifest.json">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cutive+Mono&family=Linden+Hill:ital@0;1&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+
     <script type="application/ld+json">
-    {
-        "@context": "https://schema.org",
-        "@type": "ProfilePage",
-        "mainEntity": {
-            "@type": "Person",
+{
+    "@context": "https://schema.org",
+    "@graph": [
+        {
+            "@type": "WebSite",
+            "@id": "https://juliver.xyz/#website",
+            "url": "https://juliver.xyz/",
             "name": "Julian Weaver",
-            "alternateName": ["Julian", "Weaver", "Juliver", "weavejul", "juliverian"],
-            "url": "https://juliver.xyz",
-            "jobTitle": ["ML Engineer", "Founder", "Neuroscientist", "AI Researcher"],
-            "description": "I'm Julian Weaver! I'm a neuroscientist, ML researcher, and founder based in Houston. I'm fascinated by the foundations of intelligent systems, especially the human kind!",
+            "inLanguage": "en-US",
+            "publisher": {
+                "@id": "https://juliver.xyz/#person"
+            },
+            "alternateName": [
+                "juliver",
+                "juliver.xyz"
+            ]
+        },
+        {
+            "@type": "ProfilePage",
+            "@id": "https://juliver.xyz/#profilepage",
+            "url": "https://juliver.xyz/",
+            "name": "Julian Weaver (juliver) | Founder & CEO of Dydema",
+            "isPartOf": {
+                "@id": "https://juliver.xyz/#website"
+            },
+            "mainEntity": {
+                "@id": "https://juliver.xyz/#person"
+            },
+            "primaryImageOfPage": {
+                "@id": "https://juliver.xyz/#headshot"
+            },
+            "dateModified": "2026-09-25"
+        },
+        {
+            "@type": "Person",
+            "@id": "https://juliver.xyz/#person",
+            "name": "Julian Weaver",
+            "givenName": "Julian",
+            "familyName": "Weaver",
+            "alternateName": [
+                "juliver",
+                "Juliver"
+            ],
+            "url": "https://juliver.xyz/",
+            "image": {
+                "@type": "ImageObject",
+                "@id": "https://juliver.xyz/#headshot",
+                "url": "https://juliver.xyz/assets/images/julian-weaver.jpeg",
+                "width": 330,
+                "height": 330,
+                "caption": "Julian Weaver"
+            },
+            "jobTitle": "Founder & CEO",
+            "worksFor": {
+                "@id": "https://dydema.com/#organization"
+            },
+            "description": "Julian Weaver (juliver) is the founder and CEO of Dydema (YC F26), a neurotech model and data company that serves general embedding models for neurotech and records neurodata for other teams. He is a neuroscientist and machine learning researcher based in San Francisco.",
+            "birthDate": "2004-11-23",
+            "email": "mailto:juliver@dydema.com",
+            "homeLocation": {
+                "@type": "Place",
+                "name": "San Francisco, California",
+                "address": {
+                    "@type": "PostalAddress",
+                    "addressLocality": "San Francisco",
+                    "addressRegion": "CA",
+                    "addressCountry": "US"
+                }
+            },
+            "alumniOf": {
+                "@type": "CollegeOrUniversity",
+                "name": "The University of Texas at Austin",
+                "url": "https://www.utexas.edu/",
+                "sameAs": "https://en.wikipedia.org/wiki/University_of_Texas_at_Austin"
+            },
             "knowsAbout": [
-                "Artificial Intelligence",
-                "Machine Learning",
-                "Reinforcement Learning",
                 "Neuroscience",
-                "Computational Neuroscience",
-                "Deep Learning",
-                "Neuroimaging",
-                "Neuro-inspired ML",
-                "XAI",
+                "Neurotechnology",
+                "Machine learning",
                 "Explainable AI",
-                "Neuro-inspired AI safety",
-                "AI Ethics",
-                "PyTorch",
-                "Transformers",
-                "LLMs",
-                "Python",
-                "Predictive Coding",
+                "Neuroimaging",
                 "EEG",
                 "fMRI",
-                "Neuroimaging Analysis",
                 "NeuroAI",
-                "Brain-Computer Interfaces",
-                "Neurotechnology",
-                "Neuromodulation",
-                "Neuromorphic Computing"
+                "Brain-computer interfaces",
+                "AI safety"
             ],
             "sameAs": [
-                "https://github.com/weavejul",
-                "https://linkedin.com/in/julian-weaver",
+                "https://www.linkedin.com/in/julian-weaver/",
                 "https://x.com/juliverian",
+                "https://github.com/weavejul",
+                "https://juliverian.substack.com/",
                 "https://bsky.app/profile/juliverian.bsky.social",
                 "https://www.instagram.com/official_julian_weaver/",
-                "https://juliver.xyz/",
                 "https://orcid.org/0009-0008-6358-170X"
             ],
-            "image": [
-                 "https://juliver.xyz/assets/images/julianprofessional.jpg",
-                 "https://juliver.xyz/assets/images/robotjulian.jpg",
-                 "https://juliver.xyz/assets/images/julianprofileyoung.jpg",
-                 "https://juliver.xyz/assets/images/julivereclipse.jpg",
-                 "https://juliver.xyz/assets/icons/favicon-512x512.png"
-             ],
-             "birthDate": "2004-11-23",
-             "email": "mailto:juliver.dev@gmail.com",
-            "affiliation": [
-                {
-                    "@type": "Organization",
-                    "name": "Longhorn Neurotech",
-                    "url": "https://www.linkedin.com/company/lhneurotech"
-                },
-                {
-                    "@type": "Organization",
-                    "name": "University of Texas at Austin",
-                    "url": "https://www.utexas.edu"
-                }
-            ],
-            "alumniOf": {
-                "@type": "Organization",
-                "name": "University of Texas at Austin",
-                "url": "https://www.utexas.edu"
+            "disambiguatingDescription": "Founder and CEO of Dydema; neuroscientist and machine learning researcher in San Francisco.",
+            "identifier": {
+                "@type": "PropertyValue",
+                "propertyID": "ORCID",
+                "value": "0009-0008-6358-170X"
             },
-            "worksFor": {
-                "@type": "Organization",
-                "name": "Independent Researcher"
-            },
-            "hasCredential": [
-                "Neuroscience",
-                "Computer Science",
-                "Business"
-            ]
-        },
-        "about": "Personal profile page of Julian Weaver, a neuroscientist and ML researcher specializing in XAI, neuroimaging, and NeuroAI research.",
-        "breadcrumb": {
-            "@type": "BreadcrumbList",
-            "itemListElement": [
-                {
-                    "@type": "ListItem",
-                    "position": 1,
-                    "name": "Home",
-                    "item": "https://juliver.xyz/"
-                },
-                {
-                    "@type": "ListItem",
-                    "position": 2,
-                    "name": "Julian Weaver Profile",
-                    "item": "https://juliver.xyz/"
-                }
-            ]
-        }
-    }
-    </script>
-    
-    <!-- Website Structured Data-->
-    <script type="application/ld+json">
-    {
-        "@context": "https://schema.org",
-        "@type": "WebSite",
-        "name": "Julian Weaver",
-        "alternateName": ["Julian Weaver", "Juliver", "Julian Weaver Website", "juliver.xyz"],
-        "url": "https://juliver.xyz",
-        "description": "I'm Julian Weaver! I'm a neuroscientist, ML researcher, and founder based in Houston. I'm fascinated by the foundations of intelligent systems, especially the human kind!",
-        "author": {
-            "@type": "Person",
-            "name": "Julian Weaver",
-            "url": "https://juliver.xyz"
-        },
-        "publisher": {
-            "@type": "Person",
-            "name": "Julian Weaver",
-            "url": "https://juliver.xyz"
-        },
-        "inLanguage": "en-US",
-        "copyrightYear": "2025",
-        "copyrightHolder": {
-            "@type": "Person",
-            "name": "Julian Weaver"
-        },
-        "potentialAction": {
-            "@type": "SearchAction",
-            "target": "https://juliver.xyz?search={search_term_string}",
-            "query-input": "required name=search_term_string"
-        }
-    }
-    </script>
-
-    <!-- Organization Structured Data for Longhorn Neurotech -->
-    <script type="application/ld+json">
-    {
-        "@context": "https://schema.org",
-        "@type": "Organization",
-        "name": "Longhorn Neurotech",
-        "alternateName": ["lhneurotech.com", "LHNT"],
-        "url": "https://www.linkedin.com/company/lhneurotech",
-        "founder": [
-            {
-                "@type": "Person",
-                "name": "Julian Weaver",
-                "alternateName": ["Juliver", "weavejul", "juliverian"],
-                "url": "https://juliver.xyz"
-            },
-            {
-                "@type": "Person",
-                "name": "Taima Crean"
-            },
-            {
-                "@type": "Person",
-                "name": "Holland Ernst"
-            },
-            {
-                "@type": "Person",
-                "name": "Nathan Feldt"
-            },
-            {
-                "@type": "Person",
-                "name": "Tony Chae"
+            "mainEntityOfPage": {
+                "@id": "https://juliver.xyz/#profilepage"
             }
-        ],
-        "description": "Longhorn Neurotech is an student-runorganization focused on neurotechnology education and research. It was founded at the University of Texas at Austin in the early 2020s- growing into the largest organization of its kind in the world. It has ties to companies like Neuralink, Paradromics, Microsoft, and more.",
-        "knowsAbout": [
-            "Neurotechnology",
-            "AI Safety",
-            "Brain-Computer Interfaces",
-            "EEG",
-            "Education"
-        ]
-    }
+        },
+        {
+            "@type": "Organization",
+            "@id": "https://dydema.com/#organization",
+            "name": "Dydema",
+            "url": "https://dydema.com/",
+            "description": "Dydema is a neurotech model and data company. It serves general embedding models for neurotech and records neurodata for other teams.",
+            "founder": {
+                "@id": "https://juliver.xyz/#person"
+            }
+        },
+        {
+            "@type": "Organization",
+            "@id": "https://juliver.xyz/#longhorn-neurotech",
+            "name": "Longhorn Neurotech",
+            "url": "https://www.linkedin.com/company/lhneurotech",
+            "description": "Student neurotechnology education and research organization at The University of Texas at Austin.",
+            "founder": [
+                {
+                    "@id": "https://juliver.xyz/#person"
+                },
+                {
+                    "@type": "Person",
+                    "name": "Taima Crean"
+                },
+                {
+                    "@type": "Person",
+                    "name": "Holland Ernst"
+                },
+                {
+                    "@type": "Person",
+                    "name": "Nathan Feldt"
+                },
+                {
+                    "@type": "Person",
+                    "name": "Tony Chae"
+                }
+            ]
+        },
+        {
+            "@type": "ScholarlyArticle",
+            "@id": "https://arxiv.org/abs/2509.23585",
+            "headline": "EVO-LRP: Evolutionary Optimization of LRP for Interpretable Model Explanations",
+            "url": "https://arxiv.org/abs/2509.23585",
+            "datePublished": "2025-09-28",
+            "identifier": "arXiv:2509.23585",
+            "author": [
+                {
+                    "@type": "Person",
+                    "name": "Emerald Zhang"
+                },
+                {
+                    "@id": "https://juliver.xyz/#person"
+                },
+                {
+                    "@type": "Person",
+                    "name": "Samantha R. Santacruz"
+                },
+                {
+                    "@type": "Person",
+                    "name": "Edward Castillo"
+                }
+            ]
+        }
+    ]
+}
     </script>
-    
     <style>
+        :root {
+            --paper: #ffffff;
+            --ink: #111010;
+            --ink-2: #5a5450;
+            --hair: rgba(17, 16, 16, 0.28);
+            --blood: #ad2318;
+            --serif: 'Linden Hill', 'Iowan Old Style', 'Palatino Linotype', Palatino, Georgia, serif;
+            --type: 'Cutive Mono', 'Courier New', Courier, monospace;
+            --gutter: clamp(1rem, 4.2vw, 4rem);
+        }
+        *, *::before, *::after { box-sizing: border-box; }
+        html { -webkit-text-size-adjust: 100%; }
         body {
-            margin: 0;
-            padding: 0;
-            background-color: rgba(0, 0, 0, 1);
-            overflow: hidden;
-            font-family: 'Arial', sans-serif;
-            /* Hardware acceleration for smooth scrolling and animations */
-            transform: translateZ(0);
-            will-change: scroll-position;
+            margin: 0; background: var(--paper); color: var(--ink);
+            font-family: var(--serif); font-size: 1.1875rem; line-height: 1.45;
+            font-feature-settings: 'kern' 1, 'liga' 1;
         }
-        
-        #canvas-container {
-            width: 100vw;
-            height: 100vh;
-            position: relative;
-            /* Hardware acceleration for canvas container */
-            transform: translateZ(0);
-            will-change: transform;
+        a { color: inherit; text-decoration-thickness: 1px; text-underline-offset: 0.16em; }
+        a:hover { color: var(--blood); }
+        a:focus-visible { outline: 1px solid var(--blood); outline-offset: 3px; }
+        .t { font-family: var(--type); font-size: 0.9rem; letter-spacing: 0; line-height: 1.5; }
+        .skip { position: absolute; left: 1rem; top: -4rem; background: var(--ink); color: var(--paper); padding: 0.4rem 0.8rem; z-index: 100; }
+        .skip:focus { top: 1rem; }
+        section { position: relative; }
+
+        /* ---------------- Hero: the name hangs from the top edge ---------------- */
+        .hero { position: relative; height: 100vh; height: 100svh; min-height: 560px; overflow: hidden; touch-action: pan-y; }
+        .name { margin: 0; font: inherit; position: absolute; inset: 0; text-transform: uppercase; }
+        .name .l {
+            --L: calc(var(--len) * 1svh);
+            position: absolute; top: 0; left: var(--x); width: 0; height: calc(var(--L) + 1em);
+            font-family: var(--serif); font-size: clamp(4.4rem, 10vw, 12rem); line-height: 1;
+            transform-origin: 0 0; will-change: transform;
         }
-        
-        canvas {
-            display: block;
-            /* Hardware acceleration for canvas elements */
-            transform: translateZ(0);
-            will-change: transform;
+        .name .l::before {
+            content: ''; position: absolute; left: 0; top: 0; width: 1px; height: calc(var(--L) + 0.14em);
+            background: var(--ink); opacity: 0.5;
         }
-        
-        /* Optimize transitions with CSS instead of JavaScript */
-        .optimized-transition {
-            transition: opacity 0.3s ease, transform 0.3s ease;
-            will-change: opacity, transform;
+        .name .jv::before { background: var(--blood); opacity: 0.9; }
+        .name .g { position: absolute; top: var(--L); left: 0; transform: translateX(-50%); cursor: grab; user-select: none; -webkit-user-select: none; touch-action: none; }
+        .name .l.held .g { cursor: grabbing; color: var(--blood); }
+        .hero p { margin: 0; position: absolute; }
+        .hero-role { right: var(--gutter); bottom: 5svh; width: min(25rem, 36vw); text-align: right; font-size: clamp(1.05rem, 1.3vw, 1.3rem); line-height: 1.35; }
+        .hero-role .co { font-size: 1.6em; line-height: 1.05; display: block; margin-bottom: 0.4rem; }
+        .hero-role .mail { display: inline-block; margin-top: 0.55rem; }
+        .hero-alias { left: var(--gutter); bottom: 5svh; font-size: 1rem; }
+        .hero-alias b { font-weight: 400; color: var(--blood); }
+
+        /* ---------------- Dydema: a dictionary entry ---------------- */
+        .dydema { padding: clamp(5rem, 14vh, 10rem) var(--gutter) clamp(4rem, 10vh, 7rem); display: grid; grid-template-columns: minmax(8rem, 13rem) 1fr; gap: 1.5rem 3rem; }
+        .dydema > .t { padding-top: 1.4rem; margin: 0; color: var(--ink-2); }
+        .headword { margin: 0; font-weight: 400; font-size: clamp(4rem, 13vw, 13rem); line-height: 0.85; letter-spacing: -0.02em; }
+        .headword a { text-decoration: none; }
+        .headword i { font-size: 0.22em; letter-spacing: 0; color: var(--ink-2); margin-left: 0.4em; vertical-align: 0.9em; }
+        .dydema > div { min-width: 0; }
+        .senses { list-style: none; margin: 2.2rem 0 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(17rem, 100%), 1fr)); gap: 1.5rem 3.5rem; max-width: 62rem; counter-reset: s; }
+        .senses li { counter-increment: s; position: relative; padding-left: 2rem; font-size: 1.3rem; line-height: 1.38; }
+        .senses li::before { content: counter(s) '.'; position: absolute; left: 0; top: 0.2rem; font-family: var(--type); font-size: 0.85rem; color: var(--blood); }
+        .dydema .coda { grid-column: 2; margin: 0.4rem 0 0; color: var(--ink-2); max-width: 44rem; }
+
+        /* ---------------- Plate I: the specimen ---------------- */
+        .plate { padding: clamp(3rem, 8vh, 6rem) var(--gutter) clamp(4rem, 10vh, 7rem); border-top: 1px solid var(--ink); }
+        .plate-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 2rem; margin-bottom: clamp(1.5rem, 4vw, 3rem); }
+        .plate-head h2 { margin: 0.4rem 0 0; font-weight: 400; font-size: clamp(2rem, 4.4vw, 4.2rem); line-height: 1; letter-spacing: -0.01em; max-width: 14ch; }
+        .plate-head > .t { text-align: right; max-width: 24rem; color: var(--ink-2); margin: 0; }
+        .plate-body { position: relative; display: grid; gap: 2rem; }
+        .leaders { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; overflow: visible; z-index: 2; }
+        .leaders path { fill: none; stroke: var(--ink); stroke-width: 0.75; vector-effect: non-scaling-stroke; }
+        .leaders .on path { stroke: var(--blood); stroke-width: 1.3; }
+        .specimen { position: relative; margin: 0; aspect-ratio: 4 / 3; cursor: grab; touch-action: pan-y; user-select: none; -webkit-user-select: none; }
+        .specimen.grabbing { cursor: grabbing; }
+        .specimen img, .specimen canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+        .specimen canvas { opacity: 0; transition: opacity 0.8s ease; }
+        .specimen.is-live canvas { opacity: 1; }
+        .specimen.is-live img { opacity: 0; transition: opacity 0.8s ease; }
+        .pin {
+            position: absolute; z-index: 3; width: 1.3rem; height: 1.3rem; margin: -0.65rem 0 0 -0.65rem;
+            border-radius: 50%; background: var(--paper); border: 1px solid var(--ink);
+            display: grid; place-items: center; font-family: var(--type); font-size: 0.7rem; line-height: 1;
         }
-        
-        /* Hardware acceleration for animated elements */
-        .hardware-accelerated {
-            transform: translateZ(0);
-            will-change: transform, opacity;
-        }
-        
-        /* Panel Content Styles - Initially Hidden for SEO */
-        #brain-panel-content {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            width: 80%;
-            height: 80%;
-            z-index: 999; /* Below fluid canvas when hidden */
-            background-color: rgba(26, 0, 0, 0.95);
-            border-radius: 0px;
-            border: 2px solid #ff4444;
-            box-shadow: 0 0 20px rgba(255, 68, 68, 0.3);
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out, z-index 0.3s ease-in-out;
-            overflow: hidden;
-            /* Ensure no touch interference when hidden */
-            pointer-events: none;
-            touch-action: none;
-            /* Move completely off-screen when hidden */
-            transform: translate(-50%, -150vh) translateZ(0);
-        }
-        
-        /* When panel is visible, enable touch interactions and bring to center */
-        #brain-panel-content.panel-visible {
-            pointer-events: auto;
-            touch-action: manipulation; /* Allow text selection and scrolling */
-            z-index: 1003; /* Above fluid canvas when visible */
-            transform: translate(-50%, -50%) translateZ(0);
-        }
-        
-        /* Mobile responsive panel */
-        @media (max-width: 768px) {
-            #brain-panel-content {
-                width: 95%;
-                height: 70%;
+        .pin.on { background: var(--blood); color: var(--paper); border-color: var(--blood); }
+        .labels { list-style: none; margin: 0; padding: 0; display: contents; }
+        .lab { max-width: 17.5rem; font-size: 1.02rem; line-height: 1.38; }
+        .lab h3 { margin: 0; font-family: var(--type); font-weight: 400; font-size: 0.88rem; color: var(--blood); }
+        .lab h3 .num { color: var(--ink); margin-right: 0.45em; }
+        .lab .fn { margin: 0.05rem 0 0.35rem; font-style: italic; font-size: 0.95rem; color: var(--ink-2); }
+        .lab .fact { margin: 0; }
+        .lab.on h3 { text-decoration: underline; text-underline-offset: 0.2em; }
+        .wavy { text-decoration: underline wavy var(--blood); text-decoration-thickness: 1px; text-underline-offset: 0.22em; }
+
+        @media (min-width: 1100px) {
+            .plate-body {
+                grid-template-columns: minmax(13rem, 16rem) 1fr 1fr 1fr minmax(13rem, 16rem);
+                grid-template-rows: auto auto auto auto;
+                column-gap: 2rem; row-gap: 0.5rem;
             }
-        }
-        
-        /* Panel container for scrollable content */
-        #brain-panel-container {
-            font-family: 'Courier New', 'Courier', monospace;
-            background: linear-gradient(135deg, #1a0000 0%, #2a0000 50%, #1a0000 100%);
-            color: #ff8888;
-            line-height: 1.4;
-            font-size: 14px;
-            width: 100%;
-            height: 100%;
-            overflow-y: auto;
-            padding: 15px;
-            box-sizing: border-box;
-            /* Hardware acceleration for smooth scrolling and animations */
-            transform: translateZ(0);
-            will-change: scroll-position;
-            /* Mobile touch scrolling properties */
-            -webkit-overflow-scrolling: touch;
-            overscroll-behavior: contain;
-            touch-action: pan-y;
-            /* Smooth scrolling */
-            scroll-behavior: smooth;
-            /* Enable text selection */
-            -webkit-user-select: text;
-            -moz-user-select: text;
-            -ms-user-select: text;
-            user-select: text;
-        }
-        
-        /* Custom scrollbar */
-        #brain-panel-container::-webkit-scrollbar {
-            width: 8px;
-        }
-        
-        #brain-panel-container::-webkit-scrollbar-track {
-            background: rgba(26, 0, 0, 0.8);
-            border-radius: 4px;
-        }
-        
-        #brain-panel-container::-webkit-scrollbar-thumb {
-            background: linear-gradient(180deg, #2a0000, #3a0000);
-            border-radius: 4px;
-            border: 1px solid rgba(255, 68, 68, 0.3);
-            box-shadow: 0 0 5px rgba(255, 68, 68, 0.2);
-        }
-        
-        #brain-panel-container::-webkit-scrollbar-thumb:hover {
-            background: linear-gradient(180deg, #3a0000, #4a0000);
-            border-color: rgba(255, 68, 68, 0.5);
-            box-shadow: 0 0 8px rgba(255, 68, 68, 0.4);
-        }
-        
-        /* Responsive text scaling */
-        @media (max-width: 600px) {
-            #brain-panel-container {
-                font-size: 12px;
-                padding: 10px;
-            }
-            
-            #brain-panel-container h1 {
-                font-size: 1.8em;
-                margin-bottom: 20px;
-            }
-            
-            #brain-panel-container h2 {
-                font-size: 1.2em;
-                margin-top: 25px;
-                margin-bottom: 12px;
-            }
-            
-            #brain-panel-container .section {
-                padding: 15px;
-                margin-bottom: 25px;
-            }
-            
-            #brain-panel-container .container {
-                max-width: 100%;
-            }
-        }
-        
-        @media (max-width: 400px) {
-            #brain-panel-container {
-                font-size: 12px;
-                padding: 8px;
-            }
-            
-            #brain-panel-container h1 {
-                font-size: 1.6em;
-                margin-bottom: 18px;
-            }
-            
-            #brain-panel-container h2 {
-                font-size: 1.1em;
-                margin-top: 22px;
-                margin-bottom: 10px;
-            }
-            
-            #brain-panel-container .section {
-                padding: 12px;
-                margin-bottom: 20px;
-            }
-        }
-        
-        @media (max-width: 300px) {
-            #brain-panel-container {
-                font-size: 12px;
-                padding: 6px;
-            }
-            
-            #brain-panel-container h1 {
-                font-size: 1.4em;
-                margin-bottom: 15px;
-            }
-            
-            #brain-panel-container h2 {
-                font-size: 1em;
-                margin-top: 20px;
-                margin-bottom: 8px;
-            }
-            
-            #brain-panel-container .section {
-                padding: 10px;
-                margin-bottom: 18px;
-            }
-        }
-        
-        #brain-panel-container::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: 
-                radial-gradient(circle at 20% 80%, rgba(255, 68, 68, 0.03) 0%, transparent 50%),
-                radial-gradient(circle at 80% 20%, rgba(255, 102, 102, 0.02) 0%, transparent 50%),
-                radial-gradient(circle at 40% 40%, rgba(255, 68, 68, 0.01) 0%, transparent 50%);
-            pointer-events: none;
-            z-index: -1;
-            /* Remove automatic animation - will be triggered by JavaScript */
-        }
-        
-        /* Scan lines effect */
-        #brain-panel-content::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: repeating-linear-gradient(
-                0deg,
-                transparent,
-                transparent 2px,
-                rgba(255, 68, 68, 0.02) 2px,
-                rgba(255, 68, 68, 0.02) 4px
-            );
-            pointer-events: none;
-            z-index: 1;
-            animation: scanLines 8s linear infinite;
-        }
-        
-        @keyframes scanLines {
-            0% { transform: translateY(0); }
-            100% { transform: translateY(4px); }
-        }
-        
-        /* Animation class that will be added by JavaScript */
-        #brain-panel-container.animate-background::before {
-            animation: backgroundPulse 8s ease-in-out infinite;
-        }
-        
-        @keyframes backgroundPulse {
-            0%, 100% { opacity: 0.5; }
-            50% { opacity: 1; }
-        }
-        
-        #brain-panel-container .container {
-            max-width: 900px;
-            margin: 0 auto;
-            position: relative;
-            z-index: 1;
-            /* Remove automatic animation - will be triggered by JavaScript */
-            /* Hardware acceleration for container animations */
-            transform: translateZ(0);
-            will-change: transform, opacity;
-            /* Start hidden to prevent flash */
-            opacity: 0;
-        }
-        
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        
-        /* Animation class that will be added by JavaScript */
-        #brain-panel-container .container.animate-in {
-            animation: fadeInUp 1s ease-out 0.1s forwards;
-        }
-        
-        #brain-panel-container h1 {
-            color: #ff4444;
-            margin-bottom: 25px;
-            font-size: 2.2em;
-            border-bottom: 2px solid #ff4444;
-            padding-bottom: 10px;
-            text-shadow: 0 0 10px rgba(255, 68, 68, 0.3);
-            position: relative;
-            animation: titlePulse 3s ease-in-out infinite;
-            /* Hardware acceleration for animated text */
-            transform: translateZ(0);
-            will-change: text-shadow;
-            transition: all 0.3s ease;
-        }
-        
-        #brain-panel-container h1:hover {
-            color: #ff8888;
-            text-shadow: 0 0 10px rgba(255, 136, 136, 0.3);
-        }
-        
-        @keyframes titlePulse {
-            0%, 100% { text-shadow: 0 0 10px rgba(255, 68, 68, 0.3); }
-            50% { text-shadow: 0 0 20px rgba(255, 68, 68, 0.6), 0 0 30px rgba(255, 68, 68, 0.3); }
-        }
-        
-        #brain-panel-container h1::after {
-            content: '';
-            position: absolute;
-            bottom: -2px;
-            left: 0;
-            width: 50px;
-            height: 2px;
-            background: linear-gradient(90deg, #ff4444, transparent);
-            animation: titleUnderline 2s ease-in-out infinite;
-        }
-        
-        @keyframes titleUnderline {
-            0%, 100% { width: 50px; }
-            50% { width: 100px; }
-        }
-        
-        #brain-panel-container h2 {
-            color: #ff6666;
-            margin-top: 30px;
-            margin-bottom: 15px;
-            font-size: 1.4em;
-            position: relative;
-            padding-left: 15px;
-            transition: all 0.3s ease;
-        }
-        
-        #brain-panel-container h2::before {
-            content: '>';
-            position: absolute;
-            left: 0;
-            color: #ff4444;
-            font-weight: bold;
-            animation: headerPulse 2s ease-in-out infinite;
-        }
-        
-        @keyframes headerPulse {
-            0%, 100% { opacity: 0.7; }
-            50% { opacity: 1; }
-        }
-        
-        #brain-panel-container h2:hover {
-            color: #ff8888;
-            text-shadow: 0 0 10px rgba(255, 136, 136, 0.3);
-        }
-        
-        #brain-panel-container h2:hover::before {
-            animation: headerGlow 0.5s ease-in-out;
-        }
-        
-        @keyframes headerGlow {
-            0% { text-shadow: 0 0 5px rgba(255, 68, 68, 0.5); }
-            50% { text-shadow: 0 0 15px rgba(255, 68, 68, 0.8), 0 0 25px rgba(255, 68, 68, 0.4); }
-            100% { text-shadow: 0 0 5px rgba(255, 68, 68, 0.5); }
-        }
-        
-        #brain-panel-container p {
-            margin-bottom: 12px;
-            font-size: 1em;
-        }
-        
-        /* Custom text selection */
-        #brain-panel-container ::selection {
-            background: rgba(255, 68, 68, 0.3);
-            color: #ffffff;
-        }
-        
-        #brain-panel-container ::-moz-selection {
-            background: rgba(255, 68, 68, 0.3);
-            color: #ffffff;
-        }
-        
-        #brain-panel-container .section {
-            margin-bottom: 30px;
-            padding: 20px;
-            background: linear-gradient(145deg, #2a0000 0%, #3a0000 100%);
-            border: 1px solid #ff4444;
-            border-radius: 8px;
-            box-shadow: 
-                0 4px 15px rgba(255, 68, 68, 0.1),
-                inset 0 1px 0 rgba(255, 255, 255, 0.05);
-            position: relative;
-            transition: all 0.3s ease;
-            opacity: 0;
-            transform: translateY(20px) translateZ(0);
-            /* Remove automatic animation - will be triggered by JavaScript */
-            /* Hardware acceleration for section animations */
-            will-change: transform, opacity, box-shadow;
-            /* Start hidden to prevent flash */
-            visibility: hidden;
-            /* Disable pointer events during animation */
-            pointer-events: none;
-        }
-        
-        /* Animation classes that will be added by JavaScript */
-        #brain-panel-container .section.animate-in {
-            animation: sectionFadeIn 0.8s ease-out;
-        }
-        
-        #brain-panel-container .section.animate-in:nth-child(1) { animation-delay: 0.2s; }
-        #brain-panel-container .section.animate-in:nth-child(2) { animation-delay: 0.4s; }
-        #brain-panel-container .section.animate-in:nth-child(3) { animation-delay: 0.6s; }
-        #brain-panel-container .section.animate-in:nth-child(4) { animation-delay: 0.8s; }
-        #brain-panel-container .section.animate-in:nth-child(5) { animation-delay: 1.0s; }
-        #brain-panel-container .section.animate-in:nth-child(6) { animation-delay: 1.2s; }
-        #brain-panel-container .section.animate-in:nth-child(7) { animation-delay: 1.4s; }
-        #brain-panel-container .section.animate-in:nth-child(8) { animation-delay: 1.6s; }
-        
-        @keyframes sectionFadeIn {
-            to {
-                opacity: 1;
-                transform: translateY(0) translateZ(0);
-                visibility: visible;
-            }
-        }
-        
-        #brain-panel-container .section:hover {
-            transform: translateY(-2px) scale(1.01) translateZ(0);
-            box-shadow: 
-                0 12px 30px rgba(255, 68, 68, 0.25),
-                0 8px 20px rgba(255, 68, 68, 0.15),
-                inset 0 1px 0 rgba(255, 255, 255, 0.1);
-            border-color: #ff6666;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-        
-        #brain-panel-container .section::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 1px;
-            background: linear-gradient(90deg, transparent, #ff4444, transparent);
-            animation: borderGlow 3s ease-in-out infinite;
-            transition: all 0.4s ease;
-        }
-        
-        #brain-panel-container .section:hover::before {
-            height: 2px;
-            background: linear-gradient(90deg, transparent, #ff6666, #ff8888, #ff6666, transparent);
-            box-shadow: 0 0 10px rgba(255, 102, 102, 0.5);
-        }
-        
-        @keyframes borderGlow {
-            0%, 100% { opacity: 0.5; }
-            50% { opacity: 1; }
-        }
-        
-        #brain-panel-container .birthday-easter-egg {
-            color: #ffaa00;
-            font-weight: bold;
-            animation: birthdayGlow 2s ease-in-out infinite;
-        }
-        
-        @keyframes birthdayGlow {
-            0%, 100% { text-shadow: 0 0 5px rgba(255, 170, 0, 0.5); }
-            50% { text-shadow: 0 0 20px rgba(255, 170, 0, 0.8), 0 0 30px rgba(255, 170, 0, 0.4); }
-        }
-        
-        #brain-panel-container .gradient-text {
-            background: linear-gradient(45deg, #ff4444, #ff6666, #ff8888, #ff6666, #ff4444);
-            background-size: 200% 200%;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            animation: gradientShift 3s ease-in-out infinite;
-        }
-        
-        @keyframes gradientShift {
-            0%, 100% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-        }
-        
-        #brain-panel-container .date-highlight {
-            background: linear-gradient(135deg, rgba(255, 102, 102, 0.2) 0%, rgba(255, 68, 68, 0.25) 100%);
-            padding: 4px 8px;
-            border-radius: 4px;
-            border: 1px solid rgba(255, 102, 102, 0.2);
-            font-weight: bold;
-            text-shadow: 0 0 5px rgba(255, 102, 102, 0.3);
-        }
-        
-        #brain-panel-container .link-highlight {
-            background: linear-gradient(135deg, rgba(255, 102, 102, 0.2) 0%, rgba(255, 68, 68, 0.25) 100%);
-            padding: 2px 4px;
-            border-radius: 0px;
-            border: 0px solid rgba(255, 102, 102, 0.2);
-            font-weight: bold;
-            text-shadow: 0 0 5px rgba(255, 102, 102, 0.3);
-            text-decoration: none;
-            color: #ff6666;
-            transition: all 0.3s ease;
-        }
-        
-        #brain-panel-container .link-highlight:hover {
-            background: linear-gradient(135deg, rgba(255, 102, 102, 0.3) 0%, rgba(255, 68, 68, 0.35) 100%);
-            border-color: rgba(255, 102, 102, 0.4);
-            transform: translateY(-1px);
-            box-shadow: 0 2px 8px rgba(255, 102, 102, 0.2);
-        }
-        
-        #brain-panel-container .highlight {
-            background-color: #3a0000;
-            padding: 8px;
-            border: 1px solid #ff6666;
-            margin: 10px 0;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        #brain-panel-container .highlight::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 102, 102, 0.1), transparent);
-            transition: left 0.5s ease;
-        }
-        
-        #brain-panel-container .highlight:hover::before {
-            left: 100%;
-        }
-        
-        #brain-panel-container ul {
-            margin-left: 15px;
-        }
-        
-        #brain-panel-container li {
-            margin-bottom: 6px;
-        }
-        
-        #brain-panel-container .contact-links {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin: 10px 0;
-        }
-        
-        #brain-panel-container .contact-link {
-            background-color: #3a0000;
-            padding: 5px 10px;
-            border: 1px solid #ff6666;
-            text-decoration: none;
-            color: #ff6666;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        /* Data stream effect on contact links */
-        #brain-panel-container .contact-link::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 102, 102, 0.1), transparent);
-            animation: dataStream 3s ease-in-out infinite;
-        }
-        
-        @keyframes dataStream {
-            0% { left: -100%; }
-            50% { left: 100%; }
-            100% { left: 100%; }
-        }
-        
-        #brain-panel-container .contact-link::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 102, 102, 0.2), transparent);
-            transition: left 0.5s ease;
-        }
-        
-        #brain-panel-container .contact-link:hover {
-            background-color: #ff6666;
-            color: #ffffff;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(255, 102, 102, 0.3);
-        }
-        
-        #brain-panel-container .contact-link:hover::before {
-            left: 100%;
-        }
-        
-        #brain-panel-container .friends-links {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            margin: 10px 0;
-        }
-        
-        #brain-panel-container .friend-link {
-            background-color: #3a0000;
-            padding: 4px 8px;
-            border: 1px solid #ff6666;
-            text-decoration: none;
-            color: #ff6666;
-            font-size: 0.9em;
-            transition: all 0.3s ease;
-            border-radius: 4px;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        #brain-panel-container .friend-link::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 102, 102, 0.2), transparent);
-            transition: left 0.5s ease;
-        }
-        
-        #brain-panel-container .friend-link:hover {
-            background-color: #ff6666;
-            color: #ffffff;
-            transform: translateY(-1px) scale(1.05);
-            box-shadow: 0 4px 12px rgba(255, 102, 102, 0.3);
-        }
-        
-        #brain-panel-container .friend-link:hover::before {
-            left: 100%;
-        }
-        
-        #brain-panel-container .projects-list {
-            background-color: #3a0000;
-            padding: 10px;
-            border: 1px solid #ff6666;
-            margin: 10px 0;
-        }
-        
-        #brain-panel-container .footer {
-            margin-top: 30px;
-            padding-top: 15px;
-            border-top: 1px solid #ff4444;
-            font-size: 0.9em;
-            color: #ff8888;
-        }
-        
-        /* Close button styles */
-        #brain-panel-close {
-            position: absolute;
-            top: 10px;
-            right: 15px;
-            background: none;
-            border: none;
-            color: #ff4444;
-            font-size: 24px;
-            font-weight: bold;
-            cursor: pointer;
-            z-index: 1004;
-            /* Add mobile-friendly touch target */
-            min-width: 44px;
-            min-height: 44px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            user-select: none;
-            /* Ensure close button doesn't interfere with text selection */
-            pointer-events: auto;
-            touch-action: manipulation;
-        }
-        
-        /* Modal styles */
-        #brain-panel-container .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(5px);
-        }
-        
-        #brain-panel-container .modal-content {
-            background-color: #1a0000;
-            margin: 15% auto;
-            padding: 20px;
-            border: 2px solid #ff4444;
-            border-radius: 8px;
-            width: 80%;
-            max-width: 500px;
-            position: relative;
-            box-shadow: 0 0 20px rgba(255, 68, 68, 0.3);
-        }
-        
-        #brain-panel-container .close {
-            color: #ff4444;
-            float: right;
-            font-size: 28px;
-            font-weight: bold;
-            cursor: pointer;
-            position: absolute;
-            top: 10px;
-            right: 15px;
-        }
-        
-        #brain-panel-container .close:hover,
-        #brain-panel-container .close:focus {
-            color: #ff6666;
-        }
-        
-        #brain-panel-container .modal-content h3 {
-            color: #ff4444;
-            margin-bottom: 15px;
-            border-bottom: 1px solid #ff4444;
-            padding-bottom: 5px;
-        }
-        
-        #brain-panel-container .modal-content p {
-            margin-bottom: 12px;
-        }
-        
-        #brain-panel-container .modal-content a {
-            color: #ff8888;
-            text-decoration: none;
-        }
-        
-        #brain-panel-container .modal-content a:hover {
-            color: #ff6666;
-            text-decoration: underline;
+            .specimen { grid-column: 2 / 5; grid-row: 2 / 4; align-self: center; }
+            .lab-dlpfc { grid-column: 1 / 3; grid-row: 1; align-self: end; margin-left: 12%; }
+            .lab-motor { grid-column: 3 / 5; grid-row: 1; align-self: end; justify-self: start; margin-left: 30%; }
+            .lab-frontalpole { grid-column: 1; grid-row: 2; align-self: center; margin-top: 4rem; }
+            .lab-broca { grid-column: 1; grid-row: 3; align-self: start; margin-top: 2rem; }
+            .lab-visual { grid-column: 5; grid-row: 2 / 4; align-self: center; margin-bottom: 6rem; }
+            .lab-auditory { grid-column: 1 / 3; grid-row: 4; justify-self: end; margin-right: 8%; }
+            .lab-hippocampus { grid-column: 3; grid-row: 4; margin-top: 2.5rem; }
+            .lab-brainstem { grid-column: 4 / 6; grid-row: 4; justify-self: end; margin-top: 0.5rem; }
+        }
+        @media (max-width: 1099px) {
+            .plate-body { grid-template-columns: 1fr 1fr; column-gap: 2rem; row-gap: 1.6rem; }
+            .specimen { grid-column: 1 / -1; order: -1; margin-bottom: 1rem; }
+            .leaders { display: none; }
+        }
+        @media (max-width: 640px) {
+            .plate-body { grid-template-columns: 1fr; }
+            .plate-head { flex-direction: column; gap: 1rem; }
+            .plate-head > .t { text-align: left; }
         }
 
-        #brain-panel-container .typing-cursor {
-            display: inline-block;
-            width: 2px;
-            height: 1.2em;
-            background-color: #ff6666;
-            margin-left: 2px;
-            animation: blink-caret 0.75s step-end infinite;
+        /* ---------------- Cerebrospinal fluid ---------------- */
+        .csf { background: #0d0504; color: #f5ede8; height: 92vh; min-height: 520px; overflow: hidden; }
+        .csf canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+        .csf-fallback { position: absolute; inset: 0; background: radial-gradient(50% 45% at 30% 40%, #4a0e0a, transparent 70%), radial-gradient(40% 40% at 70% 70%, #350712, transparent 70%); }
+        .drift { position: absolute; inset: 0; margin: 0; }
+        .drift span { position: absolute; white-space: nowrap; animation: bob var(--d, 9s) ease-in-out infinite alternate; }
+        .drift .f1 { left: 7%; top: 13%; font-size: clamp(1.8rem, 3.6vw, 3.4rem); --d: 8s; }
+        .drift .f2 { left: 22%; top: 33%; font-size: clamp(2.8rem, 8.2vw, 8.4rem); font-style: italic; --d: 11s; }
+        .drift .f3 { left: 10%; top: 64%; font-size: clamp(1.6rem, 3.2vw, 3rem); --d: 9.5s; }
+        .drift .f3 b { font-weight: 400; color: #ff9f8f; }
+        .drift .f4 { right: 7%; top: 80%; font-size: 1rem; color: #eadbd5; --d: 7s; }
+        @keyframes bob {
+            from { transform: translate(0, 0) rotate(-0.4deg); }
+            to { transform: translate(0.6rem, -0.9rem) rotate(0.5deg); }
         }
-        
-        @keyframes blink-caret {
-            from, to { opacity: 1; }
-            50% { opacity: 0; }
+        @media (max-width: 700px) {
+            .csf { height: auto; min-height: 0; padding: 20vh 0 16vh; }
+            .drift { position: relative; padding: 0 var(--gutter); }
+            .drift span, .drift .f1, .drift .f2, .drift .f3, .drift .f4 { position: relative; display: block; white-space: normal; left: auto; right: auto; top: auto; }
+            .drift .f2 { margin: 0.4rem 0 0.5rem 7vw; line-height: 1; }
+            .drift .f3 { margin-left: 2vw; }
+            .drift .f4 { margin: 2.5rem 0 0 24vw; }
         }
-        
-        #brain-panel-container .wavy-text {
-            display: inline-block;
-            font-style: italic;
-            white-space: pre;
-            color: #dd4444;
+
+        /* ---------------- Index ---------------- */
+        .index { padding: clamp(5rem, 14vh, 9rem) var(--gutter) clamp(4rem, 10vh, 7rem); display: grid; grid-template-columns: minmax(8rem, 13rem) 1fr; gap: 1rem 3rem; }
+        .index > h2 { color: var(--ink-2); padding-top: 0.9rem; font-weight: 400; margin: 0; }
+        .ix { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--ink); }
+        .ix li { display: flex; justify-content: space-between; align-items: baseline; gap: 2rem; padding: 0.42rem 0; border-bottom: 1px solid var(--hair); }
+        .ix .n { font-size: clamp(1.35rem, 2.3vw, 2.15rem); line-height: 1.15; }
+        .ix .k { color: var(--ink-2); text-align: right; white-space: nowrap; }
+        .ix a { text-decoration: none; }
+        .ix a:hover { text-decoration: underline; }
+
+        /* ---------------- Contact ---------------- */
+        .contact { padding: clamp(4rem, 12vh, 8rem) var(--gutter) 2rem; display: grid; grid-template-columns: 1fr auto; gap: 2rem 4rem; align-items: end; border-top: 1px solid var(--ink); }
+        .contact h2 { font-weight: 400; margin: 0 0 1rem; color: var(--ink-2); }
+        .big-mail { margin: 0; font-size: clamp(2.2rem, 7.6vw, 7.4rem); line-height: 0.95; letter-spacing: -0.015em; overflow-wrap: anywhere; }
+        .big-mail a { text-decoration: none; }
+        .contact .where { margin: 0.8rem 0 0; }
+        .contact .elsewhere { margin: 1.6rem 0 0; font-size: 1.15rem; max-width: 40rem; }
+        .contact .friends { margin: 1.4rem 0 0; color: var(--ink-2); max-width: 40rem; }
+        .photo { margin: 0; width: min(15rem, 40vw); }
+        .photo img { width: 100%; height: auto; display: block; }
+        .photo figcaption { margin-top: 0.5rem; color: var(--ink-2); }
+        .foot { grid-column: 1 / -1; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem 2rem; margin-top: clamp(3rem, 8vh, 5rem); padding-top: 0.8rem; border-top: 1px solid var(--hair); color: var(--ink-2); }
+        .foot p { margin: 0; }
+
+        @media (max-width: 700px) {
+            .name .l { left: var(--xm); --L: calc(var(--lenm) * 1svh); font-size: 17vw; }
+            .hero-role { left: var(--gutter); right: var(--gutter); bottom: calc(5svh + 2.2rem); width: auto; text-align: left; }
+            .dydema, .index { grid-template-columns: 1fr; }
+            .dydema > .t, .index > h2 { padding-top: 0; }
+            .dydema .coda { grid-column: 1; }
+            .ix li { flex-direction: column; gap: 0; }
+            .ix .k { text-align: left; white-space: normal; }
+            .contact { grid-template-columns: 1fr; }
         }
-        
-        #brain-panel-container .wavy-text span {
-            display: inline-block;
-            animation: wave 1s infinite ease-in-out;
-            font-style: inherit;
-        }
-        
-        @keyframes wave {
-            12.5%   { transform: translateY(0); }
-            25%   { transform: translateY(-1px); }
-            37.5%  { transform: translateY(-2px); }
-            50%  { transform: translateY(-1px); }
-            62.5%  { transform: translateY(0); }
-            75%   { transform: translateY(1px); }
-            87.5%  { transform: translateY(2px); }
-            100%  { transform: translateY(1px); }
+        @media (prefers-reduced-motion: reduce) {
+            .drift span { animation: none; }
         }
     </style>
 </head>
 <body>
-    <div id="seo-content" style="position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden;">
-        <h1>Julian Weaver Neuroscientist, ML Researcher, and Founder</h1>
-        
-        <h2>About Julian Weaver</h2>
-        <p>Julian Weaver, also known as Juliver, is a neuroscientist, ML researcher, and founder. Julian specializes in neurotechnology, explainable AI, neuroimaging, and neuro-inspired machine learning, and has leadership in those fields.</p>
-        
-        <h2>Julian Weaver - Academic Background</h2>
-        <p>Julian Weaver (Juliver)studied at the University of Texas at Austin, double majoring on Neuroscience, Computer Science, and minoring in Business. Julian Weaver's background combines technical AI expertise with neuroscience knowledge.</p>
-        <p>Juliver has two first-author research papers under review. Julian's work spans computational neuroscience, AI safety, and neuro-inspired ML.</p>
-        
-        <h2>AI Researcher</h2>
-        <p>Julian Weaver is currently based in Houston, Texas, where he continues his research in AI safety and neuroscience. Juliver is actively job hunting for positions in AI research and development, and is currently developing Dydema, a privacy-respecting proof of presence layer for the internet.</p>
-        
-        <h2>AI Safety and Ethics Advocacy</h2>
-        <p>Juliver is passionate about intelligence safety - both in AI model development and in neurotechnology applications. Julian Weaver advocates for careful, ethical development of both artificial intelligence and brain-computer interfaces. To this end, he is currently working on Dydema.</p>
+    <a class="skip" href="#dydema">Skip to content</a>
 
-        <h2>Contact Julian Weaver</h2>
-        <p>Connect with Julian Weaver at juliver.dev@gmail.com for research collaboration, job opportunities, or academic discussions. Find Juliver on LinkedIn (https://www.linkedin.com/in/julian-weaver/), GitHub (https://github.com/weavejul), and social media platforms (https://x.com/juliverian, https://bsky.app/profile/juliverian.bsky.social).</p>
-        <p>Julian Weaver welcomes conversations about AI safety, neuroscience research, NeuroAI applications, and intelligence safety initiatives. Juliver is actively seeking opportunities in AI research and development.</p>
-        
-        <h2>Keywords and Expertise Areas</h2>
-        <p>Julian Weaver: neuroscientist, ML researcher, AI safety advocate, XAI research, neuroimaging specialist, Longhorn Neurotech founder, AI researcher, computational neuroscience, fMRI analysis, EEG processing, deep learning, PyTorch, transformers, UT Austin alumni, intelligence safety, neurotechnology ethics, brain-computer interfaces, explainable AI, machine learning interpretability, Dydema.</p>
-    </div>
-    
-    <div id="canvas-container"></div>
-    
-    <div id="brain-panel-content" style="pointer-events: none;">
-        <button id="brain-panel-close" style="pointer-events: none;">×</button>
-        <div id="brain-panel-container">
-            <div class="container">
-                
-                <h1 class="gradient-text">Hey! I'm Julian Weaver's Brain!</h1>
-                
-                <div class="section">
-                    <p id="greeting" style="opacity: 0; visibility: hidden;">(It's <span id="current-date" style="font-weight: bold;"></span>. Do you typically poke at exposed brain matter on <span id="current-weekday"></span>s?)</p>
-                </div>
-                
-                <div class="section">
-                    <h2>My Work</h2>
-                    <p>Right now, I'm building <a href="https://dydema.xyz/" target="_blank" class="link-highlight">Dydema</a>, doing research in XAI, neuroimaging, and 
-                        neuro-inspired ML, and writing my <a href="https://juliverian.substack.com" target="_blank" class="link-highlight">blog</a>. I'm fascinated by intelligent systems, especially the human kind. I'm a big proponent of 
-                        <a href="https://neuroaisafety.com/" target="_blank" class="link-highlight">NeuroAI</a>;
-                        I believe that studying how the brain represents information can
-                        help us build stronger and safer models- and that a better 
-                        understanding of AI can, in turn, tell us more about the brain itself.</p>
-                    
-                    <p>I'm trying to direct this interest towards advancing what I call 
-                        "intelligence" safety. That is- safety in how we build our 
-                        AI models and, (in my opinion) just as importantly, 
-                        <a href="https://en.wikipedia.org/wiki/Neuroethics" target="_blank" class="link-highlight">how we interact with the brain</a>. 
-                        Both are ripe with the potential for 
-                        <span class="wavy-text">man made horrors</span>. We need to 
-                        tread carefully!</p>
-                    <p>To this end, I co-founded 
-                        <a href="https://www.linkedin.com/company/lhneurotech/posts/?feedView=all" target="_blank" class="link-highlight">Longhorn Neurotech</a> 
-                        during my time at UT Austin. My goal was to educate as many 
-                        people as possible on 
-                        the immense opportunities and dangers surrounding 
-                        neurotechnology and AI. It grew into the largest organization 
-                        of its kind in the world. As part of that, I launched a short
-                        <a href="https://github.com/LonghornNeurotech/LHNT-Synposium/tree/main" target="_blank" class="link-highlight">lecture series</a> 
-                        to discuss topics in NeuroAI, neurotech, and ethics. I also led the design of a 
-                        cheap, open-source EEG headset for hobbyists and 
-                        researchers- a project that has outlived my tenure at UT!</p>
-                    
-                    <p>My research at UT was similarly focused. I launched a project using XAI and 
-                        neuroimaging to explain black-box fMRI models that classify 
-                        neurological disorders. My aim was to use these explanations 
-                        to determine, with high fidelity, which regions of the brain 
-                        likely contributed to a disorder in a specific individual. 
-                        This project is ongoing, and yielded a <a href="https://arxiv.org/abs/2509.23585" target="_blank" class="link-highlight">novel general-purpose XAI method</a>.</p>
-                    
-                    <p>You can find my papers and preprints on 
-                        <a href="https://orcid.org/0009-0008-6358-170X" target="_blank" class="link-highlight">ORCID</a>.
-                    </p>
-                    
-                    <p>
-                        I'm also building Dydema, a privacy-respecting proof of presence layer for the internet. It's a wearable device that uses live physiological signals to verify that a real, living person is behind an online interaction. 
-                        Learn more about it on the <a href="https://dydema.xyz/" target="_blank" class="link-highlight">landing page</a> or on my <a href="https://juliverian.substack.com" target="_blank" class="link-highlight">Substack!</a>
-                    </p>
-                </div>
-                
-                <div class="section">
-                    <h2>My Existence</h2>
-                    <p>I've been floating in cerebrospinal fluid for 
-                        <b><span id="age-display"></span></b>.</p>
-                    
-                    <p>Early on, I was assigned the phonemes /ˈʤuliən ˈwivər/ 
-                        (Julian Weaver). I grew up in Missouri, 
-                        Ukraine, Arizona, and Texas. At UT Austin, I refined my model 
-                        of the world and formally studied Neuroscience, 
-                        Computer Science, and Business.</p>
-                    
-                    <p>I'm currently piloting around the construct called Houston, Texas.</p>
-                    
-                    <p>In my free time, I produce music <b>(page incoming!)</b> and rock climb.</p>
-                </div>
-                
-                <div class="section">
-                    <h2>Connect</h2>
-                    <p>Feel free to reach out:</p>
-                    <div class="contact-links">
-                        <a href="mailto:juliver.dev@gmail.com" class="contact-link">Email</a>
-                        <a href="https://github.com/weavejul" target="_blank" class="contact-link">GitHub</a>
-                        <a href="https://www.linkedin.com/in/julian-weaver/" target="_blank" class="contact-link">LinkedIn</a>
-                        <a href="https://juliverian.substack.com" target="_blank" class="contact-link">Substack</a>
-                        <a href="https://x.com/juliverian" target="_blank" class="contact-link">X</a>
-                        <a href="https://bsky.app/profile/juliverian.bsky.social" target="_blank" class="contact-link">Bluesky</a>
-                        <a href="https://orcid.org/0009-0008-6358-170X" target="_blank" class="contact-link">ORCID</a>
-                        <a href="https://dydema.xyz/" target="_blank" class="contact-link">Dydema</a>
-                    </div>
-                </div>
-                
-                <div class="section">
-                    <h2>Friends</h2>
-                    <p>Check out some of my friends! (In lexicographical order)</p>
-                    <div class="friends-links">
-                        <a href="https://akibaten.xyz" target="_blank" class="friend-link">akibaten.xyz</a>
-                        <a href="https://benaubin.com" target="_blank" class="friend-link">benaubin.com</a>
-                        <a href="https://bengentry.com" target="_blank" class="friend-link">bengentry.com</a>
-                        <a href="https://chrisoosthuizen.com" target="_blank" class="friend-link">chrisoosthuizen.com</a>
-                        <a href="https://eidna.me" target="_blank" class="friend-link">eidna.me</a>
-                        <a href="https://junelc.xyz" target="_blank" class="friend-link">junelc.xyz</a>
-                        <a href="https://prydt.xyz" target="_blank" class="friend-link">prydt.xyz</a>
-                    </div>
-                </div>
-                
-                <div class="section">
-                    <h2>Other Projects</h2>
-                    <div class="projects-list">
-                        <ul>
-                            <li>Performed at the Kennedy Center for the US Senate</li>
-                            <li>Built an electric guitar</li>
-                            <li>Led a string quartet</li>
-                            <li>Discovered that enhanced RNA Import messes with associative learning in C. elegans</li>
-                            <li>Created an LLM-powered procedurally generated dungeon crawler</li>
-                            <li>Helped start Raport, a health tech company working to improve and automate EHR management</li>
-                        </ul>
-                    </div>
-                </div>
-                
-                <div class="footer">
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <p>© 2025 Julian Weaver</p>
-                        <a href="#" id="acknowledgements-link" style="color: #ff8888; text-decoration: none; font-size: 0.9em;">Acknowledgements</a>
-                    </div>
-                </div>
-                
-                <!-- Acknowledgements Modal -->
-                <div id="acknowledgements-modal" class="modal">
-                    <div class="modal-content">
-                        <span class="close">&times;</span>
-                        <h3>Acknowledgements</h3>
-                        <p><strong>Brain model:</strong> "human-brain" (<a href="https://skfb.ly/6YqDO" target="_blank">https://skfb.ly/6YqDO</a>) by Yash_Dandavate is licensed under Creative Commons Attribution (<a href="http://creativecommons.org/licenses/by/4.0/" target="_blank">http://creativecommons.org/licenses/by/4.0/</a>).</p>
-                        
-                        <p><strong>Fluid sim reference:</strong> <a href="https://github.com/PavelDoGreat/WebGL-Fluid-Simulation" target="_blank">https://github.com/PavelDoGreat/WebGL-Fluid-Simulation</a></p>
-                    </div>
-                </div>
+    <header class="hero">
+        <h1 class="name"><span class="l jv" style="--x:5%;--len:9;--xm:5%;--lenm:6"><span class="g">J</span></span><span class="l jv" style="--x:13.5%;--len:21;--xm:21%;--lenm:13"><span class="g">u</span></span><span class="l jv" style="--x:21%;--len:5;--xm:36%;--lenm:4"><span class="g">l</span></span><span class="l jv" style="--x:28%;--len:15;--xm:48%;--lenm:10"><span class="g">i</span></span><span class="l" style="--x:35.5%;--len:25;--xm:63%;--lenm:16"><span class="g">a</span></span><span class="l" style="--x:45%;--len:11;--xm:81%;--lenm:7"><span class="g">n</span></span> <span class="l" style="--x:24%;--len:46;--xm:9%;--lenm:34"><span class="g">W</span></span><span class="l" style="--x:37%;--len:53;--xm:27%;--lenm:41"><span class="g">e</span></span><span class="l" style="--x:48.5%;--len:42;--xm:43%;--lenm:31"><span class="g">a</span></span><span class="l jv" style="--x:60%;--len:50;--xm:57%;--lenm:43"><span class="g">v</span></span><span class="l jv" style="--x:71%;--len:43;--xm:72%;--lenm:36"><span class="g">e</span></span><span class="l jv" style="--x:82%;--len:48;--xm:87%;--lenm:40"><span class="g">r</span></span></h1>
+
+        <p class="hero-role"><span class="co">Founder &amp; CEO of <a href="https://dydema.com/">Dydema</a></span>We make neuro models and record neurodata. YC F26.<br>I'm a neuroscientist and ML researcher in San Francisco.<br><a class="mail" href="mailto:juliver@dydema.com">juliver@dydema.com</a></p>
+        <p class="hero-alias t"><b>JULI</b>an wea<b>VER</b>, or juliver</p>
+    </header>
+
+    <main>
+        <section class="dydema" id="dydema" aria-labelledby="dydema-h">
+            <p class="t">Where I work</p>
+            <div>
+                <h2 class="headword" id="dydema-h"><a href="https://dydema.com/">Dydema</a><i>n.</i></h2>
+                <ol class="senses">
+                    <li><em>Models.</em> We make general embedding models for neurotech and serve them to other teams.</li>
+                    <li><em>Data.</em> We record neurodata for other teams.</li>
+                </ol>
             </div>
-        </div>
-    </div>
-    
-    <!-- Matter.js CDN -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js"></script>
-    <!-- Three.js CDN -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    
-    <!-- <script type="module" src="script.js"></script> -->
-    <script type="module" src="js/script.js"></script>
-    
-    <!-- Panel Content JavaScript -->
-    <script>
-        // Birthday calculation with proper date handling
-        const birthday = new Date(2004, 10, 23); // November 23, 2004 (month 0-indexed)
-        const now = new Date();
-        
-        // Calculate age properly accounting for leap years
-        let ageInYears = now.getFullYear() - birthday.getFullYear();
-        let ageInDays = 0;
-        
-        // Adjust for leap years and exact day calculation
-        const currentMonth = now.getMonth();
-        const currentDay = now.getDate();
-        const birthMonth = birthday.getMonth();
-        const birthDay = birthday.getDate();
-        
-        // If birthday hasn't occurred this year yet, subtract one year
-        if (currentMonth < birthMonth || (currentMonth === birthMonth && currentDay < birthDay)) {
-            ageInYears--;
-        }
-        
-        // Calculate days since last birthday (excluding birth day)
-        const lastBirthday = new Date(now.getFullYear(), birthMonth, birthDay);
-        if (currentMonth < birthMonth || (currentMonth === birthMonth && currentDay < birthDay)) {
-            lastBirthday.setFullYear(lastBirthday.getFullYear() - 1);
-        }
-        
-        // Calculate days since last birthday, excluding the birth day itself
-        ageInDays = Math.floor((now - lastBirthday) / (1000 * 60 * 60 * 24));
-        
-        // Check if it's birthday
-        const isBirthday = birthDay === currentDay && birthMonth === currentMonth;
-        
-        // Format age display
-        let ageDisplay;
-        if (isBirthday) {
-            ageDisplay = `<span class="birthday-easter-egg">${ageInYears} years exactly! It's my birthday! 🎉</span>`;
-        } else {
-            ageDisplay =  `roughly ${ageInYears} years and ${ageInDays} days`;
-        }
-        
-        // Update age display
-        document.getElementById('age-display').innerHTML = ageDisplay;
-        
-        // Update current date and weekday
-        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-        const currentDate = now.toLocaleDateString('en-US', options);
-        const currentWeekday = now.toLocaleDateString('en-US', { weekday: 'long' });
-        
-        document.getElementById('current-date').textContent = currentDate;
-        document.getElementById('current-weekday').textContent = currentWeekday;
-        
-        // Add particle effect to background
-        function createParticle() {
-            const particle = document.createElement('div');
-            particle.style.position = 'fixed';
-            particle.style.width = '2px';
-            particle.style.height = '2px';
-            particle.style.backgroundColor = '#ff6666';
-            particle.style.borderRadius = '50%';
-            particle.style.pointerEvents = 'none';
-            particle.style.zIndex = '0';
-            particle.style.opacity = '0.6';
-            particle.style.left = Math.random() * window.innerWidth + 'px';
-            particle.style.top = window.innerHeight + 'px';
-            particle.style.animation = `particleFloat ${Math.random() * 3 + 2}s linear`;
-            
-            document.body.appendChild(particle);
-            
-            setTimeout(() => {
-                particle.remove();
-            }, 5000);
-        }
-        
-        // Add particle animation CSS
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes particleFloat {
-                to {
-                    transform: translateY(-100vh) rotate(360deg);
-                    opacity: 0;
-                }
-            }
-        `;
-        document.head.appendChild(style);
-        
-        // Create particles periodically
-        setInterval(createParticle, 2000);
-        
-        // Add hover effects to sections
-        document.querySelectorAll('.section').forEach(section => {
-            section.addEventListener('mouseenter', function() {
-                this.style.transform = 'translateY(-2px) scale(1.01)';
-            });
-            
-            section.addEventListener('mouseleave', function() {
-                this.style.transform = 'translateY(0) scale(1)';
-            });
-        });
-        
-        // Modal functionality
-        const modal = document.getElementById('acknowledgements-modal');
-        const link = document.getElementById('acknowledgements-link');
-        const closeBtn = document.getElementsByClassName('close')[0];
-        
-        // Open modal when link is clicked
-        link.onclick = function(e) {
-            e.preventDefault();
-            modal.style.display = 'block';
-            modal.style.animation = 'modalFadeIn 0.3s ease-out';
-        }
-        
-        // Close modal when X is clicked
-        closeBtn.onclick = function() {
-            modal.style.animation = 'modalFadeOut 0.3s ease-out';
-            setTimeout(() => {
-                modal.style.display = 'none';
-            }, 300);
-        }
-        
-        // Close modal when clicking outside of it
-        window.onclick = function(event) {
-            if (event.target == modal) {
-                modal.style.animation = 'modalFadeOut 0.3s ease-out';
-                setTimeout(() => {
-                    modal.style.display = 'none';
-                }, 300);
-            }
-        }
-        
-        // Close modal with Escape key
-        document.addEventListener('keydown', function(event) {
-            if (event.key === 'Escape' && modal.style.display === 'block') {
-                modal.style.animation = 'modalFadeOut 0.3s ease-out';
-                setTimeout(() => {
-                    modal.style.display = 'none';
-                }, 300);
-            }
-        });
-        
-        // Add modal animations
-        const modalStyle = document.createElement('style');
-        modalStyle.textContent = `
-            @keyframes modalFadeIn {
-                from {
-                    opacity: 0;
-                    transform: scale(0.8) translateY(-20px);
-                }
-                to {
-                    opacity: 1;
-                    transform: scale(1) translateY(0);
-                }
-            }
-            
-            @keyframes modalFadeOut {
-                from {
-                    opacity: 1;
-                    transform: scale(1) translateY(0);
-                }
-                to {
-                    opacity: 0;
-                    transform: scale(0.8) translateY(-20px);
-                }
-            }
-        `;
-        document.head.appendChild(modalStyle);
-        
-        // Add smooth scrolling to all internal links
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                const href = this.getAttribute('href');
-                if (href && href !== '#') {
-                    const target = document.querySelector(href);
-                    if (target) {
-                        target.scrollIntoView({
-                            behavior: 'smooth',
-                            block: 'start'
-                        });
-                    }
-                }
-            });
-        });
-        
-        // Section animations will be triggered when panel becomes visible
-        
-        // Add keyboard shortcuts
-        document.addEventListener('keydown', function(event) {
-            // Removed brain mode toggle - keeping this for future keyboard shortcuts
-        });
+            <p class="coda">I'm the founder and CEO. We're in Y Combinator's F26 batch. <a href="https://dydema.com/">dydema.com</a></p>
+        </section>
 
-        // Custom typing animation for greeting
-        function typeText(element, text, speed = 50) {
-            // Create a temporary element to parse the HTML
-            const tempDiv = document.createElement('div');
-            tempDiv.innerHTML = text;
-            
-            // Get all text nodes and elements
-            const walker = document.createTreeWalker(
-                tempDiv,
-                NodeFilter.SHOW_TEXT | NodeFilter.SHOW_ELEMENT,
-                {
-                    acceptNode: function(node) {
-                        // Skip text nodes that are inside elements (they'll be handled by the element)
-                        if (node.nodeType === Node.TEXT_NODE && node.parentNode !== tempDiv) {
-                            return NodeFilter.FILTER_REJECT;
-                        }
-                        return NodeFilter.FILTER_ACCEPT;
-                    }
-                },
-                false
-            );
-            
-            const nodes = [];
-            let node;
-            while (node = walker.nextNode()) {
-                if (node.nodeType === Node.TEXT_NODE) {
-                    // Split text into individual characters
-                    for (let i = 0; i < node.textContent.length; i++) {
-                        nodes.push({ type: 'char', content: node.textContent[i] });
-                    }
-                } else if (node.nodeType === Node.ELEMENT_NODE) {
-                    // For elements, we need to type out their text content character by character
-                    // but preserve the element structure
-                    const elementText = node.textContent;
-                    const elementTag = node.outerHTML.replace(node.textContent, '');
-                    
-                    // Add opening tag
-                    nodes.push({ type: 'element-start', content: elementTag });
-                    
-                    // Add each character of the element's text
-                    for (let i = 0; i < elementText.length; i++) {
-                        nodes.push({ type: 'char', content: elementText[i] });
-                    }
-                    
-                    // Add closing tag
-                    nodes.push({ type: 'element-end', content: '</' + node.tagName.toLowerCase() + '>' });
-                }
-            }
-            
-            // Clear the original element and add cursor
-            element.innerHTML = '';
-            const cursor = document.createElement('span');
-            cursor.className = 'typing-cursor';
-            element.appendChild(cursor);
-            
-            let i = 0;
-            const typeInterval = setInterval(() => {
-                if (i < nodes.length) {
-                    const node = nodes[i];
-                    if (node.type === 'char') {
-                        // Insert character before cursor
-                        const textNode = document.createTextNode(node.content);
-                        if (cursor.parentNode) {
-                            cursor.parentNode.insertBefore(textNode, cursor);
-                        } else {
-                            element.appendChild(textNode);
-                        }
-                    } else if (node.type === 'element-start') {
-                        // Create the element and insert it
-                        const tempDiv = document.createElement('div');
-                        tempDiv.innerHTML = node.content;
-                        const newElement = tempDiv.firstChild;
-                        
-                        // Insert element before cursor
-                        if (cursor.parentNode) {
-                            cursor.parentNode.insertBefore(newElement, cursor);
-                        } else {
-                            element.appendChild(newElement);
-                        }
-                        
-                        // Move cursor inside the element
-                        newElement.appendChild(cursor);
-                    } else if (node.type === 'element-end') {
-                        // Close the element by moving cursor back out
-                        if (cursor.parentNode && cursor.parentNode !== element) {
-                            const parent = cursor.parentNode;
-                            parent.parentNode.insertBefore(cursor, parent.nextSibling);
-                        }
-                    }
-                    i++;
-                } else {
-                    clearInterval(typeInterval);
-                    setTimeout(() => {
-                        cursor.remove();
-                    }, 1000);
-                }
-            }, speed);
-        }
-        
-        // Wavy animation for 'man made horrors'
-        document.addEventListener('DOMContentLoaded', function() {
-            document.querySelectorAll('.wavy-text').forEach(function(el) {
-                const text = el.textContent;
-                el.innerHTML = '';
-                for (let i = 0; i < text.length; i++) {
-                    const span = document.createElement('span');
-                    span.textContent = text[i];
-                    span.style.animationDelay = (i * 0.08) + 's';
-                    el.appendChild(span);
-                }
-            });
-        });
-        
-        // Function to start all panel animations when panel becomes visible
-        window.startPanelAnimations = function() {
-            // Start typing animation
-            const greetingElement = document.getElementById('greeting');
-            if (greetingElement && !greetingElement.dataset.animationStarted) {
-                const originalText = greetingElement.innerHTML;
-                greetingElement.style.visibility = 'visible';
-                greetingElement.style.opacity = '1';
-                greetingElement.dataset.animationStarted = 'true';
-                typeText(greetingElement, originalText, 30);
-            }
-            
-            // Start container animation
-            const container = document.querySelector('#brain-panel-container .container');
-            if (container && !container.classList.contains('animate-in')) {
-                container.classList.add('animate-in');
-            }
-            
-            // Start background animation
-            const panelContainer = document.getElementById('brain-panel-container');
-            if (panelContainer && !panelContainer.classList.contains('animate-background')) {
-                panelContainer.classList.add('animate-background');
-            }
-            
-            // Start section animations
-            const sections = document.querySelectorAll('#brain-panel-container .section');
-            sections.forEach((section, index) => {
-                if (!section.classList.contains('animate-in')) {
-                    section.classList.add('animate-in');
-                    
-                    // Listen for animation end to enable hover effects
-                    section.addEventListener('animationend', function() {
-                        // Animation is complete, set final state and enable hover effects
-                        this.style.opacity = '1';
-                        this.style.transform = 'translateY(0) translateZ(0)';
-                        this.style.visibility = 'visible';
-                        this.style.pointerEvents = 'auto';
-                    }, { once: true });
-                }
-            });
-            
-            // Enable mobile touch scrolling for the panel
-            enableMobilePanelScrolling();
-        };
-        
-        // Function to enable mobile touch scrolling for the panel
-        function enableMobilePanelScrolling() {
-            // Only apply mobile-specific touch handling on mobile devices
-            if (!isMobileDevice()) {
-                return;
-            }
-            
-            const panelContainer = document.getElementById('brain-panel-container');
-            const panelContent = document.getElementById('brain-panel-content');
-            
-            if (panelContainer && panelContent) {
-                // Ensure proper touch scrolling is enabled
-                panelContainer.style.touchAction = 'pan-y';
-                panelContainer.style.overscrollBehavior = 'contain';
-                
-                // Remove any existing touch event listeners to prevent conflicts
-                // and don't add new ones that might interfere with text selection
-                // The CSS touch-action property will handle the behavior
-                
-                console.log('Mobile panel scrolling enabled');
-            }
-        }
-        
-        // Function to disable mobile touch events when panel is hidden
-        function disableMobilePanelScrolling() {
-            // Only apply mobile-specific touch handling on mobile devices
-            if (!isMobileDevice()) {
-                return;
-            }
-            
-            const panelContent = document.getElementById('brain-panel-content');
-            const panelContainer = document.getElementById('brain-panel-container');
-            
-            if (panelContent) {
-                // Reset touch action to allow fluid simulation to work
-                panelContent.style.touchAction = 'none';
-                console.log('Mobile panel scrolling disabled');
-            }
-            
-            if (panelContainer) {
-                // Reset touch action on container as well
-                panelContainer.style.touchAction = 'none';
-            }
-        }
-        
-        // Utility function to detect mobile devices
-        function isMobileDevice() {
-            return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
-                   ('ontouchstart' in window) ||
-                   (navigator.maxTouchPoints > 0) ||
-                   (navigator.msMaxTouchPoints > 0);
-        }
-        
-        // Monitor panel visibility changes
-        function observePanelVisibility() {
-            const panelContent = document.getElementById('brain-panel-content');
-            
-            if (panelContent) {
-                const observer = new MutationObserver(function(mutations) {
-                    mutations.forEach(function(mutation) {
-                        if (mutation.type === 'attributes' && 
-                            (mutation.attributeName === 'style' || mutation.attributeName === 'class')) {
-                            const isVisible = panelContent.style.visibility === 'visible' || 
-                                             panelContent.style.opacity === '1' ||
-                                             panelContent.classList.contains('panel-visible');
-                            
-                            console.log('Panel visibility change detected:', {
-                                isVisible: isVisible,
-                                opacity: panelContent.style.opacity,
-                                visibility: panelContent.style.visibility,
-                                hasPanelVisibleClass: panelContent.classList.contains('panel-visible')
-                            });
-                            
-                            if (isVisible) {
-                                console.log('Enabling mobile panel scrolling');
-                                enableMobilePanelScrolling();
-                            } else {
-                                console.log('Disabling mobile panel scrolling');
-                                disableMobilePanelScrolling();
-                            }
-                        }
-                    });
-                });
-                
-                observer.observe(panelContent, { 
-                    attributes: true, 
-                    attributeFilter: ['style', 'class'] 
-                });
-                
-                console.log('Panel visibility observer set up w/ debugging');
-            }
-        }
-        
-        // Start observing panel visibility changes
-        observePanelVisibility();
-        
-        // Keep the old function name for backward compatibility
-        window.startTypingAnimation = window.startPanelAnimations;
-        
-        // Panel interactions are handled by brain manager only
-        // No direct event listeners needed here
-    </script>
+        <section class="plate" id="brain" aria-labelledby="plate-h">
+            <div class="plate-head">
+                <div>
+                    <p class="t" style="margin:0">PLATE I.</p>
+                    <h2 id="plate-h">Hey! I'm Julian Weaver's brain.</h2>
+                </div>
+                <p class="t">Left lateral view. Drag to rotate.<br><span id="poke">Do you typically poke at exposed brain matter?</span></p>
+            </div>
 
+            <div class="plate-body">
+                <svg class="leaders" aria-hidden="true"></svg>
+                <ol class="labels">
+                    <li class="lab lab-dlpfc" data-r="dlpfc">
+                        <h3><span class="num">1</span>Dorsolateral prefrontal cortex</h3>
+                        <p class="fn">planning, working memory</p>
+                        <p class="fact">I run <a href="#dydema">Dydema</a> (see above).</p>
+                    </li>
+                    <li class="lab lab-motor" data-r="motor">
+                        <h3><span class="num">2</span>Precentral gyrus</h3>
+                        <p class="fn">movement</p>
+                        <p class="fact">I rock climb. I also built an electric guitar, and led the design of a cheap, open-source EEG headset for hobbyists and researchers. It has outlived my time at UT!</p>
+                    </li>
+                    <li class="lab lab-frontalpole" data-r="frontalpole">
+                        <h3><span class="num">3</span>Frontal pole</h3>
+                        <p class="fn">thinking about the future</p>
+                        <p class="fact">I care about what I call &ldquo;intelligence&rdquo; safety. That is, safety in how we build our AI models and, just as importantly in my opinion, how we interact with the brain. Both are ripe with the potential for <span class="wavy">man made horrors</span>. We need to tread carefully!</p>
+                    </li>
+                    <li class="lab lab-broca" data-r="broca">
+                        <h3><span class="num">4</span>Broca's area</h3>
+                        <p class="fn">speech</p>
+                        <p class="fact">I co-founded <a href="https://www.linkedin.com/company/lhneurotech">Longhorn Neurotech</a> during my time at UT Austin. My goal was to educate as many people as possible on the opportunities and dangers of neurotechnology and AI, and it grew into the largest organization of its kind in the world. I also launched a short <a href="https://github.com/LonghornNeurotech/LHNT-Synposium/tree/main">lecture series</a> on NeuroAI, neurotech, and ethics.</p>
+                    </li>
+                    <li class="lab lab-visual" data-r="visual">
+                        <h3><span class="num">5</span>Occipital pole</h3>
+                        <p class="fn">vision</p>
+                        <p class="fact">At UT I launched a project using XAI and neuroimaging to explain black-box fMRI models that classify neurological disorders. It's ongoing, and it yielded a new general-purpose XAI method, <a href="https://arxiv.org/abs/2509.23585">EVO-LRP</a>.</p>
+                    </li>
+                    <li class="lab lab-auditory" data-r="auditory">
+                        <h3><span class="num">6</span>Superior temporal gyrus</h3>
+                        <p class="fn">hearing</p>
+                        <p class="fact">I produce music. I've led a string quartet and performed at the Kennedy Center for the US Senate.</p>
+                    </li>
+                    <li class="lab lab-hippocampus" data-r="hippocampus">
+                        <h3><span class="num">7</span>Hippocampus (deep)</h3>
+                        <p class="fn">memory</p>
+                        <p class="fact">I grew up in Missouri, Ukraine, Arizona, and Texas. At UT Austin, I refined my model of the world and formally studied Neuroscience, Computer Science, and Business.</p>
+                    </li>
+                    <li class="lab lab-brainstem" data-r="brainstem">
+                        <h3><span class="num">8</span>Brainstem</h3>
+                        <p class="fn">breathing, heart rate</p>
+                        <p class="fact">Currently piloting around the construct called San Francisco.</p>
+                    </li>
+                </ol>
+
+                <figure class="specimen">
+                    <img src="/assets/images/brain-specimen.webp" width="1200" height="900" alt="3D model of a human brain in left lateral view, with numbered regions labeled with facts about Julian Weaver" decoding="async">
+                    <canvas aria-hidden="true"></canvas>
+                    <span class="pin" data-r="dlpfc" style="left:27.5%;top:27.56%">1</span>
+                    <span class="pin" data-r="motor" style="left:50.33%;top:23.33%">2</span>
+                    <span class="pin" data-r="frontalpole" style="left:15.92%;top:35.78%">3</span>
+                    <span class="pin" data-r="broca" style="left:36.58%;top:41.44%">4</span>
+                    <span class="pin" data-r="visual" style="left:85.5%;top:51.22%">5</span>
+                    <span class="pin" data-r="auditory" style="left:53.75%;top:51%">6</span>
+                    <span class="pin" data-r="hippocampus" style="left:48.42%;top:64.56%">7</span>
+                    <span class="pin" data-r="brainstem" style="left:60%;top:86.67%">8</span>
+                </figure>
+            </div>
+        </section>
+
+        <section class="csf" aria-label="Cerebrospinal fluid">
+            <div class="csf-fallback" aria-hidden="true"></div>
+            <canvas id="csf-canvas" aria-hidden="true"></canvas>
+            <p class="drift">
+                <span class="f1">I've been floating in</span>
+                <span class="f2">cerebrospinal fluid</span>
+                <span class="f3" id="csf-age">since November 23, 2004.</span>
+                <span class="f4 t" id="csf-clock"></span>
+            </p>
+        </section>
+
+        <section class="index" id="index" aria-labelledby="index-h">
+            <h2 class="t" id="index-h">Index</h2>
+            <ul class="ix">
+                <li><a class="n" href="https://dydema.com/">Dydema</a><span class="k t">company, founder &amp; CEO</span></li>
+                <li><a class="n" href="https://arxiv.org/abs/2509.23585">EVO-LRP: Evolutionary Optimization of LRP for Interpretable Model Explanations</a><span class="k t">paper, 2025</span></li>
+                <li><span class="n">Explaining black-box fMRI models</span><span class="k t">research, UT Austin</span></li>
+                <li><a class="n" href="https://www.linkedin.com/company/lhneurotech">Longhorn Neurotech</a><span class="k t">co-founder</span></li>
+                <li><a class="n" href="https://github.com/LonghornNeurotech/LHNT-Synposium/tree/main">Lecture series on NeuroAI, neurotech &amp; ethics</a><span class="k t">talks</span></li>
+                <li><span class="n">Open-source EEG headset</span><span class="k t">hardware, design lead</span></li>
+                <li><span class="n">Enhanced RNA import and associative learning in <i>C.&nbsp;elegans</i></span><span class="k t">biology</span></li>
+                <li><span class="n">LLM-powered procedurally generated dungeon crawler</span><span class="k t">game</span></li>
+                <li><span class="n">An electric guitar</span><span class="k t">built</span></li>
+                <li><span class="n">A string quartet</span><span class="k t">led</span></li>
+                <li><span class="n">The Kennedy Center, for the US Senate</span><span class="k t">performed</span></li>
+                <li><a class="n" href="https://juliverian.substack.com/">juliverian.substack.com</a><span class="k t">writing</span></li>
+            </ul>
+        </section>
+
+        <section class="contact" id="contact" aria-labelledby="contact-h">
+            <div>
+                <h2 class="t" id="contact-h">Contact</h2>
+                <p class="big-mail"><a href="mailto:juliver@dydema.com">juliver@dydema.com</a></p>
+                <p class="where">San Francisco, California</p>
+                <p class="elsewhere"><a href="https://www.linkedin.com/in/julian-weaver/" rel="me">LinkedIn</a> / <a href="https://x.com/juliverian" rel="me">X</a> / <a href="https://github.com/weavejul" rel="me">GitHub</a> / <a href="https://juliverian.substack.com/" rel="me">Substack</a> / <a href="https://bsky.app/profile/juliverian.bsky.social" rel="me">Bluesky</a> / <a href="https://www.instagram.com/official_julian_weaver/" rel="me">Instagram</a> / <a href="https://orcid.org/0009-0008-6358-170X" rel="me">ORCID</a></p>
+                <p class="friends">Check out some of my friends! (In lexicographical order) <a href="https://akibaten.xyz">akibaten.xyz</a>, <a href="https://benaubin.com">benaubin.com</a>, <a href="https://bengentry.com">bengentry.com</a>, <a href="https://chrisoosthuizen.com">chrisoosthuizen.com</a>, <a href="https://eidna.me">eidna.me</a>, <a href="https://junelc.xyz">junelc.xyz</a>, <a href="https://prydt.xyz">prydt.xyz</a></p>
+            </div>
+            <figure class="photo">
+                <img src="/assets/images/julian-weaver.jpeg" width="330" height="330" loading="lazy" alt="Julian Weaver">
+                <figcaption class="t">Julian Weaver (juliver)</figcaption>
+            </figure>
+            <footer class="foot t">
+                <p>juliver.xyz is the personal site of Julian Weaver, also known as juliver, founder and CEO of Dydema. &copy; 2026</p>
+                <p>Brain model: <a href="https://skfb.ly/6YqDO">&ldquo;human-brain&rdquo;</a> by Yash_Dandavate, <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>. Fluid after <a href="https://github.com/PavelDoGreat/WebGL-Fluid-Simulation">Pavel Dobryakov</a>.</p>
+            </footer>
+        </section>
+    </main>
+
+    <script src="/js/home.js" defer></script>
 </body>
-</html> 
+</html>

@@ -49,7 +49,6 @@ export const julianInfo = {
       "Led a string quartet",
       "Discovered enhanced RNA Import effects on associative learning in C. elegans",
       "Created LLM-powered procedurally generated dungeon crawler (2020)",
-      "Helped start Raport (health tech company for EHR management)",
       "Created a 3D brain model for his website"
     ],
     philosophy: "Passionate about intelligence safety - both in AI development and neurotechnology applications"

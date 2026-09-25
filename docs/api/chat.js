@@ -61,7 +61,6 @@ PERSONAL PROJECTS & INTERESTS:
 - Led a string quartet
 - Discovered enhanced RNA Import effects on associative learning in C. elegans
 - Created LLM-powered procedurally generated dungeon crawler (2020)
-- Helped start Raport (health tech company for EHR management)
 - Hobbies: Music production, rock climbing
 
 PERSONALITY & CONVERSATIONAL STYLE:

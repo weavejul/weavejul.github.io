@@ -1,33 +1,4 @@
 User-agent: *
 Allow: /
-Allow: /manifest.json
-Allow: /favicon.ico
-Allow: /assets/icons/
 
-# Disallow sensitive files and directories
-Disallow: /.htaccess
-Disallow: /.git/
-Disallow: /node_modules/
-Disallow: /*.config
-Disallow: /*.bak
-Disallow: /*.tmp
-Disallow: /*.log
-Disallow: /.env*
-Disallow: /package*.json
-Disallow: /README.md
-Disallow: /.DS_Store
-Disallow: /Thumbs.db
-Disallow: /.vscode/
-Disallow: /.idea/
-Disallow: /*.sublime-*
-
-# Disallow any admin or private areas (if you add them later)
-# Disallow: /admin/
-# Disallow: /private/
-
-# Sitemap location
 Sitemap: https://juliver.xyz/sitemap.xml
-
-# Preferred domain (non-www)
-# This helps search engines understand the preferred version
-Host: juliver.xyz

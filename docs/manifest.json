@@ -1,11 +1,11 @@
 {
-    "name": "Julian Weaver (Juliver)",
+    "name": "Julian Weaver",
     "short_name": "Juliver",
-    "description": "Julian Weaver (Juliver) - Neuroscientist, ML Researcher & AI Safety Advocate",
+    "description": "Julian Weaver (juliver), founder & CEO of Dydema (YC F26), a neurotech model and data company.",
     "start_url": "/",
     "display": "standalone",
-    "background_color": "#000000",
-    "theme_color": "#ff4444",
+    "background_color": "#ffffff",
+    "theme_color": "#ffffff",
     "icons": [
         {
             "src": "/assets/icons/favicon-16x16.png",
