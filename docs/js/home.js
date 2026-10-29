@@ -256,12 +256,14 @@
       return 'M' + L.hl + ' ' + (L.t - 8) + 'v-10L' + tx + ' ' + ty;
     }
 
+    // With JS the pins sit at the figure's corner and move by transform, which skips layout every frame.
+    Object.keys(pins).forEach(function (r) { pins[r].style.left = '0'; pins[r].style.top = '0'; });
+
     function draw() {
       if (!layout) return;
       Object.keys(pos).forEach(function (r) {
         var p = pos[r];
-        pins[r].style.left = (p.x * 100) + '%';
-        pins[r].style.top = (p.y * 100) + '%';
+        pins[r].style.transform = 'translate(' + (p.x * layout.fw).toFixed(1) + 'px,' + (p.y * layout.fh).toFixed(1) + 'px)';
         pins[r].style.opacity = (0.45 + 0.55 * p.f).toFixed(2);
         if (!layout.lines) { paths[r].path.setAttribute('d', ''); return; }
         var tx = +(layout.fx + p.x * layout.fw).toFixed(1), ty = +(layout.fy + p.y * layout.fh).toFixed(1);
@@ -287,17 +289,23 @@
 
     function live() {
       var THREE = window.THREE;
-      var renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
+      // Big or high-DPI screens were drawing 10+ million pixels a frame with 4x MSAA.
+      // Retina screens don't need MSAA, and the pixel count is capped at ~4.2 MP.
+      var dpr = window.devicePixelRatio || 1;
+      var renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: dpr < 1.5, alpha: true, powerPreference: 'high-performance' });
       renderer.setClearColor(0x000000, 0);
       renderer.outputEncoding = THREE.sRGBEncoding;
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
       var scene = new THREE.Scene();
       scene.add(new THREE.HemisphereLight(0xfff4e8, 0x442222, 1.0));
       var key = new THREE.DirectionalLight(0xffffff, 2.2);
       key.position.set(-2, 3, 4); scene.add(key);
       var camera = new THREE.PerspectiveCamera(22.5, 4 / 3, 0.1, 100);
       camera.position.set(0, 0, 5.2); camera.lookAt(0, 0, 0);
-      function size() { var r = fig.getBoundingClientRect(); renderer.setSize(r.width, r.width * 0.75, false); }
+      function size() {
+        var r = fig.getBoundingClientRect(), w = r.width, h = r.width * 0.75;
+        renderer.setPixelRatio(Math.min(dpr, 2, Math.sqrt(4.2e6 / Math.max(1, w * h))));
+        renderer.setSize(w, h, false);
+      }
       size(); window.addEventListener('resize', size);
 
       var loader = new THREE.GLTFLoader(), draco = new THREE.DRACOLoader();
@@ -313,26 +321,34 @@
         });
         var wp = new THREE.Vector3(), wn = new THREE.Vector3(), toCam = new THREE.Vector3();
 
-        var yaw = 0, pitch = 0, vyaw = 0, vpitch = 0, dragging = false, lx = 0, ly = 0;
+        var yaw = 0, pitch = 0, vyaw = 0, vpitch = 0, dragging = false, lx = 0, ly = 0, lt = 0;
         fig.addEventListener('pointerdown', function (e) {
-          dragging = true; lx = e.clientX; ly = e.clientY;
+          dragging = true; lx = e.clientX; ly = e.clientY; lt = performance.now(); vyaw = vpitch = 0;
           fig.setPointerCapture(e.pointerId); fig.classList.add('grabbing');
         });
         fig.addEventListener('pointermove', function (e) {
           if (!dragging) return;
-          var dx = e.clientX - lx, dy = e.clientY - ly; lx = e.clientX; ly = e.clientY;
-          yaw += dx * 0.008; pitch = Math.max(-0.7, Math.min(0.7, pitch + dy * 0.006));
-          vyaw = dx * 0.008; vpitch = dy * 0.006;
+          var t = performance.now(), dt = Math.max(0.008, (t - lt) / 1000);
+          var dx = (e.clientX - lx) * 0.008, dy = (e.clientY - ly) * 0.006;
+          lx = e.clientX; ly = e.clientY; lt = t;
+          yaw += dx; pitch = Math.max(-0.7, Math.min(0.7, pitch + dy));
+          vyaw = 0.5 * vyaw + 0.5 * Math.max(-12, Math.min(12, dx / dt));
+          vpitch = 0.5 * vpitch + 0.5 * Math.max(-12, Math.min(12, dy / dt));
         });
         function up() { dragging = false; fig.classList.remove('grabbing'); }
         fig.addEventListener('pointerup', up);
         fig.addEventListener('pointercancel', up);
 
-        var visible = true, running = false, t0 = performance.now();
+        // Released, the brain springs back to the lateral view (critically damped, so no wobble).
+        // Stepping by real elapsed time keeps the return the same speed at 60, 120 or 144 Hz.
+        var W = 4.5, visible = true, running = false, t0 = performance.now(), tl = 0;
         function frame(now) {
-          if (!visible) { running = false; return; }
-          var t = (now - t0) / 1000;
-          if (!dragging) { yaw += vyaw; pitch += vpitch; vyaw *= 0.92; vpitch *= 0.92; yaw *= 0.985; pitch *= 0.985; }
+          if (!visible) { running = false; tl = 0; return; }
+          var t = (now - t0) / 1000, dt = Math.min(0.05, tl ? (now - tl) / 1000 : 0); tl = now;
+          if (!dragging) {
+            vyaw += (-W * W * yaw - 2 * W * vyaw) * dt; yaw += vyaw * dt;
+            vpitch += (-W * W * pitch - 2 * W * vpitch) * dt; pitch = Math.max(-0.7, Math.min(0.7, pitch + vpitch * dt));
+          }
           var iy = reduceMotion ? 0 : 0.28 * Math.sin(t * 0.33), ip = reduceMotion ? 0 : 0.05 * Math.sin(t * 0.21);
           brain.rotation.set(ip + pitch, Math.PI + iy + yaw, 0);
           brain.updateMatrixWorld(true);
@@ -367,12 +383,13 @@
     var born = new Date(2004, 10, 23);
     function plural(n, w) { return n + ' ' + w + (n === 1 ? '' : 's'); }
     function tick() {
-      var now = new Date();
-      var years = now.getFullYear() - born.getFullYear();
-      var last = new Date(now.getFullYear(), born.getMonth(), born.getDate());
-      if (now < last) { years--; last = new Date(now.getFullYear() - 1, born.getMonth(), born.getDate()); }
-      var ms = now - last, days = Math.floor(ms / 864e5), rest = ms - days * 864e5;
-      var h = Math.floor(rest / 36e5), m = Math.floor(rest / 6e4) % 60, s = Math.floor(rest / 1e3) % 60;
+      // Count calendar days and read hours off the local clock. Subtracting timestamps instead
+      // gains or loses an hour whenever daylight saving changed since the last birthday.
+      var now = new Date(), y = now.getFullYear(), bm = born.getMonth(), bd = born.getDate();
+      if (now < new Date(y, bm, bd)) y--;
+      var years = y - born.getFullYear();
+      var days = Math.round((Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()) - Date.UTC(y, bm, bd)) / 864e5);
+      var h = now.getHours(), m = now.getMinutes(), s = now.getSeconds();
       age.innerHTML = 'for roughly <b>' + plural(years, 'year') + '</b> and <b>' + plural(days, 'day') + '</b>.';
       if (clock) clock.textContent = '(and ' + plural(h, 'hour') + ', ' + plural(m, 'minute') + ', ' + plural(s, 'second') + ')';
     }
